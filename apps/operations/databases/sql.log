@@ -1,0 +1,713 @@
+timestamp: 2026-06-25T07:42:11.871627
+CREATE TABLE "py4web_session"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "rkey" CHAR(512),
+    "rvalue" TEXT,
+    "expiration" INTEGER,
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP
+);
+success!
+timestamp: 2026-06-25T07:42:11.911144
+CREATE TABLE "auth_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "username" CHAR(512) UNIQUE,
+    "email" CHAR(512) UNIQUE,
+    "phone_number" CHAR(512),
+    "password" CHAR(512),
+    "first_name" CHAR(512),
+    "last_name" CHAR(512),
+    "sso_id" CHAR(512),
+    "action_token" CHAR(512),
+    "last_password_change" TIMESTAMP,
+    "past_passwords_hash" TEXT,
+    "created_at" TIMESTAMP,
+    "token_created_on" TIMESTAMP,
+    "is_active" CHAR(1),
+    "is_deleted" CHAR(1)
+);
+success!
+timestamp: 2026-06-25T07:42:11.932926
+CREATE TABLE "auth_user_tag_groups"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:11.948444
+CREATE TABLE "auth_user_tag_permissions"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tagpath" CHAR(512),
+    "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.334420
+CREATE TABLE "ministere"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT,
+    "abbr" CHAR(512),
+    "is_active" CHAR(1),
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "modified_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.364290
+CREATE TABLE "exercice_budgetaire"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "annee" INTEGER,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.393315
+CREATE TABLE "session_budgetaire"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "exercice" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "objet" TEXT,
+    "objectif" TEXT,
+    "date_debut" DATE,
+    "date_fin" DATE,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.419591
+CREATE TABLE "autorite_contractante"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT,
+    "abbr" CHAR(512),
+    "ministere" INTEGER REFERENCES "ministere" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "is_active" CHAR(1),
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "modified_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.454524
+CREATE TABLE "nature_operation"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "operation_nom" CHAR(512),
+    "operation_code" CHAR(512)
+);
+success!
+timestamp: 2026-06-25T07:42:12.497489
+CREATE TABLE "mode_passation"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "mode_passation_nom" CHAR(512),
+    "mode_passation_abrege" CHAR(512)
+);
+success!
+timestamp: 2026-06-25T07:42:12.554781
+CREATE TABLE "groupe"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "name" CHAR(512) UNIQUE,
+    "description" TEXT,
+    "actif" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "is_deleted" CHAR(1)
+);
+success!
+timestamp: 2026-06-25T07:42:12.592305
+CREATE TABLE "password_reset_token"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "token_hash" CHAR(64),
+    "created_on" TIMESTAMP,
+    "expires_on" TIMESTAMP,
+    "used" CHAR(1)
+);
+success!
+timestamp: 2026-06-25T07:42:12.627422
+CREATE TABLE "aoo_operations"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "agent_dgmp" CHAR(512),
+    "date_controle" DATE,
+    "ministere" INTEGER REFERENCES "ministere" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "autorite_contractante" INTEGER REFERENCES "autorite_contractante" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "interlocuteur_ac" CHAR(512),
+    "imputation_budgetaire" CHAR(512),
+    "montant_dotation_credit" DOUBLE,
+    "n_bomp" CHAR(512),
+    "objet_operation" CHAR(512),
+    "nature_operation" INTEGER REFERENCES "nature_operation" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "nature_operation_observation" TEXT,
+    "ppm_existence" CHAR(1),
+    "ppm_existence_observation" TEXT,
+    "ppm_respect" CHAR(1),
+    "ppm_respect_observation" TEXT,
+    "operation_reservee_pme_constat" CHAR(1),
+    "operation_reservee_pme_observations" TEXT,
+    "examen_validation_dao_dgmp_constat" CHAR(1),
+    "examen_validation_dao_dgmp_date_reception" DATE,
+    "examen_validation_dao_dgmp_date_validation" DATE,
+    "examen_validation_dao_dgmp_observation" TEXT,
+    "publication_aao_constat" CHAR(1),
+    "publication_aao_date" DATE,
+    "publication_aao_num" CHAR(512),
+    "publication_aao_duree" INTEGER,
+    "publication_aao_nb_report" INTEGER,
+    "publication_aao_observation" TEXT,
+    "existence_cojo_conformite" CHAR(1),
+    "existence_cojo_observations" TEXT,
+    "existence_mandats_representants_membres_constat" CHAR(1),
+    "existence_mandats_representants_membres_observations" TEXT,
+    "existence_pv_ouv_exist" CHAR(1),
+    "existence_pv_ouv_obs" TEXT,
+    "existence_rapport_analyse_offres" CHAR(1),
+    "existence_rapport_analyse_offres_observations" TEXT,
+    "existence_cojo_jugement_conformite" CHAR(1),
+    "existence_cojo_jugement_observations" TEXT,
+    "existence_pv_jug_exist" CHAR(1),
+    "existence_pv_jug_obs" TEXT,
+    "delai_impart_cojo_trvx_date_ouv" DATE,
+    "delai_impart_cojo_trvx_date_jug" DATE,
+    "delai_impart_cojo_trvx_dern_recours" DATE,
+    "delai_impart_cojo_trvx_nb_jug" INTEGER,
+    "delai_impart_cojo_trvx_respect_delai" CHAR(1),
+    "delai_impart_cojo_trvx_observation" TEXT,
+    "affich_resultat_trvx_cojo_constat" CHAR(1),
+    "affich_resultat_trvx_cojo_respect_delai" CHAR(1),
+    "affich_resultat_trvx_cojo_observation" TEXT,
+    "pub_resultat_trvx_cojo_constat" CHAR(1),
+    "pub_resultat_trvx_cojo_date" DATE,
+    "pub_resultat_trvx_cojo_support_pub" CHAR(512),
+    "pub_resultat_trvx_cojo_observation" TEXT,
+    "exigence_quitus_non_redevance_constat" CHAR(1),
+    "exigence_quitus_non_redevance_observations" TEXT,
+    "situation_execution_ligne_budgetaire_montant_disponible" DOUBLE,
+    "temps_total_operation_nb_jours" INTEGER,
+    "temps_total_operation_observation" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-25T07:42:12.657377
+CREATE TABLE "aoo_allotissements"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "operation" INTEGER REFERENCES "aoo_operations" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "objet_lot" CHAR(512),
+    "numero_lot" INTEGER,
+    "montant_estimation" INTEGER,
+    "garantie_offre_minimale" DOUBLE,
+    "garantie_offre_maximale" DOUBLE,
+    "garantie_offre_constat" CHAR(1),
+    "garantie_offre_observation" TEXT,
+    "attributaire_nom" CHAR(512),
+    "attributaire_ncc" CHAR(512),
+    "attributaire_lot" CHAR(512),
+    "attributaire_objet" CHAR(512),
+    "attributaire_montant" DOUBLE,
+    "attributaire_observation" TEXT,
+    "notification_resultats_attributaires_constat" CHAR(1),
+    "notification_resultats_attributaires_date" DATE,
+    "notification_resultats_attributaires_observations" TEXT,
+    "information_soumissionnaires_non_retenus_constat" CHAR(1),
+    "information_soumissionnaires_non_retenus_observations" TEXT,
+    "respect_delai_recours_eventuels_constat" CHAR(1),
+    "respect_delai_recours_eventuels_observations" TEXT,
+    "existence_marche_constat" CHAR(1),
+    "existence_marche_observations" TEXT,
+    "production_pieces_fiscales_sociales_constat" CHAR(1),
+    "production_pieces_fiscales_sociales_observations" TEXT,
+    "conformite_contenu_marche_constat" CHAR(1),
+    "conformite_contenu_marche_observations" TEXT,
+    "signature_marche_attributaire_constat" CHAR(1),
+    "signature_marche_attributaire_date_signature" DATE,
+    "signature_marche_attributaire_observations" TEXT,
+    "signature_marche_autorite_contractante_constat" CHAR(1),
+    "signature_marche_autorite_contractante_date_signature" DATE,
+    "signature_marche_autorite_contractante_observations" TEXT,
+    "signature_autorite_competente_constat" CHAR(1),
+    "signature_autorite_competente_observations" TEXT,
+    "numerotation_marche_constat" CHAR(1),
+    "numerotation_marche" CHAR(512),
+    "numerotation_marche_observation" TEXT,
+    "montant_marche" DOUBLE,
+    "ecart_entre_montant_estimatif" DOUBLE,
+    "exam_prealable_approb_constat" CHAR(1),
+    "exam_prealable_approb_date_soumission" DATE,
+    "exam_prealable_approb_date_validation" DATE,
+    "exam_prealable_approb_observation" TEXT,
+    "approbation_marche_constat" CHAR(1),
+    "approbation_marche_date" DATE,
+    "approbation_marche_observation" TEXT,
+    "organe_approbateur_constat" CHAR(1),
+    "organe_approbateur_observation" TEXT,
+    "notif_approbation_titulaire_constat" CHAR(1),
+    "notif_approbation_titulaire_date" DATE,
+    "notif_approbation_titulaire_observation" TEXT,
+    "garantie_bonne_execution_constat" CHAR(1),
+    "garantie_bonne_execution_observations" TEXT,
+    "enregistrement_marche_constat" CHAR(1),
+    "enregistrement_marche_date" DATE,
+    "enregistrement_marche_observation" TEXT,
+    "transmission_02_exemplaires_contrat_constat" CHAR(1),
+    "transmission_02_exemplaires_contrat_observations" TEXT,
+    "notif_ordre_demarrage_constat" CHAR(1),
+    "notif_ordre_demarrage_date_accuse_recept" DATE,
+    "notif_ordre_demarrage_conforme" CHAR(1),
+    "notif_ordre_demarrage_observation" TEXT,
+    "existence_exhaustivite_existence" CHAR(1),
+    "existence_exhaustivite_exhaustivite" CHAR(1),
+    "existence_exhaustivite_observation" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:09:30.221020
+CREATE TABLE "aor_pi_operations"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "agent_dgmp" CHAR(512),
+    "date_controle" DATE,
+    "ministere" INTEGER REFERENCES "ministere" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "autorite_contractante" INTEGER REFERENCES "autorite_contractante" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "interlocuteur_ac" CHAR(512),
+    "imputation_budgetaire" CHAR(512),
+    "montant_dotation_credit" DOUBLE,
+    "n_bomp" CHAR(512),
+    "objet_operation" CHAR(512),
+    "objet_operation_observation" TEXT,
+    "preparation_ppm_pspm_existence_ppm_pspm" CHAR(1),
+    "preparation_ppm_pspm_observations" TEXT,
+    "preparation_ppm_pspm_respect_ppm_pspm" CHAR(1),
+    "preparation_ppm_pspm_observations_2" TEXT,
+    "operation_reservee_pme_constat" CHAR(1),
+    "operation_reservee_pme_observations" TEXT,
+    "mode_selection_entreprises_ami_requete_motivee" CHAR(512),
+    "publication_ami_bomp_constat" CHAR(1),
+    "publication_ami_bomp_date_publication" DATE,
+    "publication_ami_bomp_observations" TEXT,
+    "autorisation_recourir_aor_constat" CHAR(1),
+    "autorisation_recourir_aor_reference_autorisation" CHAR(512),
+    "examen_validation_dp_dgmp_constat" CHAR(1),
+    "examen_validation_dp_dgmp_date_reception_dp_dgmp" DATE,
+    "examen_validation_dp_dgmp_date_validation_dp" DATE,
+    "examen_validation_dp_dgmp_observations" TEXT,
+    "existence_cojo_conformite" CHAR(1),
+    "existence_cojo_observations" TEXT,
+    "existence_mandats_representants_membres_cojo_constat" CHAR(1),
+    "existence_mandats_representants_membres_cojo_observati" TEXT,
+    "existence_proces_verbal_douverture_plis_existence_pv" CHAR(1),
+    "existence_proces_verbal_douverture_plis_observations" TEXT,
+    "existence_rapport_danalyse_offres_techniques_existence" CHAR(1),
+    "existence_rapport_danalyse_offres_techniques_observati" TEXT,
+    "conformite_cojo_jugement_offres_techniques_constat" CHAR(1),
+    "conformite_cojo_jugement_offres_techniques_observation" TEXT,
+    "existence_proces_verbal_jugement_offres_existence_rapp" CHAR(1),
+    "existence_proces_verbal_jugement_offres_observations" TEXT,
+    "existence_proces_verbal_douverture_plis_existence_pv_2" CHAR(1),
+    "existence_proces_verbal_douverture_plis_observations_2" TEXT,
+    "existence_rapport_danalyse_offres_financiers_existence" CHAR(1),
+    "existence_rapport_danalyse_offres_financiers_observati" TEXT,
+    "conformite_cojo_jugement_combine_offres_constat" CHAR(1),
+    "conformite_cojo_jugement_combine_offres_observations" TEXT,
+    "existence_proces_verbal_jugement_combine_existence_rap" CHAR(1),
+    "existence_proces_verbal_jugement_combine_observations" TEXT,
+    "respect_delai_imparti_cojo_ses_constat" CHAR(1),
+    "respect_delai_imparti_cojo_ses_date_ouverture_plis_tec" DATE,
+    "respect_delai_imparti_cojo_ses_date_jugement_plis_tech" DATE,
+    "respect_delai_imparti_cojo_ses_date_ouverture_plis_fin" DATE,
+    "respect_delai_imparti_cojo_ses_date_jugement_plis_fina" DATE,
+    "respect_delai_imparti_cojo_ses_date_dernier_jugement_c" DATE,
+    "respect_delai_imparti_cojo_ses_nombre_jugements" INTEGER,
+    "respect_delai_imparti_cojo_ses_respect_delai" CHAR(1),
+    "respect_delai_imparti_cojo_ses_observations" TEXT,
+    "publication_resultats_cojo_dgmp_constat" CHAR(1),
+    "publication_resultats_cojo_dgmp_date_publication" DATE,
+    "publication_resultats_cojo_dgmp_numero_bomp" CHAR(512),
+    "publication_resultats_cojo_dgmp_observations" TEXT,
+    "exigence_quitus_non_redevance_dao_constat" CHAR(1),
+    "exigence_quitus_non_redevance_dao_observations" TEXT,
+    "situation_execution_ligne_budgetaire_apres_montant_dis" DOUBLE,
+    "temps_total_conduite_loperation_nombre_jours" INTEGER,
+    "temps_total_conduite_loperation_observations" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:09:30.237072
+CREATE TABLE "aor_pi_allotissements"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "operation" INTEGER REFERENCES "aor_pi_operations" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "objet_lot" CHAR(512),
+    "numero_lot" INTEGER,
+    "montant_estimation" DOUBLE,
+    "liste_entreprises_retenues_cabinet_1" CHAR(512),
+    "liste_entreprises_retenues_ncc" CHAR(512),
+    "liste_entreprises_retenues_cabinet_2" CHAR(512),
+    "liste_entreprises_retenues_ncc_2" CHAR(512),
+    "liste_entreprises_retenues_cabinet_3" CHAR(512),
+    "liste_entreprises_retenues_ncc_3" CHAR(512),
+    "liste_entreprises_retenues_cabinet_4" CHAR(512),
+    "liste_entreprises_retenues_ncc_4" CHAR(512),
+    "liste_entreprises_retenues_cabinet_5" CHAR(512),
+    "liste_entreprises_retenues_ncc_5" CHAR(512),
+    "transmission_lettres_invitation_candidats_retenus_cons" CHAR(1),
+    "transmission_lettres_invitation_candidats_retenus_date" DATE,
+    "transmission_lettres_invitation_candidats_retenus_obse" TEXT,
+    "nombre_plis_recus_ouverture_nombre_plis" INTEGER,
+    "nombre_plis_recus_ouverture_observations" TEXT,
+    "attributaire_nom" CHAR(512),
+    "attributaire_ncc" CHAR(512),
+    "attributaire_lot" CHAR(512),
+    "attributaire_objet" CHAR(512),
+    "attributaire_montant" DOUBLE,
+    "attributaire_observation" TEXT,
+    "notification_resultats_attributaires_constat" CHAR(1),
+    "notification_resultats_attributaires_date" DATE,
+    "notification_resultats_attributaires_observations" TEXT,
+    "information_soumissionnaires_non_retenus_constat" CHAR(1),
+    "information_soumissionnaires_non_retenus_observations" TEXT,
+    "respect_delai_recours_eventuels_constat" CHAR(1),
+    "respect_delai_recours_eventuels_observations" TEXT,
+    "production_pieces_fiscales_sociales_lattributaire_cons" CHAR(1),
+    "production_pieces_fiscales_sociales_lattributaire_obse" TEXT,
+    "existence_dun_marche_constat" CHAR(1),
+    "existence_dun_marche_observations" TEXT,
+    "production_pieces_fiscales_sociales_lattributaire_cons_2" CHAR(1),
+    "production_pieces_fiscales_sociales_lattributaire_obse_2" TEXT,
+    "conformite_contenu_marche_constat" CHAR(1),
+    "conformite_contenu_marche_observations" TEXT,
+    "signature_marche_lattributaire_constat" CHAR(1),
+    "signature_marche_lattributaire_date_signature" DATE,
+    "signature_marche_lattributaire_observations" TEXT,
+    "signature_marche_lautorite_contractante_constat" CHAR(1),
+    "signature_marche_lautorite_contractante_date_signature" DATE,
+    "signature_marche_lautorite_contractante_observations" TEXT,
+    "signature_lautorite_competente_constat" CHAR(1),
+    "signature_lautorite_competente_observations" TEXT,
+    "numerotation_marche_constat" CHAR(1),
+    "numerotation_marche_numero" CHAR(512),
+    "numerotation_marche_observations" TEXT,
+    "montant_marche" DOUBLE,
+    "ecart_entre_montant_estimatif" DOUBLE,
+    "examen_prealable_approbation_constat" CHAR(1),
+    "examen_prealable_approbation_date_soumission_projet_ma" DATE,
+    "examen_prealable_approbation_date_validation_projet_ma" DATE,
+    "examen_prealable_approbation_observations" TEXT,
+    "approbation_marche_constat" CHAR(1),
+    "approbation_marche_date_approbation" DATE,
+    "approbation_marche_observations" TEXT,
+    "autorite_approbatrice_organe_approbateur_competent_con" CHAR(1),
+    "autorite_approbatrice_organe_approbateur_competent_obs" TEXT,
+    "notification_lapprobation_marche_titulaire_constat" CHAR(1),
+    "notification_lapprobation_marche_titulaire_date_recept" DATE,
+    "notification_lapprobation_marche_titulaire_observation" TEXT,
+    "enregistrement_marche_constat" CHAR(1),
+    "enregistrement_marche_observations" TEXT,
+    "transmission_02_exemplaires_contrat_dgmp_constat" CHAR(1),
+    "transmission_02_exemplaires_contrat_dgmp_observations" TEXT,
+    "notification_lordre_service_demarrage_constat" CHAR(1),
+    "notification_lordre_service_demarrage_date_accuse_rece" DATE,
+    "notification_lordre_service_demarrage_conforme" CHAR(1),
+    "notification_lordre_service_demarrage_observations" TEXT,
+    "existence_exhaustivite_larchivage_documents_existence" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_exhaustivi" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_observatio" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:09:30.254252
+CREATE TABLE "aor_ft_operations"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "agent_dgmp" CHAR(512),
+    "date_controle" DATE,
+    "ministere" INTEGER REFERENCES "ministere" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "autorite_contractante" INTEGER REFERENCES "autorite_contractante" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "interlocuteur_ac" CHAR(512),
+    "imputation_budgetaire" CHAR(512),
+    "montant_dotation_credit" DOUBLE,
+    "n_bomp" CHAR(512),
+    "objet_operation" CHAR(512),
+    "nature_operation" INTEGER REFERENCES "nature_operation" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "nature_operation_observation" TEXT,
+    "nature_operation_nb" TEXT,
+    "preparation_ppm_pspm_existence_ppm_pspm" CHAR(1),
+    "preparation_ppm_pspm_observations" TEXT,
+    "preparation_ppm_pspm_respect_ppm_pspm" CHAR(1),
+    "preparation_ppm_pspm_observations_2" TEXT,
+    "operation_reservee_pme_constat" CHAR(1),
+    "operation_reservee_pme_observations" TEXT,
+    "mode_selection_entreprises_prequalification_requete_mo" CHAR(512),
+    "publication_avis_prequalification_bomp_constat" CHAR(1),
+    "publication_avis_prequalification_bomp_date_publicatio" DATE,
+    "publication_avis_prequalification_bomp_observations" TEXT,
+    "autorisation_recourir_aor_constat" CHAR(1),
+    "autorisation_recourir_aor_reference_autorisation" CHAR(512),
+    "examen_validation_dao_dgmp_constat" CHAR(1),
+    "examen_validation_dao_dgmp_date_reception_dao_dgmp" DATE,
+    "examen_validation_dao_dgmp_date_validation_dao_dgmp" DATE,
+    "examen_validation_dao_dgmp_observations" TEXT,
+    "existence_cojo_conformite" CHAR(1),
+    "existence_cojo_observations" TEXT,
+    "existence_mandats_representants_membres_cojo_constat" CHAR(1),
+    "existence_mandats_representants_membres_cojo_observati" TEXT,
+    "existence_proces_verbal_douverture_plis_existence_pv" CHAR(1),
+    "existence_proces_verbal_douverture_plis_observations" TEXT,
+    "existence_rapport_danalyse_offres_existence_rapport" CHAR(1),
+    "existence_rapport_danalyse_offres_observations" TEXT,
+    "conformite_cojo_jugement_constat" CHAR(1),
+    "conformite_cojo_jugement_observations" TEXT,
+    "existence_conformite_proces_verbal_jugement_existence_" CHAR(1),
+    "existence_conformite_proces_verbal_jugement_observatio" TEXT,
+    "respect_delai_imparti_cojo_ses_constat" CHAR(1),
+    "respect_delai_imparti_cojo_ses_date_ouverture" DATE,
+    "respect_delai_imparti_cojo_ses_date_jugement" DATE,
+    "respect_delai_imparti_cojo_ses_date_dernier_jugement_c" DATE,
+    "respect_delai_imparti_cojo_ses_nombre_jugements" INTEGER,
+    "respect_delai_imparti_cojo_ses_respect_delai" CHAR(1),
+    "respect_delai_imparti_cojo_ses_observations" TEXT,
+    "publication_resultats_cojo_dgmp_constat" CHAR(1),
+    "publication_resultats_cojo_dgmp_date_publication" DATE,
+    "publication_resultats_cojo_dgmp_numero_bomp" CHAR(512),
+    "publication_resultats_cojo_dgmp_observations" TEXT,
+    "exigence_quitus_non_redevance_dao_constat" CHAR(1),
+    "exigence_quitus_non_redevance_dao_observations" TEXT,
+    "situation_execution_ligne_budgetaire_apres_montant_dis" DOUBLE,
+    "temps_total_conduite_loperation_nombre_jours" INTEGER,
+    "temps_total_conduite_loperation_observations" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:09:30.267637
+CREATE TABLE "aor_ft_allotissements"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "operation" INTEGER REFERENCES "aor_ft_operations" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "objet_lot" CHAR(512),
+    "numero_lot" INTEGER,
+    "montant_estimation" DOUBLE,
+    "liste_entreprises_retenues_entreprise_1" CHAR(512),
+    "liste_entreprises_retenues_ncc" CHAR(512),
+    "liste_entreprises_retenues_entreprise_2" CHAR(512),
+    "liste_entreprises_retenues_ncc_2" CHAR(512),
+    "liste_entreprises_retenues_entreprise_3" CHAR(512),
+    "liste_entreprises_retenues_ncc_3" CHAR(512),
+    "liste_entreprises_retenues_entreprise_4" CHAR(512),
+    "liste_entreprises_retenues_ncc_4" CHAR(512),
+    "liste_entreprises_retenues_entreprise_5" CHAR(512),
+    "liste_entreprises_retenues_ncc_5" CHAR(512),
+    "garantie_offre_comprise_entre_1_garantie_minimale_1" CHAR(512),
+    "garantie_offre_comprise_entre_1_garantie_maximale_1_5" CHAR(512),
+    "garantie_offre_comprise_entre_1_constat" CHAR(1),
+    "garantie_offre_comprise_entre_1_observations" TEXT,
+    "transmission_lettres_invitation_candidats_retenus_cons" CHAR(1),
+    "transmission_lettres_invitation_candidats_retenus_date" DATE,
+    "transmission_lettres_invitation_candidats_retenus_obse" TEXT,
+    "nombre_plis_recus_ouverture_nombre_plis" INTEGER,
+    "nombre_plis_recus_ouverture_observations" TEXT,
+    "attributaire_nom" CHAR(512),
+    "attributaire_ncc" CHAR(512),
+    "attributaire_lot" CHAR(512),
+    "attributaire_objet" CHAR(512),
+    "attributaire_montant" DOUBLE,
+    "attributaire_observation" TEXT,
+    "notification_resultats_attributaires_constat" CHAR(1),
+    "notification_resultats_attributaires_date" DATE,
+    "notification_resultats_attributaires_observations" TEXT,
+    "information_soumissionnaires_non_retenus_constat" CHAR(1),
+    "information_soumissionnaires_non_retenus_observations" TEXT,
+    "respect_delai_recours_eventuels_constat" CHAR(1),
+    "respect_delai_recours_eventuels_observations" TEXT,
+    "existence_dun_marche_constat" CHAR(1),
+    "existence_dun_marche_observations" TEXT,
+    "production_pieces_fiscales_sociales_lattributaire_cons" CHAR(1),
+    "production_pieces_fiscales_sociales_lattributaire_obse" TEXT,
+    "conformite_contenu_marche_constat" CHAR(1),
+    "conformite_contenu_marche_observations" TEXT,
+    "signature_marche_lattributaire_constat" CHAR(1),
+    "signature_marche_lattributaire_date_signature" DATE,
+    "signature_marche_lattributaire_observations" TEXT,
+    "signature_marche_lautorite_contractante_constat" CHAR(1),
+    "signature_marche_lautorite_contractante_date_signature" DATE,
+    "signature_marche_lautorite_contractante_observations" TEXT,
+    "signature_lautorite_competente_constat" CHAR(1),
+    "signature_lautorite_competente_observations" TEXT,
+    "numerotation_marche_constat" CHAR(1),
+    "numerotation_marche_numero" CHAR(512),
+    "numerotation_marche_observations" TEXT,
+    "montant_marche" DOUBLE,
+    "ecart_entre_montant_estimatif" DOUBLE,
+    "examen_prealable_approbation_constat" CHAR(1),
+    "examen_prealable_approbation_date_soumission_projet_ma" DATE,
+    "examen_prealable_approbation_date_validation_projet_ma" DATE,
+    "examen_prealable_approbation_observations" TEXT,
+    "approbation_marche_constat" CHAR(1),
+    "approbation_marche_date_approbation" DATE,
+    "approbation_marche_observations" TEXT,
+    "autorite_approbatrice_organe_approbateur_competent_con" CHAR(1),
+    "autorite_approbatrice_organe_approbateur_competent_obs" TEXT,
+    "notification_lapprobation_marche_titulaire_constat" CHAR(1),
+    "notification_lapprobation_marche_titulaire_date_recept" DATE,
+    "notification_lapprobation_marche_titulaire_observation" TEXT,
+    "garantie_bonne_execution_constat" CHAR(1),
+    "garantie_bonne_execution_observations" TEXT,
+    "enregistrement_marche_constat" CHAR(1),
+    "enregistrement_marche_observations" TEXT,
+    "transmission_02_exemplaires_contrat_dgmp_constat" CHAR(1),
+    "transmission_02_exemplaires_contrat_dgmp_observations" TEXT,
+    "notification_lordre_service_demarrage_constat" CHAR(1),
+    "notification_lordre_service_demarrage_date_accuse_rece" DATE,
+    "notification_lordre_service_demarrage_conforme" CHAR(1),
+    "notification_lordre_service_demarrage_observations" TEXT,
+    "existence_exhaustivite_larchivage_documents_existence" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_exhaustivi" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_observatio" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:13:29.808300
+CREATE TABLE "gag_operations"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "agent_dgmp" CHAR(512),
+    "date_controle" DATE,
+    "ministere" INTEGER REFERENCES "ministere" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "autorite_contractante" INTEGER REFERENCES "autorite_contractante" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "interlocuteur_ac" CHAR(512),
+    "imputation_budgetaire" CHAR(512),
+    "montant_dotation_credit" DOUBLE,
+    "objet_operation" CHAR(512),
+    "nature_operation" INTEGER REFERENCES "nature_operation" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "nature_operation_observation" TEXT,
+    "nature_operation_nombre" INTEGER,
+    "preparation_ppm_existence_ppm" CHAR(1),
+    "preparation_ppm_observations" TEXT,
+    "preparation_ppm_respect_ppm" CHAR(1),
+    "preparation_ppm_observations_2" TEXT,
+    "operation_reservee_pme_constat" CHAR(1),
+    "operation_reservee_pme_observations" TEXT,
+    "autorisation_recourir_gre_gre_constat" CHAR(1),
+    "autorisation_recourir_gre_gre_reference_autorisation" CHAR(512),
+    "situation_execution_ligne_budgetaire_apres_montant_dis" DOUBLE,
+    "temps_total_conduite_loperation_nombre_jours" INTEGER,
+    "temps_total_conduite_loperation_observations" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-26T19:13:29.820597
+CREATE TABLE "gag_allotissements"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "operation" INTEGER REFERENCES "gag_operations" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "objet_lot" CHAR(512),
+    "numero_lot" INTEGER,
+    "montant_estimation" DOUBLE,
+    "attributaire_nom" CHAR(512),
+    "attributaire_ncc" CHAR(512),
+    "attributaire_lot" CHAR(512),
+    "attributaire_objet" CHAR(512),
+    "attributaire_montant" DOUBLE,
+    "attributaire_observation" TEXT,
+    "existence_dun_marche_constat" CHAR(1),
+    "existence_dun_marche_observations" TEXT,
+    "production_pieces_fiscales_sociales_lattributaire_cons" CHAR(1),
+    "production_pieces_fiscales_sociales_lattributaire_obse" TEXT,
+    "exigence_quitus_non_redevance_arcop_constat" CHAR(1),
+    "exigence_quitus_non_redevance_arcop_observations" TEXT,
+    "conformite_contenu_marche_constat" CHAR(1),
+    "conformite_contenu_marche_observations" TEXT,
+    "signature_marche_lattributaire_constat" CHAR(1),
+    "signature_marche_lattributaire_date_signature" DATE,
+    "signature_marche_lattributaire_observations" TEXT,
+    "signature_marche_lautorite_contractante_constat" CHAR(1),
+    "signature_marche_lautorite_contractante_date_signature" DATE,
+    "signature_marche_lautorite_contractante_observations" TEXT,
+    "signature_lautorite_competente_constat" CHAR(1),
+    "signature_lautorite_competente_observations" TEXT,
+    "numerotation_marche_constat" CHAR(1),
+    "numerotation_marche_numero" CHAR(512),
+    "numerotation_marche_observations" TEXT,
+    "montant_marche" DOUBLE,
+    "examen_prealable_approbation_constat" CHAR(1),
+    "examen_prealable_approbation_date_soumission_projet_ma" DATE,
+    "examen_prealable_approbation_date_validation_projet_ma" DATE,
+    "examen_prealable_approbation_observations" TEXT,
+    "approbation_marche_constat" CHAR(1),
+    "approbation_marche_date_approbation" DATE,
+    "approbation_marche_observations" TEXT,
+    "autorite_approbatrice_organe_approbateur_competent_con" CHAR(1),
+    "autorite_approbatrice_organe_approbateur_competent_obs" TEXT,
+    "notification_lapprobation_marche_titulaire_constat" CHAR(1),
+    "notification_lapprobation_marche_titulaire_date_recept" DATE,
+    "notification_lapprobation_marche_titulaire_observation" TEXT,
+    "enregistrement_marche_constat" CHAR(1),
+    "enregistrement_marche_observations" TEXT,
+    "notification_lordre_service_demarrage_constat" CHAR(1),
+    "notification_lordre_service_demarrage_date_accuse_rece" DATE,
+    "notification_lordre_service_demarrage_conforme" CHAR(1),
+    "notification_lordre_service_demarrage_observations" TEXT,
+    "existence_exhaustivite_larchivage_documents_existence" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_exhaustivi" CHAR(1),
+    "existence_exhaustivite_larchivage_documents_observatio" TEXT,
+    "is_deleted" CHAR(1),
+    "created_on" TIMESTAMP,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
+);
+success!
+timestamp: 2026-06-27T12:25:13.420067
+ALTER TABLE "aoo_operations" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.428332
+ALTER TABLE "aoo_operations" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:13.526644
+ALTER TABLE "aoo_allotissements" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.535731
+ALTER TABLE "aoo_allotissements" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:13.627444
+ALTER TABLE "aor_pi_operations" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.634601
+ALTER TABLE "aor_pi_operations" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:13.748429
+ALTER TABLE "aor_pi_allotissements" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.753981
+ALTER TABLE "aor_pi_allotissements" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:13.834926
+ALTER TABLE "aor_ft_operations" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.840995
+ALTER TABLE "aor_ft_operations" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:13.960231
+ALTER TABLE "aor_ft_allotissements" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:13.965696
+ALTER TABLE "aor_ft_allotissements" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:14.011685
+ALTER TABLE "gag_operations" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:14.018157
+ALTER TABLE "gag_operations" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+timestamp: 2026-06-27T12:25:14.110998
+ALTER TABLE "gag_allotissements" ADD "gestion" INTEGER REFERENCES "exercice_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+timestamp: 2026-06-27T12:25:14.116878
+ALTER TABLE "gag_allotissements" ADD "session" INTEGER REFERENCES "session_budgetaire" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

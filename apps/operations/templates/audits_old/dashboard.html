@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUDIT — a posteriori · Tailwind v4</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Runtime Tailwind v4 (aperçu). En production : compile via la CLI Tailwind v4. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- ============================================================
+     app.css  →  à coller tel quel dans ton projet py4web
+     (@import "tailwindcss";  puis ce @theme + @layer components)
+     ============================================================ -->
+<style type="text/tailwindcss">
+  @theme {
+    /* Polices */
+    --font-sans:    "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Baloo 2", system-ui, sans-serif;
+    --font-heading: "Outfit", system-ui, sans-serif;
+
+    /* Marque — vert (#1A6B3C au cœur) → bg-brand-600, text-brand-600… */
+    --color-brand-50:#ecfdf3;  --color-brand-100:#d3f7e2; --color-brand-200:#9af0c0;
+    --color-brand-300:#5fe49a; --color-brand-400:#2bc46a; --color-brand-500:#1e9e54;
+    --color-brand-600:#1a6b3c; --color-brand-700:#155c36; --color-brand-800:#114a2c;
+    --color-brand-900:#0d3a22;
+
+    /* Encre / texte → text-ink, text-muted… */
+    --color-ink:#0f1b14; --color-ink-2:#2b3a31;
+    --color-muted:#5d6e63; --color-muted-2:#93a399;
+
+    /* Verre → bg-glass, border-glassb */
+    --color-glass:rgba(255,255,255,.66);
+    --color-glassb:rgba(255,255,255,.85);
+
+    /* Ombres → shadow-glass, shadow-glasslg, shadow-glow */
+    --shadow-glass:0 8px 32px rgba(18,70,42,.10),0 2px 8px rgba(18,70,42,.05);
+    --shadow-glasslg:0 18px 48px rgba(18,70,42,.16),0 6px 16px rgba(18,70,42,.08);
+    --shadow-glow:0 8px 24px rgba(30,158,84,.38);
+  }
+
+  @layer base {
+    body { @apply font-sans text-ink antialiased; background:#e7efe9; }
+  }
+
+  @layer components {
+    /* Surface glassmorphism réutilisable */
+    .glass{
+      background:var(--color-glass);
+      -webkit-backdrop-filter:blur(22px) saturate(150%);
+      backdrop-filter:blur(22px) saturate(150%);
+      border:1px solid var(--color-glassb);
+      box-shadow:var(--shadow-glass);
+      border-radius:1.5rem;
+    }
+
+    /* Navigation */
+    .nav-item{
+      @apply flex items-center gap-4 px-4 py-3 rounded-2xl font-semibold text-ink-2
+             transition cursor-pointer;
+      border:1px solid transparent;
+    }
+    .nav-item:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(3px); box-shadow:0 4px 14px rgba(18,70,42,.10); }
+    .nav-item:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .nav-item.active{
+      @apply text-white;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow);
+      border-color:rgba(255,255,255,.4); transform:none;
+    }
+
+    /* Boutons */
+    .btn-primary{
+      @apply inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold
+             font-heading text-sm cursor-pointer transition;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow); border:none;
+    }
+    .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(30,158,84,.45); }
+    .btn-soft{
+      @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50
+             border border-glassb font-bold font-heading text-sm text-ink-2 transition cursor-pointer;
+    }
+
+    /* Pilules de statut */
+    .pill{ @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading; }
+    .pill::before{ content:""; @apply w-[7px] h-[7px] rounded-full bg-current; }
+
+    /* Barre de progression */
+    .bar{ @apply h-2.5 rounded-full overflow-hidden; background:rgba(15,27,20,.07); }
+    .bar > i{ @apply block h-full rounded-full; transition:width .8s cubic-bezier(.2,.8,.2,1); }
+
+    /* Sous-menu sidebar (Administration) — animation de hauteur sans saut */
+    .submenu{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+    .submenu.open{ grid-template-rows:1fr; }
+    .submenu > div{ overflow:hidden; }
+    .subitem{ @apply flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl font-medium text-sm text-muted transition cursor-pointer; }
+    .subitem:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(2px); }
+    .subitem:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .subitem.active{
+      @apply text-white font-semibold;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow);
+      border:1px solid rgba(255,255,255,.4); transform:none;
+    }
+
+    /* Listes déroulantes du header (Gestion / Session) */
+    .dd-panel{
+      @apply absolute left-0 z-30 mt-2 min-w-[132px] p-1.5 rounded-2xl flex flex-col gap-0.5;
+      background:rgba(255,255,255,.98);
+      -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+      border:1px solid rgba(15,27,20,.06); box-shadow:var(--shadow-glasslg);
+      opacity:0; transform:translateY(-6px) scale(.97); transform-origin:top; pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+    }
+    .dd-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+    .dd-option{ @apply px-4 py-2 rounded-xl text-sm font-bold text-ink-2 text-center cursor-pointer transition tabular-nums; }
+    .dd-option:hover{ @apply bg-brand-50 text-brand-600; }
+    .dd-option.selected{ @apply bg-brand-500 text-white; }
+  }
+</style>
+
+<!-- Décor + animations (CSS simple) -->
+<style>
+  .bg-decor{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg-decor::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.55), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.42), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.50), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.20), transparent 60%),
+      linear-gradient(160deg,#eef5f0,#e3efe7);
+  }
+  .bg-decor::after{
+    content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+  .chev{transition:transform .25s ease}
+  .is-open .chev{transform:rotate(180deg)}
+  /* animation longue (sans animation-delay) pour laisser les utilitaires [animation-delay:…] de Tailwind s'appliquer */
+  .reveal{
+    opacity:0;transform:translateY(14px);
+    animation-name:rise;animation-duration:.6s;
+    animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{animation:none;opacity:1;transform:none}
+    *{transition:none!important}
+  }
+</style>
+</head>
+
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+
+<!-- Shell : reprend Layout.jpg (sidebar | contenu) + footer pleine largeur. gap/padding = 16px (rythme 8px) -->
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] min-[860px]:grid-rows-[1fr_auto]
+            gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="glass reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-4 self-start"
+         aria-label="Navigation principale">
+    <div class="px-2 pt-2">
+      <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-brand-600">IT</span></div>
+      <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+    </div>
+    <nav class="flex flex-col gap-2 min-[860px]:flex-col max-[860px]:flex-row max-[860px]:flex-wrap" aria-label="Menu">
+      <span class="font-heading text-[11px] font-bold tracking-[1.5px] text-muted-2 uppercase px-2 pb-1 w-full">Pilotage</span>
+      <a class="nav-item active" href="#" aria-current="page">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        Collecte
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>
+        Rapport
+      </a>
+      <div data-admin-group>
+        <button class="nav-item w-full justify-between" data-admin-toggle aria-expanded="false" aria-controls="admin-sub">
+          <span class="flex items-center gap-4">
+            <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>
+            Administration
+          </span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="submenu" id="admin-sub" role="region" aria-label="Sous-menu Administration">
+          <div>
+            <div class="flex flex-col gap-1 pt-1">
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.8 18.5a5.2 5.2 0 0 1 10.4 0"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18.4 18.5a5.2 5.2 0 0 0-2.9-4.6"/></svg>
+                comptes
+              </a>
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16"/><path d="M8.5 3.5v3M15.5 3.5v3"/><path d="m9 14 2 2 4-4"/></svg>
+                exercice budgétaire
+              </a>
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h4"/></svg>
+                Gestionnaire de crédits
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ CONTENU ============ -->
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+
+    <!-- ---- HEADER (header.png) ---- -->
+    <header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+            <span class="font-heading font-bold text-sm text-ink">Gestion</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2026</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2026</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2025</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2024</button>
+          </div>
+        </div>
+
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session">
+            <span class="font-heading font-bold text-sm text-ink">Session</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0 min-w-[100px]" data-dd-panel role="listbox" aria-label="Session">
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">1</button>
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">3</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="grid place-items-center w-9 h-9 rounded-full text-white bg-gradient-to-br from-brand-400 to-teal-500 shadow-md" aria-hidden="true">
+          <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+        </span>
+        <button class="btn-soft hover:bg-rose-100 hover:text-rose-500" aria-label="Se déconnecter">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Quitter
+        </button>
+      </div>
+    </header>
+
+    <!-- ---- MAIN PAGE ---- -->
+    <main class="glass reveal [animation-delay:190ms] p-8 flex flex-col gap-8 min-h-[560px]">
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="font-heading font-bold text-[30px] tracking-tight text-ink">Tableau de bord</h1>
+          <p class="text-sm text-muted mt-1">Audit a posteriori des marchés — Gestion 2026, Session 2</p>
+        </div>
+        <button class="btn-primary">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Nouvel audit
+        </button>
+      </div>
+
+      <!-- KPIs -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 min-[1080px]:grid-cols-4 gap-4" aria-label="Indicateurs clés">
+        <article class="glass p-6 flex flex-col gap-4 transition hover:-translate-y-1 hover:shadow-glasslg">
+          <div class="flex items-center justify-between">
+            <span class="grid place-items-center w-11 h-11 rounded-[14px] bg-brand-100 text-brand-600" aria-hidden="true"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold font-heading bg-brand-50 text-brand-600"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+12%</span>
+          </div>
+          <span class="text-[13px] text-muted font-semibold">Audits en cours</span>
+          <span class="font-heading font-extrabold text-[30px] tracking-tight tabular-nums">24</span>
+        </article>
+
+        <article class="glass p-6 flex flex-col gap-4 transition hover:-translate-y-1 hover:shadow-glasslg">
+          <div class="flex items-center justify-between">
+            <span class="grid place-items-center w-11 h-11 rounded-[14px] bg-teal-100 text-teal-600" aria-hidden="true"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h5l2 3h4l2-3h5"/><path d="M5 6h14l2 6v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/></svg></span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold font-heading bg-brand-50 text-brand-600"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+34</span>
+          </div>
+          <span class="text-[13px] text-muted font-semibold">Pièces collectées</span>
+          <span class="font-heading font-extrabold text-[30px] tracking-tight tabular-nums">156</span>
+        </article>
+
+        <article class="glass p-6 flex flex-col gap-4 transition hover:-translate-y-1 hover:shadow-glasslg">
+          <div class="flex items-center justify-between">
+            <span class="grid place-items-center w-11 h-11 rounded-[14px] bg-violet-100 text-violet-600" aria-hidden="true"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13v3M12 11v5M15 14v2"/></svg></span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold font-heading bg-brand-50 text-brand-600"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg>+8</span>
+          </div>
+          <span class="text-[13px] text-muted font-semibold">Rapports générés</span>
+          <span class="font-heading font-extrabold text-[30px] tracking-tight tabular-nums">38</span>
+        </article>
+
+        <article class="glass p-6 flex flex-col gap-4 transition hover:-translate-y-1 hover:shadow-glasslg">
+          <div class="flex items-center justify-between">
+            <span class="grid place-items-center w-11 h-11 rounded-[14px] bg-amber-100 text-amber-600" aria-hidden="true"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold font-heading bg-rose-100 text-rose-500"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>-3%</span>
+          </div>
+          <span class="text-[13px] text-muted font-semibold">Taux de conformité</span>
+          <span class="font-heading font-extrabold text-[30px] tracking-tight tabular-nums">92%</span>
+        </article>
+      </section>
+
+      <!-- Avancement + Activités -->
+      <section class="grid grid-cols-1 min-[1080px]:grid-cols-[1.55fr_1fr] gap-4">
+        <article class="glass p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-heading text-lg font-bold text-ink">Progression des audits</h2>
+            <a href="#" class="text-[13px] text-brand-600 font-bold hover:underline">Tout voir</a>
+          </div>
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between gap-4"><span class="font-bold text-sm text-ink-2">Marché AO-2026-014 · Travaux routiers</span><span class="font-heading font-bold text-[13px] text-muted tabular-nums">78%</span></div>
+              <div class="bar"><i class="bg-gradient-to-r from-brand-400 to-brand-600 w-[78%]"></i></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between gap-4"><span class="font-bold text-sm text-ink-2">Marché AO-2026-021 · Fournitures médicales</span><span class="font-heading font-bold text-[13px] text-muted tabular-nums">54%</span></div>
+              <div class="bar"><i class="bg-gradient-to-r from-teal-400 to-teal-600 w-[54%]"></i></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between gap-4"><span class="font-bold text-sm text-ink-2">Marché AO-2026-009 · Services informatiques</span><span class="font-heading font-bold text-[13px] text-muted tabular-nums">93%</span></div>
+              <div class="bar"><i class="bg-gradient-to-r from-violet-400 to-violet-600 w-[93%]"></i></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between gap-4"><span class="font-bold text-sm text-ink-2">Marché AO-2026-033 · Prestations conseil</span><span class="font-heading font-bold text-[13px] text-muted tabular-nums">31%</span></div>
+              <div class="bar"><i class="bg-gradient-to-r from-amber-400 to-amber-500 w-[31%]"></i></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="glass p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-heading text-lg font-bold text-ink">Activités récentes</h2>
+            <a href="#" class="text-[13px] text-brand-600 font-bold hover:underline">Journal</a>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="flex gap-4 p-2.5 rounded-2xl hover:bg-white/55 transition">
+              <span class="grid place-items-center w-9 h-9 rounded-full shrink-0 bg-brand-100 text-brand-600" aria-hidden="true"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div class="flex flex-col gap-0.5"><span class="text-[11px] text-muted-2 font-semibold">Aujourd'hui · 10:24</span><span class="font-bold text-sm text-ink-2">AO-2026-009 validé</span><span class="text-[12.5px] text-muted">Rapport de conformité approuvé</span></div>
+            </div>
+            <div class="flex gap-4 p-2.5 rounded-2xl hover:bg-white/55 transition">
+              <span class="grid place-items-center w-9 h-9 rounded-full shrink-0 bg-teal-100 text-teal-600" aria-hidden="true"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v7l4 2"/><circle cx="12" cy="12" r="9"/></svg></span>
+              <div class="flex flex-col gap-0.5"><span class="text-[11px] text-muted-2 font-semibold">Aujourd'hui · 09:10</span><span class="font-bold text-sm text-ink-2">Collecte AO-2026-021</span><span class="text-[12.5px] text-muted">12 nouvelles pièces ajoutées</span></div>
+            </div>
+            <div class="flex gap-4 p-2.5 rounded-2xl hover:bg-white/55 transition">
+              <span class="grid place-items-center w-9 h-9 rounded-full shrink-0 bg-amber-100 text-amber-600" aria-hidden="true"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 4 3 17a2 2 0 0 0 1.7 3h14.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0z"/></svg></span>
+              <div class="flex flex-col gap-0.5"><span class="text-[11px] text-muted-2 font-semibold">Hier · 16:45</span><span class="font-bold text-sm text-ink-2">Écart relevé · AO-2026-033</span><span class="text-[12.5px] text-muted">Pièce justificative manquante</span></div>
+            </div>
+            <div class="flex gap-4 p-2.5 rounded-2xl hover:bg-white/55 transition">
+              <span class="grid place-items-center w-9 h-9 rounded-full shrink-0 bg-violet-100 text-violet-600" aria-hidden="true"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span>
+              <div class="flex flex-col gap-0.5"><span class="text-[11px] text-muted-2 font-semibold">Hier · 11:02</span><span class="font-bold text-sm text-ink-2">Rapport AO-2026-014</span><span class="text-[12.5px] text-muted">Brouillon généré automatiquement</span></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Tableau -->
+      <article class="glass p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="font-heading text-lg font-bold text-ink">Derniers rapports</h2>
+          <a href="#" class="text-[13px] text-brand-600 font-bold hover:underline">Exporter</a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse min-w-[560px]">
+            <thead>
+              <tr class="[&>th]:text-left [&>th]:font-heading [&>th]:text-xs [&>th]:font-bold [&>th]:tracking-wide [&>th]:text-muted-2 [&>th]:uppercase [&>th]:px-4 [&>th]:pb-4">
+                <th>Référence</th><th>Entité auditée</th><th>Date</th><th>Auditeur</th><th>Statut</th>
+              </tr>
+            </thead>
+            <tbody class="[&>tr]:transition [&>tr:hover]:bg-white/50 [&_td]:p-4 [&_td]:text-sm [&_td]:text-ink-2 [&_td]:border-t [&_td]:border-black/[.06]">
+              <tr><td class="font-bold tabular-nums">RPT-0648</td><td class="font-semibold">Min. des Travaux Publics</td><td>02 juin 2026</td><td>K. Aboua</td><td><span class="pill bg-brand-50 text-brand-600">Terminé</span></td></tr>
+              <tr><td class="font-bold tabular-nums">RPT-0647</td><td class="font-semibold">Centre Hospitalier Régional</td><td>28 mai 2026</td><td>M. Koné</td><td><span class="pill bg-blue-100 text-blue-600">En cours</span></td></tr>
+              <tr><td class="font-bold tabular-nums">RPT-0646</td><td class="font-semibold">Agence Numérique d'État</td><td>21 mai 2026</td><td>S. Yao</td><td><span class="pill bg-brand-50 text-brand-600">Terminé</span></td></tr>
+              <tr><td class="font-bold tabular-nums">RPT-0645</td><td class="font-semibold">Office National de l'Eau</td><td>15 mai 2026</td><td>A. Bamba</td><td><span class="pill bg-rose-100 text-rose-500">En retard</span></td></tr>
+              <tr><td class="font-bold tabular-nums">RPT-0644</td><td class="font-semibold">Direction des Routes</td><td>09 mai 2026</td><td>K. Aboua</td><td><span class="pill bg-amber-100 text-amber-700">Planifié</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <!-- ============ FOOTER (footer.png) ============ -->
+  <footer class="glass reveal [animation-delay:260ms] min-[860px]:col-start-2 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+    <span class="text-[13.5px] text-muted font-medium"><b class="text-ink-2 font-bold">DGMP</b> © 2026. Tous droits réservés.</span>
+    <nav class="flex gap-6" aria-label="Liens du pied de page">
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Mentions légales</a>
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Confidentialité</a>
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Support</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+  /* ---- Activation des pages (liens simples + sous-éléments) ---- */
+  function clearActive(){
+    document.querySelectorAll('.nav-item[href], .subitem').forEach(function(n){
+      n.classList.remove('active'); n.removeAttribute('aria-current');
+    });
+  }
+  document.querySelectorAll('.nav-item[href], .subitem').forEach(function(item){
+    item.addEventListener('click', function(e){
+      e.preventDefault();
+      clearActive();
+      item.classList.add('active'); item.setAttribute('aria-current','page');
+    });
+  });
+
+  /* ---- Sous-menu Administration (repliable) ---- */
+  document.querySelectorAll('[data-admin-toggle]').forEach(function(btn){
+    var group = btn.closest('[data-admin-group]');
+    var sub   = group.querySelector('.submenu');
+    btn.addEventListener('click', function(){
+      var open = sub.classList.toggle('open');
+      group.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* ---- Listes déroulantes du header (Gestion / Session) ---- */
+  var dropdowns = Array.from(document.querySelectorAll('[data-dropdown]'));
+
+  function closeAllDropdowns(except){
+    dropdowns.forEach(function(dd){
+      if (dd === except) return;
+      dd.classList.remove('is-open');
+      dd.querySelector('[data-dd-panel]').classList.remove('open');
+      dd.querySelector('[data-dd-trigger]').setAttribute('aria-expanded','false');
+    });
+  }
+
+  dropdowns.forEach(function(dd){
+    var trigger = dd.querySelector('[data-dd-trigger]');
+    var panel   = dd.querySelector('[data-dd-panel]');
+    var valueEl = dd.querySelector('[data-dd-value]');
+
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      var willOpen = !panel.classList.contains('open');
+      closeAllDropdowns(dd);
+      panel.classList.toggle('open', willOpen);
+      dd.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    panel.querySelectorAll('[data-dd-option]').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        panel.querySelectorAll('[data-dd-option]').forEach(function(o){
+          o.classList.remove('selected'); o.setAttribute('aria-selected','false');
+        });
+        opt.classList.add('selected'); opt.setAttribute('aria-selected','true');
+        valueEl.textContent = opt.textContent.trim();
+        closeAllDropdowns();
+      });
+    });
+  });
+
+  /* Fermeture au clic extérieur + touche Échap */
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAllDropdowns(); });
+</script>
+</body>
+</html>

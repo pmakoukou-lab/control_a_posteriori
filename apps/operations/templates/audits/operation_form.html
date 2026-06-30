@@ -1,0 +1,549 @@
+[[extend 'audits/layout.html']]
+
+[[block title]][[='Modification' if is_edit else "Ajout"]] d'une opération — AUDIT a posteriori[[end]]
+
+[[block main]]
+[[
+  def _v(name): return data.get(name, '')
+  _min = data.get('ministere') or {}
+  _gc  = data.get('autorite_contractante') or {}
+  _nat = data.get('nature_operation') or {}
+]]
+<form method="post" action="[[=edit_url if is_edit else add_url]]" id="op-form">
+<input type="hidden" name="mode_passation" value="[[=mode]]">
+<input type="hidden" name="ministere" data-min-hidden value="[[=_min.get('id','')]]">
+<input type="hidden" name="autorite_contractante" data-gc-hidden value="[[=_gc.get('id','')]]">
+<input type="hidden" name="nature_operation" data-nature-hidden value="[[=_nat.get('id','')]]">
+<input type="hidden" name="save_again" data-save-again value="">
+
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <div class="sticky top-4 z-30 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 pt-3 sm:pt-4 pb-3 flex flex-col gap-2 border-b border-black/[.07] bg-white/85 backdrop-blur-md rounded-t-2xl">
+        <!-- Ligne 1 : titre · Gestion · Session · tout replier/déplier -->
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex items-center gap-3 flex-wrap min-w-0">
+            <h1 class="font-heading font-bold text-base tracking-tight text-ink whitespace-nowrap">[[='Modification' if is_edit else "Ajout"]] d'une opération</h1>
+            <span class="hidden sm:block w-px h-5 bg-black/10"></span>
+            <label class="flex items-center gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-[.06em] text-muted-2">Gestion</span>
+              <select name="gestion" class="field w-auto min-w-[88px] text-sm font-semibold" style="height:36px" data-gestion-select aria-label="Gestion (exercice budgétaire)">
+                [[ for e in globals().get('exercice_options', []): ]]
+                <option value="[[=e['id'] ]]" [[='selected' if e['id']==gestion_default else '']]>[[=e['annee'] ]]</option>
+                [[ pass ]]
+              </select>
+            </label>
+            <label class="flex items-center gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-[.06em] text-muted-2">Session</span>
+              <select name="session" class="field w-auto min-w-[116px] text-sm font-semibold" style="height:36px" data-session-select aria-label="Session budgétaire">
+                [[ for s in globals().get('session_options', []): ]]
+                <option value="[[=s['id'] ]]" data-gestion="[[=s['gestion'] ]]" [[='selected' if s['id']==session_default else '']]>[[=s['label'] ]]</option>
+                [[ pass ]]
+              </select>
+            </label>
+          </div>
+          <button type="button" class="act-btn shrink-0" data-toggle-all aria-expanded="true" aria-label="Tout replier">
+            <svg data-toggle-all-icon class="w-[18px] h-[18px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+          </button>
+        </div>
+        <!-- Ligne 2 : rappel des informations essentielles (mis à jour pendant la saisie) -->
+        <div class="flex items-baseline gap-2 min-w-0">
+          <p class="text-sm font-bold text-ink-2 truncate min-w-0" data-hdr-objet>[[=_v('objet_operation') or '—']]</p>
+          <span class="text-muted-2 shrink-0">·</span>
+          <p class="text-[13px] font-semibold text-muted shrink-0" data-hdr-bomp>[[=mode]] - [[=_v('n_bomp')]]</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        [[ for _typ, _skey, stitle, fields in all_sections: ]]
+        [[ if _typ == 'op': ]]
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>[[=stitle]]</button>
+          <div class="acc-body">
+            [[ for _row in group_rows(fields): ]]
+              [[ if len(_row) > 1: ]]<div style="display:grid;grid-template-columns:repeat([[=len(_row)]],minmax(0,1fr));gap:1rem">[[ pass ]]
+              [[ for name, label, kind in _row: ]]
+
+              [[ if kind == 'ref_min': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-min-combo data-combo-placeholder="Sélectionner" data-value="[[=_min.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_min.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in min_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ elif kind == 'ref_gc': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-gc-combo data-combo-placeholder="Sélectionner" data-value="[[=_gc.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_gc.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une autorité contractante"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in gc_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]" data-min="[[=o['min_id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ elif kind == 'ref_nature': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-nature-combo data-combo-placeholder="Sélectionner" data-value="[[=_nat.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_nat.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une nature d'opération"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in nature_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ else: ]]
+              [[=XML(simple_field(name, label, kind, _v(name), data.get(name)))]]
+              [[ pass ]]
+
+              [[ pass ]]
+              [[ if len(_row) > 1: ]]</div>[[ pass ]]
+            [[ pass ]]
+          </div>
+        </section>
+
+        [[ if any(n == 'nature_operation' for n, _l, _k in fields): ]]
+        <!-- Opérations : nombre de lots + objet de chaque lot (placée sous « Nature de l'opération ») -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opérations</button>
+          <div class="acc-body">
+            <div><label class="lbl">Nombre de lots <span class="text-rose-500">*</span></label>
+              <div class="stepper" data-nombre-stepper>
+                <button type="button" data-nl-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+                <span data-nl-val>[[=lot_count]]</span>
+                <input type="hidden" name="nombre_lots" data-nombre-lots value="[[=lot_count]]">
+                <button type="button" data-nl-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+              </div>
+              <p id="nombre-lots-help" class="text-[12px] text-muted-2 mt-1">Au-delà d'un lot, saisissez l'objet de chaque lot ci-dessous (sinon l'objet de l'opération est repris).</p>
+            </div>
+            <div class="flex flex-col gap-4" data-lot-objets></div>
+            <template data-lot-objet-tpl>[[=XML(objet_lot_tpl)]]</template>
+          </div>
+        </section>
+        [[ pass ]]
+
+        [[ else: ]]
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>[[=stitle]]</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <template data-lot-tpl>[[=XML(lot_tpl(fields))]]</template>
+          </div>
+        </section>
+        [[ pass ]]
+        [[ pass ]]
+        <div class="hidden" data-lot-markers></div>
+        <script>window.__ALLOT_STATE__ = [[=XML(allot_state_json)]];</script>
+
+      </div>
+    </main>
+
+<footer class="glass reveal [animation-delay:260ms] flex items-center justify-between gap-3 flex-wrap px-6 py-4">
+    <a class="btn-soft" href="[[=URL('collecte')]]">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Fermer
+    </a>
+    <div class="flex items-center gap-3 flex-wrap">
+      [[ if not is_edit: ]]
+      <button type="submit" class="btn-secondary" data-save-again-btn>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Enregistrer et ajouter une nouvelle opération
+      </button>
+      [[ pass ]]
+      <button type="submit" class="btn-primary">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        [[='Mettre à jour' if is_edit else 'Enregistrer']]
+      </button>
+    </div>
+  </footer>
+</form>
+[[end]]
+
+[[block js]]
+<script>
+  /* Accordéon + tout replier/déplier */
+  var accSections = document.querySelectorAll('.acc');
+  var toggleAllBtn = document.querySelector('[data-toggle-all]');
+  var toggleAllLabel = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-label]') : null;
+  var toggleAllIcon = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-icon]') : null;
+  function anyAccOpen(){ return Array.prototype.some.call(accSections, function(a){ return a.classList.contains('open'); }); }
+  function syncToggleAll(){
+    if (!toggleAllBtn) return;
+    var open = anyAccOpen();
+    if (toggleAllLabel) toggleAllLabel.textContent = open ? 'Tout replier' : 'Tout déplier';
+    if (toggleAllIcon) toggleAllIcon.classList.toggle('rotate-180', !open);
+    toggleAllBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggleAllBtn.setAttribute('aria-label', open ? 'Tout replier' : 'Tout déplier');
+  }
+  /* Délégation : couvre les sections (.acc) ET les accordéons de lots (.lot-acc),
+     y compris ceux ajoutés dynamiquement. */
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-acc-toggle]');
+    if (!btn) return;
+    var acc = btn.closest('.lot-acc') || btn.closest('.acc');
+    if (acc) acc.classList.toggle('open');
+    syncToggleAll();
+  });
+  if (toggleAllBtn){
+    toggleAllBtn.addEventListener('click', function(){
+      var collapse = anyAccOpen();
+      accSections.forEach(function(a){ a.classList.toggle('open', !collapse); });
+      syncToggleAll();
+    });
+    syncToggleAll();
+  }
+
+  /* Barre : la liste des Sessions dépend de la Gestion choisie. Quand la gestion
+     change, on n'affiche que ses sessions et on re-défaut sur la dernière. */
+  (function(){
+    var gSel = document.querySelector('[data-gestion-select]');
+    var sSel = document.querySelector('[data-session-select]');
+    if (!gSel || !sSel) return;
+    function syncSessions(){
+      var g = gSel.value, last = null, curOk = false;
+      Array.prototype.forEach.call(sSel.options, function(o){
+        var match = (o.getAttribute('data-gestion') === g);
+        o.hidden = !match; o.disabled = !match;
+        if (match){ last = o; if (o.selected) curOk = true; }
+      });
+      if (!curOk && last) sSel.value = last.value;  /* dernière session de la gestion */
+    }
+    gSel.addEventListener('change', syncSessions);
+    syncSessions();
+  })();
+
+  /* Compteurs (stepper) — délégation pour couvrir les champs clonés éventuels */
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-dec],[data-inc]');
+    if (!btn) return;
+    var st = btn.closest('[data-stepper]'); if (!st) return;
+    var val = st.querySelector('[data-stepper-val]'); var input = st.querySelector('[data-stepper-input]');
+    var n = (parseInt(val.textContent, 10) || 0) + (btn.hasAttribute('data-inc') ? 1 : -1);
+    n = Math.max(0, n); val.textContent = n; if (input) input.value = n;
+  });
+
+  /* Allotissements : génération des lots pilotée par « Nombre de lots ».
+     - Chaque section d'allotissement reçoit N blocs « Lot 1..N ».
+     - Sous « Nombre de lots » : un champ « Objet du Lot k » par lot, visible
+       seulement si N>1 ; si N=1 l'objet du lot recopie l'objet de l'opération.
+     - Les valeurs saisies sont conservées dans STATE entre deux recalculs. */
+  var lotInput   = document.querySelector('[data-nombre-lots]');
+  var lotMarkers = document.querySelector('[data-lot-markers]');
+  var lotRowsAll = Array.prototype.slice.call(document.querySelectorAll('[data-lot-rows]'));
+  var lotObjets  = document.querySelector('[data-lot-objets]');
+  var objetTplEl = document.querySelector('[data-lot-objet-tpl]');
+  var objetOp    = document.querySelector('[name="objet_operation"]');
+  var STATE = window.__ALLOT_STATE__ || {};
+  var LOT_RE = /^lot_(\d+)_(.+)$/;
+  function lotInputs(){ return document.querySelectorAll('#op-form [name^="lot_"]'); }
+  function getN(){ var n = parseInt(lotInput.value, 10); return (n >= 1) ? n : 1; }
+
+  function syncLotState(){
+    lotInputs().forEach(function(el){
+      var m = el.name.match(LOT_RE); if (!m) return;
+      (STATE[m[1]] = STATE[m[1]] || {})[m[2]] = (el.type === 'checkbox') ? el.checked : el.value;
+    });
+  }
+  function applyLotState(){
+    lotInputs().forEach(function(el){
+      var m = el.name.match(LOT_RE); if (!m) return;
+      var s = STATE[m[1]]; if (!s || !(m[2] in s)) return;
+      var v = s[m[2]];
+      if (el.type === 'checkbox') el.checked = !!v; else el.value = (v == null ? '' : v);
+    });
+  }
+  function syncObjetMirror(){
+    var mir = lotObjets && lotObjets.querySelector('[data-objet-mirror]');
+    if (mir && objetOp) mir.value = objetOp.value || '';
+  }
+  function buildObjets(n){
+    if (!lotObjets) return;
+    if (n <= 1){
+      // Un seul lot : objet recopié de l'opération (champ masqué).
+      lotObjets.style.display = 'none';
+      lotObjets.innerHTML = '<input type="hidden" name="lot_1_objet_lot" data-objet-mirror>';
+      syncObjetMirror();
+    } else {
+      lotObjets.style.display = '';
+      var tpl = objetTplEl ? objetTplEl.innerHTML : '', html = '';
+      for (var k = 1; k <= n; k++){ html += tpl.replace(/__IDX__/g, k).replace(/__LOTNO__/g, k); }
+      lotObjets.innerHTML = html;
+    }
+  }
+  function buildLots(){
+    if (!lotInput) return;
+    syncLotState();
+    var n = getN();
+    // Marqueurs lot_index (un par lot) — lus côté serveur.
+    lotMarkers.innerHTML = '';
+    for (var k = 1; k <= n; k++){
+      var inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = 'lot_index'; inp.value = k;
+      lotMarkers.appendChild(inp);
+    }
+    // Pour chaque section : N blocs « Lot k » clonés depuis son gabarit.
+    lotRowsAll.forEach(function(rows){
+      var tpl = rows.parentNode.querySelector('[data-lot-tpl]');
+      if (!tpl) return;
+      var html = '';
+      for (var k = 1; k <= n; k++){
+        html += tpl.innerHTML.replace(/__IDX__/g, k).replace(/__LOTNO__/g, k);
+      }
+      rows.innerHTML = html;
+      // 1 lot : pas d'accordéon ni d'objet → on déballe le corps (champs seuls).
+      if (n <= 1){
+        rows.querySelectorAll('[data-lot-block]').forEach(function(block){
+          var bodyEl = block.querySelector('.lot-acc-body');
+          if (!bodyEl) return;
+          var plain = document.createElement('div');
+          plain.setAttribute('data-lot-block', '');
+          while (bodyEl.firstChild) plain.appendChild(bodyEl.firstChild);
+          block.parentNode.replaceChild(plain, block);
+        });
+      }
+    });
+    // Champs « Objet du Lot » sous « Nombre de lots ».
+    buildObjets(n);
+    applyLotState();
+    if (getN() <= 1) syncObjetMirror();
+    refreshObjetLabels();
+    document.querySelectorAll('[data-thousands]').forEach(applyThousands);
+    refreshObjetDisplays();
+    computeMontantDispo();
+    computeEcarts();
+  }
+  function objetForLot(k){
+    if (getN() <= 1) return objetOp ? (objetOp.value || '') : '';
+    var inp = document.querySelector('[name="lot_' + k + '_objet_lot"]');
+    if (inp) return inp.value || '';
+    return (STATE[k] && STATE[k].objet_lot) || '';
+  }
+  // En-têtes d'accordéon de lot : concatène « : <objet> » à « Lot X ».
+  // Uniquement si le nombre de lots > 1 (sinon en-tête « Lot X » seul).
+  function refreshObjetLabels(){
+    var show = getN() > 1;
+    document.querySelectorAll('[data-objet-label]').forEach(function(el){
+      var o = show ? objetForLot(el.getAttribute('data-objet-label')) : '';
+      el.textContent = o ? (' : ' + o) : '';
+    });
+  }
+  // Débounce 5 s après la saisie des objets (appliqué seulement pour N > 1).
+  var _objetTimer = null;
+  function scheduleObjetLabels(){
+    if (getN() <= 1) return;
+    clearTimeout(_objetTimer);
+    _objetTimer = setTimeout(refreshObjetLabels, 5000);
+  }
+  function applyThousands(el){
+    // Partie entière (avant , ou .) → chiffres groupés par milliers.
+    var d = String(el.value).split(/[.,]/)[0].replace(/[^\d]/g, '');
+    el.value = d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '';
+  }
+  // Champs « Objet » (lecture seule) de la section Attributaire(s) = objet du lot.
+  function refreshObjetDisplays(){
+    document.querySelectorAll('[data-objet-display]').forEach(function(el){
+      el.value = objetForLot(el.getAttribute('data-objet-display'));
+    });
+  }
+  // « Montant disponible » = dotation − total des « Montant du marché » des lots.
+  function parseNum(v){ var d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? parseInt(d, 10) : 0; }
+  function computeMontantDispo(){
+    var disp = document.querySelector('[data-montant-dispo]');
+    if (!disp) return;
+    var dotEl = document.querySelector('[name="montant_dotation_credit"]');
+    var dotation = parseNum(dotEl ? dotEl.value : 0);
+    var total = 0;
+    document.querySelectorAll('#op-form [name^="lot_"]').forEach(function(el){
+      if (/^lot_\d+_montant_marche$/.test(el.name)) total += parseNum(el.value);
+    });
+    var res = dotation - total;
+    disp.value = (res < 0 ? '-' : '') + String(Math.abs(res)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  }
+  // « Écart » de chaque lot = montant de l'estimation − montant du marché.
+  function computeEcarts(){
+    document.querySelectorAll('[data-ecart]').forEach(function(el){
+      var k = el.getAttribute('data-ecart');
+      var est = document.querySelector('[name="lot_' + k + '_montant_estimation"]');
+      var mar = document.querySelector('[name="lot_' + k + '_montant_marche"]');
+      var res = parseNum(est ? est.value : 0) - parseNum(mar ? mar.value : 0);
+      el.value = (res < 0 ? '-' : '') + String(Math.abs(res)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    });
+  }
+  if (lotInput){
+    lotInput.addEventListener('input', buildLots);
+    lotInput.addEventListener('change', buildLots);
+    if (objetOp) objetOp.addEventListener('input', function(){ if (getN() <= 1) syncObjetMirror(); });
+    // Stepper « Nombre de lots » (icônes +/- toujours visibles).
+    var nlStepper = document.querySelector('[data-nombre-stepper]');
+    if (nlStepper){
+      var nlVal = nlStepper.querySelector('[data-nl-val]');
+      var nlSet = function(v){ v = Math.max(1, v | 0); nlVal.textContent = v; lotInput.value = v; buildLots(); };
+      nlStepper.querySelector('[data-nl-dec]').addEventListener('click', function(){ nlSet((parseInt(lotInput.value, 10) || 1) - 1); });
+      nlStepper.querySelector('[data-nl-inc]').addEventListener('click', function(){ nlSet((parseInt(lotInput.value, 10) || 1) + 1); });
+    }
+    buildLots();
+  }
+  // Saisie d'un objet de lot (section « Opérations ») → MAJ des en-têtes de lot
+  // après un délai de 5 s (uniquement pour N > 1). Formatage des montants en direct.
+  // En-tête « MODE - N° BOMP » + objet, rafraîchi 5 s après la saisie.
+  var hdrBomp = document.querySelector('[data-hdr-bomp]');
+  var hdrObjet = document.querySelector('[data-hdr-objet]');
+  var _hdrTimer = null;
+  function refreshHeader(){
+    var nAoo = document.querySelector('[name="n_bomp"]');
+    var objO = document.querySelector('[name="objet_operation"]');
+    if (hdrBomp) hdrBomp.textContent = '[[=mode]] - ' + (nAoo ? nAoo.value : '');
+    if (hdrObjet) hdrObjet.textContent = objO ? objO.value : '';
+  }
+  function scheduleHeader(){ clearTimeout(_hdrTimer); _hdrTimer = setTimeout(refreshHeader, 5000); }
+
+  document.addEventListener('input', function(e){
+    var t = e.target, nm = t.name || '';
+    if (/^lot_\d+_objet_lot$/.test(nm)) { scheduleObjetLabels(); refreshObjetDisplays(); }
+    if (nm === 'objet_operation') refreshObjetDisplays();
+    if (t.matches && t.matches('[data-thousands]')) applyThousands(t);
+    if (nm === 'montant_dotation_credit' || /^lot_\d+_montant_marche$/.test(nm)) computeMontantDispo();
+    if (/^lot_\d+_montant_(estimation|marche)$/.test(nm)) computeEcarts();
+    if (nm === 'n_bomp' || nm === 'objet_operation') scheduleHeader();
+  });
+
+  /* Combos liés à des inputs cachés (ministère, autorité, nature) */
+  var form = document.getElementById('op-form');
+  var minCombo    = document.querySelector('[data-min-combo]');
+  var gcCombo     = document.querySelector('[data-gc-combo]');
+  var natureCombo = document.querySelector('[data-nature-combo]');
+  var minHidden    = document.querySelector('[data-min-hidden]');
+  var gcHidden     = document.querySelector('[data-gc-hidden]');
+  var natureHidden = document.querySelector('[data-nature-hidden]');
+  function selectedOption(combo){
+    if (!combo) return null;
+    var label = (window.getComboValue ? window.getComboValue(combo) : '') || '';
+    var found = null;
+    combo.querySelectorAll('[data-combo-option]').forEach(function(o){ if (o.textContent.trim() === label) found = o; });
+    return found;
+  }
+  function filterGc(minId){
+    if (!gcCombo) return;
+    var opts = gcCombo.querySelectorAll('[data-combo-option]');
+    var matches = 0;
+    if (minId) opts.forEach(function(o){ if ((o.getAttribute('data-min') || '') === String(minId)) matches++; });
+    opts.forEach(function(o){
+      var m = o.getAttribute('data-min') || '';
+      var show = (!minId || matches === 0) ? true : (m === String(minId));
+      o.style.display = show ? '' : 'none';
+    });
+  }
+  function syncHidden(){
+    var mo = selectedOption(minCombo);    if (minHidden)    minHidden.value    = mo ? (mo.getAttribute('data-id') || '') : '';
+    var go = selectedOption(gcCombo);     if (gcHidden)     gcHidden.value     = go ? (go.getAttribute('data-id') || '') : '';
+    var no = selectedOption(natureCombo); if (natureHidden) natureHidden.value = no ? (no.getAttribute('data-id') || '') : '';
+  }
+  if (gcCombo) gcCombo.querySelectorAll('[data-combo-option]').forEach(function(o){
+    o.addEventListener('click', function(){ if (gcHidden) gcHidden.value = o.getAttribute('data-id') || ''; });
+  });
+  if (natureCombo) natureCombo.querySelectorAll('[data-combo-option]').forEach(function(o){
+    o.addEventListener('click', function(){ if (natureHidden) natureHidden.value = o.getAttribute('data-id') || ''; });
+  });
+  if (minCombo){
+    minCombo.querySelectorAll('[data-combo-option]').forEach(function(o){
+      o.addEventListener('click', function(){
+        var id = o.getAttribute('data-id') || '';
+        if (minHidden) minHidden.value = id;
+        filterGc(id);
+        var go = selectedOption(gcCombo);
+        if (go && (go.getAttribute('data-min') || '') !== String(id)){
+          if (window.setComboValue) window.setComboValue(gcCombo, '');
+          if (gcHidden) gcHidden.value = '';
+        }
+      });
+    });
+    if (minHidden && minHidden.value) filterGc(minHidden.value);
+  }
+  if (form) form.addEventListener('submit', function(){ syncHidden(); });
+
+  var againBtn = document.querySelector('[data-save-again-btn]');
+  var againField = document.querySelector('[data-save-again]');
+  if (againBtn && againField) againBtn.addEventListener('click', function(){ againField.value = '1'; });
+
+  /* ================= Date picker maison (branding) ================= */
+  (function(){
+    var MS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    var DOW = ['lu','ma','me','je','ve','sa','di'];
+    var CH_L = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>';
+    var CH_R = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    function parseDMY(s){ var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((s || '').trim()); return m ? { d:+m[1], mo:+m[2]-1, y:+m[3] } : null; }
+    function closeAll(){ document.querySelectorAll('[data-dp-pop]').forEach(function(p){ p.hidden = true; }); }
+    function build(pop, y, mo, sel){
+      pop.setAttribute('data-y', y); pop.setAttribute('data-m', mo);
+      var startDow = (new Date(y, mo, 1).getDay() + 6) % 7;
+      var days = new Date(y, mo + 1, 0).getDate();
+      var now = new Date(), th = (now.getFullYear() === y && now.getMonth() === mo) ? now.getDate() : -1;
+      var h = '<div class="dp-head"><button type="button" class="dp-nav" data-dp-prev aria-label="Mois précédent">' + CH_L + '</button>' +
+        '<span class="dp-title">' + MS[mo] + ' ' + y + '</span>' +
+        '<button type="button" class="dp-nav" data-dp-next aria-label="Mois suivant">' + CH_R + '</button></div><div class="dp-grid">';
+      DOW.forEach(function(d){ h += '<div class="dp-dow">' + d + '</div>'; });
+      for (var i = 0; i < startDow; i++) h += '<div></div>';
+      for (var dd = 1; dd <= days; dd++){
+        var cls = 'dp-day';
+        if (sel && sel.d === dd && sel.mo === mo && sel.y === y) cls += ' sel';
+        if (dd === th) cls += ' today';
+        h += '<button type="button" class="' + cls + '" data-dp-day="' + dd + '">' + dd + '</button>';
+      }
+      pop.innerHTML = h + '</div>';
+    }
+    function open(wrap){
+      closeAll();
+      var input = wrap.querySelector('[data-dp-input]'), pop = wrap.querySelector('[data-dp-pop]');
+      var sel = parseDMY(input.value), now = new Date();
+      build(pop, sel ? sel.y : now.getFullYear(), sel ? sel.mo : now.getMonth(), sel);
+      pop.hidden = false;
+    }
+    document.addEventListener('click', function(e){
+      var day = e.target.closest('[data-dp-day]');
+      if (day){
+        var pop = day.closest('[data-dp-pop]'), wrap = pop.closest('[data-dp]');
+        wrap.querySelector('[data-dp-input]').value = pad(+day.getAttribute('data-dp-day')) + '/' + pad(+pop.getAttribute('data-m') + 1) + '/' + pop.getAttribute('data-y');
+        closeAll(); e.stopPropagation(); return;
+      }
+      var nav = e.target.closest('[data-dp-prev],[data-dp-next]');
+      if (nav){
+        var pop2 = nav.closest('[data-dp-pop]'), wrap2 = pop2.closest('[data-dp]');
+        var y2 = +pop2.getAttribute('data-y'), m2 = +pop2.getAttribute('data-m');
+        m2 += nav.hasAttribute('data-dp-prev') ? -1 : 1;
+        if (m2 < 0){ m2 = 11; y2--; } else if (m2 > 11){ m2 = 0; y2++; }
+        build(pop2, y2, m2, parseDMY(wrap2.querySelector('[data-dp-input]').value));
+        e.stopPropagation(); return;
+      }
+      var wrap3 = e.target.closest('[data-dp]');
+      if (wrap3){
+        var pop3 = wrap3.querySelector('[data-dp-pop]');
+        if (pop3.hidden) open(wrap3); else closeAll();
+        e.stopPropagation(); return;
+      }
+      closeAll();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAll(); });
+  })();
+</script>
+[[end]]

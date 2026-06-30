@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestionnaire de crédits — AUDIT a posteriori</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Runtime Tailwind v4 (aperçu). En production : compile via la CLI Tailwind v4. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --font-sans:    "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Baloo 2", system-ui, sans-serif;
+    --font-heading: "Outfit", system-ui, sans-serif;
+
+    --color-brand-50:#ecfdf3;  --color-brand-100:#d3f7e2; --color-brand-200:#9af0c0;
+    --color-brand-300:#5fe49a; --color-brand-400:#2bc46a; --color-brand-500:#1e9e54;
+    --color-brand-600:#1a6b3c; --color-brand-700:#155c36; --color-brand-800:#114a2c;
+    --color-brand-900:#0d3a22;
+
+    --color-ink:#0f1b14; --color-ink-2:#2b3a31;
+    --color-muted:#5d6e63; --color-muted-2:#93a399;
+
+    --color-glass:rgba(255,255,255,.66);
+    --color-glassb:rgba(255,255,255,.85);
+
+    --shadow-glass:0 8px 32px rgba(18,70,42,.10),0 2px 8px rgba(18,70,42,.05);
+    --shadow-glasslg:0 18px 48px rgba(18,70,42,.16),0 6px 16px rgba(18,70,42,.08);
+    --shadow-glow:0 8px 24px rgba(30,158,84,.38);
+
+    /* Danger (rouge) & Warning (ambre) */
+    --color-danger-50:#fef2f2; --color-danger-500:#ef4444; --color-danger-600:#dc2626; --color-danger-700:#b91c1c;
+    --color-warning-50:#fffbeb; --color-warning-500:#f59e0b; --color-warning-600:#d97706; --color-warning-700:#b45309;
+  }
+
+  @layer base { body { @apply font-sans text-ink antialiased; background:#e7efe9; } }
+
+  @layer components {
+    .glass{
+      background:var(--color-glass);
+      -webkit-backdrop-filter:blur(22px) saturate(150%); backdrop-filter:blur(22px) saturate(150%);
+      border:1px solid var(--color-glassb); box-shadow:var(--shadow-glass); border-radius:1.5rem;
+    }
+
+    .nav-item{ @apply flex items-center gap-4 px-4 py-3 rounded-2xl font-semibold text-ink-2 transition cursor-pointer; border:1px solid transparent; }
+    .nav-item:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(3px); box-shadow:0 4px 14px rgba(18,70,42,.10); }
+    .nav-item:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .nav-item.active{ @apply text-white; background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600)); box-shadow:var(--shadow-glow); border-color:rgba(255,255,255,.4); transform:none; }
+
+    .btn-primary{ @apply inline-flex items-center gap-2 px-5 py-3 rounded-full text-white font-bold font-heading text-sm cursor-pointer transition; background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600)); box-shadow:var(--shadow-glow); border:none; }
+    .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(30,158,84,.45); }
+    .btn-soft{ @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb font-bold font-heading text-sm text-ink-2 transition cursor-pointer; }
+    .btn-danger{ @apply inline-flex items-center gap-2 px-5 py-3 rounded-full text-white font-bold font-heading text-sm cursor-pointer transition; background:linear-gradient(135deg,var(--color-danger-500),var(--color-danger-600)); border:none; box-shadow:0 8px 20px rgba(220,38,38,.32); }
+    .btn-danger:hover{ transform:translateY(-1px); box-shadow:0 12px 26px rgba(220,38,38,.45); }
+    .btn-warning{ @apply inline-flex items-center gap-2 px-5 py-3 rounded-full text-white font-bold font-heading text-sm cursor-pointer transition; background:linear-gradient(135deg,var(--color-warning-500),var(--color-warning-600)); border:none; box-shadow:0 8px 20px rgba(217,119,6,.30); }
+    .btn-warning:hover{ transform:translateY(-1px); box-shadow:0 12px 26px rgba(217,119,6,.42); }
+
+    .submenu{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+    .submenu.open{ grid-template-rows:1fr; }
+    .submenu > div{ overflow:hidden; }
+    .subitem{ @apply flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl font-medium text-sm text-muted transition cursor-pointer; }
+    .subitem:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(2px); }
+    .subitem.active{ @apply text-white font-semibold; background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600)); box-shadow:var(--shadow-glow); border:1px solid rgba(255,255,255,.4); transform:none; }
+
+    .dd-panel{
+      @apply absolute left-0 z-30 mt-2 min-w-[132px] p-1.5 rounded-2xl flex flex-col gap-0.5;
+      background:rgba(255,255,255,.98); -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+      border:1px solid rgba(15,27,20,.06); box-shadow:var(--shadow-glasslg);
+      opacity:0; transform:translateY(-6px) scale(.97); transform-origin:top; pointer-events:none; transition:opacity .18s ease, transform .18s ease;
+    }
+    .dd-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+    .dd-option{ @apply px-4 py-2 rounded-xl text-sm font-bold text-ink-2 text-center cursor-pointer transition tabular-nums; }
+    .dd-option:hover{ @apply bg-brand-50 text-brand-600; }
+    .dd-option.selected{ @apply bg-brand-500 text-white; }
+
+    /* Champs */
+    .lbl{ @apply block font-heading font-semibold text-sm text-ink-2 mb-1.5; }
+    .field{ @apply w-full px-4 py-3 rounded-xl bg-white/70 border border-glassb text-sm text-ink transition; }
+    .field::placeholder{ color:var(--color-muted-2); }
+    .field:focus{ @apply outline-none bg-white; border-color:var(--color-brand-400); box-shadow:0 0 0 4px rgba(43,196,106,.16); }
+
+    /* Recherche */
+    .search{ @apply relative; }
+    .search input{ @apply w-full pl-11 pr-4 py-3 rounded-xl bg-white/70 border border-glassb text-sm text-ink transition; }
+    .search input::placeholder{ color:var(--color-muted-2); }
+    .search input:focus{ @apply outline-none bg-white; border-color:var(--color-brand-400); box-shadow:0 0 0 4px rgba(43,196,106,.16); }
+    .search > svg{ @apply w-[18px] h-[18px] text-muted-2 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none; }
+
+    /* Interrupteur */
+    .switch{ position:relative; display:inline-block; width:46px; height:26px; }
+    .switch input{ position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; z-index:2; }
+    .switch .track{ position:absolute; inset:0; border-radius:9999px; background:rgba(15,27,20,.18); transition:.2s; }
+    .switch .thumb{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:9999px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:.2s; }
+    .switch input:checked ~ .track{ background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600)); }
+    .switch input:checked ~ .thumb{ transform:translateX(20px); }
+    .switch input:focus-visible ~ .track{ outline:3px solid var(--color-brand-200); outline-offset:2px; }
+
+    /* Table */
+    .utbl{ @apply w-full border-collapse text-sm min-w-[680px]; }
+    .utbl thead th{ @apply text-left font-heading font-bold text-sm text-ink-2 px-5 py-3.5; background:#e9eceb; }
+    .utbl tbody td{ @apply px-5 py-4 align-middle; border-top:1px solid rgba(15,27,20,.06); }
+
+    .status{ @apply inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold; }
+    .status-actif{ background:rgba(15,27,20,.10); @apply text-ink-2; }
+    .status-off{ @apply text-white; background:var(--color-ink); }
+
+    .act-btn{ @apply inline-grid place-items-center w-9 h-9 rounded-lg text-muted-2 transition cursor-pointer; }
+    .act-edit:hover{ @apply bg-brand-50 text-brand-600; }
+    .act-del:hover{ background:var(--color-danger-50); color:var(--color-danger-600); }
+    .act-toggle{ @apply text-muted-2; }
+    .act-toggle:hover{ background:#fff7ed; color:#d97706; }
+    .act-toggle.is-on{ @apply text-ink; }
+    .act-toggle.is-on:hover{ @apply bg-brand-50 text-brand-600; }
+
+    /* Pagination */
+    .page-num{ @apply min-w-9 h-9 px-2 inline-grid place-items-center rounded-lg text-sm font-semibold text-ink-2 transition cursor-pointer tabular-nums; }
+    .page-num:hover{ background:rgba(15,27,20,.05); }
+    .page-num.active{ @apply text-white; background:var(--color-ink); }
+    .page-link{ @apply inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-semibold text-ink-2 transition cursor-pointer; }
+    .page-link:hover{ background:rgba(15,27,20,.05); }
+    .page-link:disabled{ @apply text-muted-2 cursor-not-allowed; background:none; }
+
+    /* Onglets */
+    .tab{ @apply px-4 py-2 rounded-lg font-heading font-semibold text-sm text-muted transition cursor-pointer; }
+    .tab:hover{ @apply text-ink-2; background:rgba(15,27,20,.04); }
+    .tab.active{ @apply text-ink; background:rgba(15,27,20,.07); }
+
+    /* Modales */
+    .modal-root{ @apply fixed inset-0 z-[100] hidden; }
+    .modal-root.open{ @apply grid place-items-center p-4; }
+    .modal-back{ @apply absolute inset-0; background:rgba(8,20,13,.45); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); }
+    .umodal{ @apply relative w-full rounded-[1.4rem] p-6 sm:p-7 flex flex-col max-h-[90dvh] overflow-y-auto; background:var(--color-glassb); border:1px solid #fff; box-shadow:var(--shadow-glasslg); animation:pop .26s cubic-bezier(.2,.8,.2,1); }
+    .umodal[hidden]{ display:none; }
+    .umodal-sm{ max-width:31rem; }
+    .umodal-lg{ max-width:38rem; }
+  }
+</style>
+
+<style>
+  .bg-decor{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg-decor::before{ content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.55), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.42), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.50), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.20), transparent 60%),
+      linear-gradient(160deg,#eef5f0,#e3efe7); }
+  .bg-decor::after{ content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E"); }
+  .chev{transition:transform .25s ease}
+  .is-open .chev{transform:rotate(180deg)}
+  .reveal{ opacity:0;transform:translateY(14px); animation-name:rise;animation-duration:.6s; animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards; }
+  @keyframes rise{to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){ .reveal{animation:none;opacity:1;transform:none} .umodal{animation:none} *{transition:none!important} }
+</style>
+</head>
+
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="glass reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-4 self-start" aria-label="Navigation principale">
+    <div class="px-2 pt-2">
+      <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-brand-600">IT</span></div>
+      <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+    </div>
+    <nav class="flex flex-col gap-2" aria-label="Menu">
+      <span class="font-heading text-[11px] font-bold tracking-[1.5px] text-muted-2 uppercase px-2 pb-1">Pilotage</span>
+      <a class="nav-item" href="#"><svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>Dashboard</a>
+      <a class="nav-item" href="#"><svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Collecte</a>
+      <a class="nav-item" href="#"><svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>Rapport</a>
+      <div data-admin-group class="is-open">
+        <button class="nav-item w-full justify-between" data-admin-toggle aria-expanded="true" aria-controls="admin-sub">
+          <span class="flex items-center gap-4">
+            <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>
+            Administration
+          </span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="submenu open" id="admin-sub" role="region" aria-label="Sous-menu Administration">
+          <div>
+            <div class="flex flex-col gap-1 pt-1">
+              <a class="subitem" href="#"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.8 18.5a5.2 5.2 0 0 1 10.4 0"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18.4 18.5a5.2 5.2 0 0 0-2.9-4.6"/></svg>comptes</a>
+              <a class="subitem" href="#"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16"/><path d="M8.5 3.5v3M15.5 3.5v3"/><path d="m9 14 2 2 4-4"/></svg>exercice budgétaire</a>
+              <a class="subitem active" href="#" aria-current="page"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h4"/></svg>Gestionnaire de crédits</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ CONTENU ============ -->
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+
+    <!-- ---- HEADER ---- -->
+    <header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer" data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+            <span class="font-heading font-bold text-sm text-ink">Gestion</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2026</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2026</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2025</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2024</button>
+          </div>
+        </div>
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer" data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session">
+            <span class="font-heading font-bold text-sm text-ink">Session</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0 min-w-[100px]" data-dd-panel role="listbox" aria-label="Session">
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">1</button>
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">3</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="grid place-items-center w-9 h-9 rounded-full text-white bg-gradient-to-br from-brand-400 to-teal-500 shadow-md" aria-hidden="true">
+          <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+        </span>
+        <button class="btn-soft hover:bg-rose-100 hover:text-rose-500" aria-label="Se déconnecter">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Quitter
+        </button>
+      </div>
+    </header>
+
+    <!-- ---- MAIN ---- -->
+    <main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6">
+
+      <!-- Onglets -->
+      <div class="flex items-center gap-1 border-b border-black/[.08]" role="tablist" aria-label="Vues">
+        <button class="tab" data-tab="min" role="tab" aria-selected="false" aria-controls="panel-min">Ministère</button>
+        <button class="tab active" data-tab="gc" role="tab" aria-selected="true" aria-controls="panel-gc">Gestionnaire de credit</button>
+      </div>
+
+      <!-- ============ PANNEAU : MINISTÈRE ============ -->
+      <div id="panel-min" data-panel="min" role="tabpanel" hidden class="flex flex-col gap-5">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des ministères</h1>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un ministère" data-search="min" aria-label="Rechercher un ministère">
+          </div>
+          <button class="btn-primary" data-add="min">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un ministère
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+          <table class="utbl">
+            <thead><tr><th>Ministères</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="min">
+              <tr data-name="Ministre de l'Emploi et de la Protection Sociale" data-abbr="MEPS">
+                <td><div class="font-bold text-ink">Ministre de l'Emploi et de la Protection Sociale</div><div class="text-muted text-[13px]">MEPS</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Ministre de l'Intérieur et de la Sécurité" data-abbr="MIS">
+                <td><div class="font-bold text-ink">Ministre de l'Intérieur et de la Sécurité</div><div class="text-muted text-[13px]">MIS</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora" data-abbr="MAEIAD">
+                <td><div class="font-bold text-ink">Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora</div><div class="text-muted text-[13px]">MAEIAD</div></td>
+                <td><span class="status status-off" data-status>Desactivé</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle is-on" data-toggle aria-label="Activer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+          <button class="page-link" disabled><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</button>
+          <button class="page-num active" aria-current="page">1</button>
+          <button class="page-num">2</button><button class="page-num">3</button>
+          <span class="px-1.5 text-muted-2 select-none">…</span>
+          <button class="page-num">67</button><button class="page-num">68</button>
+          <button class="page-link">Next<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </nav>
+      </div>
+
+      <!-- ============ PANNEAU : GESTIONNAIRE DE CREDIT ============ -->
+      <div id="panel-gc" data-panel="gc" role="tabpanel" class="flex flex-col gap-5">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des gestionnaires de crédits</h1>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un gestionnaire" data-search="gc" aria-label="Rechercher un gestionnaire de crédit">
+          </div>
+          <button class="btn-primary" data-add="gc">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un gestionnaire de credit
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+          <table class="utbl">
+            <thead><tr><th>Gestionnaires de crédits</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="gc">
+              <tr data-name="Direction de la lutte contre le tabac" data-abbr="DLT" data-min="Ministère de la Santé (MS)">
+                <td><div class="font-bold text-ink">Direction de la lutte contre le tabac - DLT</div><div class="text-muted text-[13px]">Ministère de la Santé (MS)</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Direction de la lutte contre la criminalité" data-abbr="DLC" data-min="Ministère de l'Intérieur et de la Sécurité (MIS)">
+                <td><div class="font-bold text-ink">Direction de la lutte contre la criminalité - DLC</div><div class="text-muted text-[13px]">Ministère de l'Intérieur et de la Sécurité (MIS)</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Direction de l'Intégration Africaine et de la Diaspora" data-abbr="DIAD" data-min="Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)">
+                <td><div class="font-bold text-ink">Direction de l'Intégration Africaine et de la Diaspora - DIAD</div><div class="text-muted text-[13px]">Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)</div></td>
+                <td><span class="status status-off" data-status>Desactivé</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle is-on" data-toggle aria-label="Activer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+          <button class="page-link" disabled><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</button>
+          <button class="page-num active" aria-current="page">1</button>
+          <button class="page-num">2</button><button class="page-num">3</button>
+          <span class="px-1.5 text-muted-2 select-none">…</span>
+          <button class="page-num">67</button><button class="page-num">68</button>
+          <button class="page-link">Next<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </nav>
+      </div>
+    </main>
+
+    <p class="text-xs text-muted-2 px-2 pb-2">DGMP @ 202X. Tous droits réservés.</p>
+  </div>
+</div>
+
+<!-- ============ MODALES ============ -->
+<div class="modal-root" data-modal-root>
+  <div class="modal-back" data-modal-close></div>
+
+  <!-- Ministère : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="min-form" hidden role="dialog" aria-modal="true" aria-labelledby="min-form-title">
+    <h2 id="min-form-title" data-min-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un ministère</h2>
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="m-nom">Nom</label><textarea id="m-nom" data-m-nom class="field resize-y min-h-[80px]" rows="2" placeholder="Ex. Garde des Sceaux, Ministre de la justice et des droits de l'Homme"></textarea></div>
+      <div><label class="lbl" for="m-abbr">Abrégé</label><input id="m-abbr" data-m-abbr class="field" type="text" placeholder="Ex. MJDH"></div>
+      <div class="flex items-center gap-3" data-m-activer-row>
+        <label class="switch"><input type="checkbox" data-m-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="min-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-min-form-btn>Ajouter le ministère</span></button>
+    </div>
+  </div>
+
+  <!-- Gestionnaire : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="gc-form" hidden role="dialog" aria-modal="true" aria-labelledby="gc-form-title">
+    <h2 id="gc-form-title" data-gc-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un gestionnaire de crédit</h2>
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="g-nom">Nom</label><textarea id="g-nom" data-g-nom class="field resize-y min-h-[80px]" rows="2" placeholder="Ex. Direction de la lutte contre le tabac"></textarea></div>
+      <div><label class="lbl" for="g-abbr">Abrégé</label><input id="g-abbr" data-g-abbr class="field" type="text" placeholder="Ex. DLT"></div>
+      <div><label class="lbl" for="g-min">Ministère</label>
+        <select id="g-min" data-g-min class="field cursor-pointer">
+          <option value="" disabled selected>Choisir ministère</option>
+          <option>Ministère de la Santé (MS)</option>
+          <option>Ministère de l'Intérieur et de la Sécurité (MIS)</option>
+          <option>Ministre de l'Emploi et de la Protection Sociale (MEPS)</option>
+          <option>Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-3" data-g-activer-row>
+        <label class="switch"><input type="checkbox" data-g-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="gc-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-gc-form-btn>Ajouter le gestionnaire</span></button>
+    </div>
+  </div>
+
+  <!-- Confirmation : suppression -->
+  <div class="umodal umodal-sm" data-modal="confirm-delete" hidden role="dialog" aria-modal="true" aria-labelledby="cdel-title">
+    <h2 id="cdel-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-danger" data-confirm="delete"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>Supprimer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : activation -->
+  <div class="umodal umodal-sm" data-modal="confirm-activate" hidden role="dialog" aria-modal="true" aria-labelledby="cact-title">
+    <h2 id="cact-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous activer ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="activate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg>Activer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : désactivation -->
+  <div class="umodal umodal-sm" data-modal="confirm-deactivate" hidden role="dialog" aria-modal="true" aria-labelledby="cdea-title">
+    <h2 id="cdea-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous desactiver ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-warning" data-confirm="deactivate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg>Desactiver</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var XBOX   = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>';
+  var ZAP_OFF = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/>';
+  var ZAP_ON  = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>';
+  function toggleBtnHtml(isOn){
+    return '<button class="act-btn act-toggle'+(isOn?' is-on':'')+'" data-toggle aria-label="'+(isOn?'Activer':'Désactiver')+'"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+(isOn?ZAP_ON:ZAP_OFF)+'</svg></button>';
+  }
+  function actionsCell(isOn){
+    return '<div class="flex items-center justify-end gap-1.5"><button class="act-btn act-edit" aria-label="Modifier">'+PENCIL+'</button><button class="act-btn act-del" aria-label="Supprimer">'+XBOX+'</button>'+toggleBtnHtml(isOn)+'</div>';
+  }
+
+  /* ---- Onglets ---- */
+  document.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function(t){ var on=(t===tab); t.classList.toggle('active',on); t.setAttribute('aria-selected', on?'true':'false'); });
+      document.querySelectorAll('[data-panel]').forEach(function(p){ p.hidden = (p.getAttribute('data-panel') !== name); });
+    });
+  });
+
+  /* ---- Navigation ---- */
+  function clearActive(){ document.querySelectorAll('.nav-item[href], .subitem').forEach(function(n){ n.classList.remove('active'); n.removeAttribute('aria-current'); }); }
+  document.querySelectorAll('.nav-item[href], .subitem').forEach(function(item){
+    item.addEventListener('click', function(e){ e.preventDefault(); clearActive(); item.classList.add('active'); item.setAttribute('aria-current','page'); });
+  });
+  document.querySelectorAll('[data-admin-toggle]').forEach(function(btn){
+    var group = btn.closest('[data-admin-group]'); var sub = group.querySelector('.submenu');
+    btn.addEventListener('click', function(){ var open = sub.classList.toggle('open'); group.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', open?'true':'false'); });
+  });
+
+  /* ---- Dropdowns header ---- */
+  var dropdowns = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+  function closeAllDropdowns(except){ dropdowns.forEach(function(dd){ if (dd===except) return; dd.classList.remove('is-open'); var p=dd.querySelector('[data-dd-panel]'); var t=dd.querySelector('[data-dd-trigger]'); if(p)p.classList.remove('open'); if(t)t.setAttribute('aria-expanded','false'); }); }
+  dropdowns.forEach(function(dd){
+    var trigger=dd.querySelector('[data-dd-trigger]'); var panel=dd.querySelector('[data-dd-panel]'); var valueEl=dd.querySelector('[data-dd-value]');
+    trigger.addEventListener('click', function(e){ e.stopPropagation(); var willOpen=!panel.classList.contains('open'); closeAllDropdowns(dd); panel.classList.toggle('open',willOpen); dd.classList.toggle('is-open',willOpen); trigger.setAttribute('aria-expanded',willOpen?'true':'false'); });
+    panel.querySelectorAll('[data-dd-option]').forEach(function(opt){ opt.addEventListener('click', function(){ panel.querySelectorAll('[data-dd-option]').forEach(function(o){ o.classList.remove('selected'); o.setAttribute('aria-selected','false'); }); opt.classList.add('selected'); opt.setAttribute('aria-selected','true'); if(valueEl)valueEl.textContent=opt.textContent.trim(); closeAllDropdowns(); }); });
+  });
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+
+  /* ===== Modales ===== */
+  var modalRoot = document.querySelector('[data-modal-root]');
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+  var currentRow=null, currentToggleBtn=null, currentEntity='min', formMode='add';
+
+  function openModal(name){ Object.keys(modals).forEach(function(k){ modals[k].hidden = (k!==name); }); modalRoot.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(){ modalRoot.classList.remove('open'); Object.keys(modals).forEach(function(k){ modals[k].hidden=true; }); document.body.style.overflow=''; currentRow=null; currentToggleBtn=null; }
+  modalRoot.querySelectorAll('[data-modal-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  function phraseOf(entity){ return entity==='min' ? 'ce ministère' : 'ce gestionnaire de crédit'; }
+  function nameOf(row){ return row.getAttribute('data-name') || ''; }
+
+  /* ---- Bascule de statut ---- */
+  function setStatus(row, btn, actif){
+    var pill = row.querySelector('[data-status]'); var svg = btn ? btn.querySelector('svg') : null;
+    if (actif){ pill.classList.remove('status-off'); pill.classList.add('status-actif'); pill.textContent='Actif';
+      if(btn){ btn.classList.remove('is-on'); btn.setAttribute('aria-label','Désactiver'); if(svg) svg.innerHTML=ZAP_OFF; } }
+    else { pill.classList.remove('status-actif'); pill.classList.add('status-off'); pill.textContent='Desactivé';
+      if(btn){ btn.classList.add('is-on'); btn.setAttribute('aria-label','Activer'); if(svg) svg.innerHTML=ZAP_ON; } }
+  }
+
+  /* ---- Confirmations (suppression / activation / désactivation) ---- */
+  function openConfirm(entity, kind, row){
+    currentEntity=entity; currentRow=row; currentToggleBtn=row.querySelector('[data-toggle]');
+    var verb = kind==='delete'?'supprimer':(kind==='activate'?'activer':'desactiver');
+    var modalName = 'confirm-'+kind; var modal = modals[modalName];
+    modal.querySelector('[data-confirm-title]').textContent = 'Voulez-vous '+verb+' '+phraseOf(entity)+' ?';
+    modal.querySelector('[data-confirm-name]').textContent = nameOf(row);
+    openModal(modalName);
+  }
+
+  /* ===== Formulaire Ministère ===== */
+  var minTitle=modalRoot.querySelector('[data-min-form-title]'), minBtn=modalRoot.querySelector('[data-min-form-btn]');
+  var mNom=modalRoot.querySelector('[data-m-nom]'), mAbbr=modalRoot.querySelector('[data-m-abbr]'), mActiverRow=modalRoot.querySelector('[data-m-activer-row]'), mActiver=modalRoot.querySelector('[data-m-activer]');
+  function openMinForm(mode, row){
+    formMode=mode; currentEntity='min'; currentRow=row||null;
+    minTitle.textContent = mode==='edit' ? 'Mettre à jour un ministère' : 'Ajouter un ministère';
+    minBtn.textContent   = mode==='edit' ? 'Mettre à jour le ministère' : 'Ajouter le ministère';
+    mActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){ mNom.value=nameOf(row); mAbbr.value=row.getAttribute('data-abbr')||''; }
+    else { mNom.value=''; mAbbr.value=''; mActiver.checked=true; }
+    openModal('min-form');
+  }
+  function submitMinForm(){
+    var nom=mNom.value.trim()||'Nouveau ministère'; var abbr=mAbbr.value.trim();
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr);
+      currentRow.querySelector('td .font-bold').textContent=nom;
+      currentRow.querySelector('td .text-muted').textContent=abbr;
+    } else {
+      var isOn = !mActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="status '+(isOn?'status-off':'status-actif')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=nom; tr.querySelector('.text-muted').textContent=abbr;
+      document.querySelector('[data-list="min"]').appendChild(tr); wireRow(tr,'min');
+    }
+  }
+
+  /* ===== Formulaire Gestionnaire ===== */
+  var gcTitle=modalRoot.querySelector('[data-gc-form-title]'), gcBtn=modalRoot.querySelector('[data-gc-form-btn]');
+  var gNom=modalRoot.querySelector('[data-g-nom]'), gAbbr=modalRoot.querySelector('[data-g-abbr]'), gMin=modalRoot.querySelector('[data-g-min]'), gActiverRow=modalRoot.querySelector('[data-g-activer-row]'), gActiver=modalRoot.querySelector('[data-g-activer]');
+  function openGcForm(mode, row){
+    formMode=mode; currentEntity='gc'; currentRow=row||null;
+    gcTitle.textContent = mode==='edit' ? 'Mettre à jour un gestionnaire de crédit' : 'Ajouter un gestionnaire de crédit';
+    gcBtn.textContent   = mode==='edit' ? 'Mettre à jour le gestionnaire' : 'Ajouter le gestionnaire';
+    gActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){
+      gNom.value=nameOf(row); gAbbr.value=row.getAttribute('data-abbr')||'';
+      var min=row.getAttribute('data-min')||''; gMin.value = min; if (gMin.value!==min) gMin.selectedIndex=0;
+    } else { gNom.value=''; gAbbr.value=''; gMin.selectedIndex=0; gActiver.checked=true; }
+    openModal('gc-form');
+  }
+  function submitGcForm(){
+    var nom=gNom.value.trim()||'Nouveau gestionnaire'; var abbr=gAbbr.value.trim(); var min=(gMin.value||'Ministère non défini');
+    var line1 = nom + (abbr ? ' - '+abbr : '');
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr); currentRow.setAttribute('data-min',min);
+      currentRow.querySelector('td .font-bold').textContent=line1;
+      currentRow.querySelector('td .text-muted').textContent=min;
+    } else {
+      var isOn = !gActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr); tr.setAttribute('data-min',min);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="status '+(isOn?'status-off':'status-actif')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=line1; tr.querySelector('.text-muted').textContent=min;
+      document.querySelector('[data-list="gc"]').appendChild(tr); wireRow(tr,'gc');
+    }
+  }
+
+  function openForm(entity, mode, row){ if (entity==='min') openMinForm(mode,row); else openGcForm(mode,row); }
+
+  /* ---- Câblage des lignes ---- */
+  function wireRow(row, entity){
+    row.querySelector('.act-edit').addEventListener('click', function(){ openForm(entity,'edit',row); });
+    row.querySelector('.act-del').addEventListener('click', function(){ openConfirm(entity,'delete',row); });
+    var tog = row.querySelector('[data-toggle]');
+    if (tog) tog.addEventListener('click', function(){
+      var actif = row.querySelector('[data-status]').classList.contains('status-actif');
+      openConfirm(entity, actif ? 'deactivate' : 'activate', row);
+    });
+  }
+  document.querySelectorAll('[data-list="min"] tr').forEach(function(r){ wireRow(r,'min'); });
+  document.querySelectorAll('[data-list="gc"] tr').forEach(function(r){ wireRow(r,'gc'); });
+
+  document.querySelector('[data-add="min"]').addEventListener('click', function(){ openMinForm('add'); });
+  document.querySelector('[data-add="gc"]').addEventListener('click', function(){ openGcForm('add'); });
+
+  /* ---- Recherche ---- */
+  document.querySelectorAll('[data-search]').forEach(function(input){
+    var list = document.querySelector('[data-list="'+input.getAttribute('data-search')+'"]');
+    input.addEventListener('input', function(){
+      var q = input.value.trim().toLowerCase();
+      list.querySelectorAll('tr').forEach(function(tr){
+        var txt = (tr.textContent || '').toLowerCase();
+        tr.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ---- Confirmations ---- */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type==='delete' && currentRow) currentRow.remove();
+      else if (type==='activate' && currentRow) setStatus(currentRow, currentToggleBtn, true);
+      else if (type==='deactivate' && currentRow) setStatus(currentRow, currentToggleBtn, false);
+      else if (type==='min-form') submitMinForm();
+      else if (type==='gc-form') submitGcForm();
+      closeModal();
+    });
+  });
+</script>
+</body>
+</html>

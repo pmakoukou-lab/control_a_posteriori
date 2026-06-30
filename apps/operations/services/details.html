@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajout d'une opération AOO — CONTRÔLE a posteriori</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- Tailwind v4 (dev, zéro build). Le design system est inline ci-dessous car le
+     runtime @tailwindcss/browser ne compile QUE les blocs <style type="text/tailwindcss">.
+     Prod : npx @tailwindcss/cli -i templates/app.css -o static/css/app.build.css -->
+<style type="text/tailwindcss">
+/* ====================================================================
+   CONTRÔLE a posteriori — Design system (Tailwind CSS v4)
+   Une seule définition par composant (dédoublonné par sélecteur).
+   ==================================================================== */
+
+@theme {
+  --font-sans:    "Inter", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* === Amber — primaire (= brand, pour la rétrocompat des pages existantes) === */
+  --color-amber-50:#FFF8EC;  --color-brand-50:#FFF8EC;
+  --color-amber-100:#FDECCB; --color-brand-100:#FDECCB;
+  --color-amber-200:#FAD78F; --color-brand-200:#FAD78F;
+  --color-amber-300:#F8C25A; --color-brand-300:#F8C25A;
+  --color-amber-400:#F6AE34; --color-brand-400:#F6AE34;
+  --color-amber-500:#F4A01C; --color-brand-500:#F4A01C;
+  --color-amber-600:#DE860F; --color-brand-600:#DE860F;
+  --color-amber-700:#B96A0D; --color-brand-700:#B96A0D;
+  --color-amber-800:#92520C; --color-brand-800:#92520C;
+  --color-amber-900:#6F3E0A; --color-brand-900:#6F3E0A;
+
+  /* === Green — secondaire / accent === */
+  --color-green-50:#ECF8F0;  --color-green-100:#D2EFDC; --color-green-200:#A7E0BC;
+  --color-green-300:#72CD96; --color-green-400:#46B673; --color-green-500:#2FA15C;
+  --color-green-600:#258C4D; --color-green-700:#1F7340; --color-green-800:#195A33; --color-green-900:#134327;
+
+  /* === Neutres gris purs === */
+  --color-n0:#FFFFFF;  --color-n25:#FAFAFA; --color-n50:#F4F4F4; --color-n100:#EBEBEB;
+  --color-n200:#E0E0E0; --color-n300:#CFCFCF; --color-n400:#ABABAB; --color-n500:#8A8A8A;
+  --color-n600:#6A6A6A; --color-n700:#4C4C4C; --color-n800:#313131; --color-n900:#1E1E1E;
+
+  /* === Texte / surfaces / bordures (alias sémantiques) === */
+  --color-ink:#1E1E1E;
+  --color-ink-2:#4C4C4C;
+  --color-muted:#6A6A6A;
+  --color-muted-2:#8A8A8A;
+  --color-surface:#FFFFFF;
+  --color-surface-2:#FAFAFA;
+  --color-surface-3:#EBEBEB;
+
+  /* === Sémantiques === */
+  --color-info-50:#E7F0FE;  --color-info-500:#2D7FF0; --color-info-700:#1C5FC9;
+  --color-success-50:#ECF8F0; --color-success-500:#2FA15C; --color-success-700:#195A33;
+  --color-warning-50:#FDEBD9; --color-warning-500:#E0670B; --color-warning-600:#C9590A; --color-warning-700:#9A4A08;
+  --color-danger-50:#FBE9E6;  --color-danger-100:#FBE9E6; --color-danger-200:#F1C9C3;
+  --color-danger-500:#D64535; --color-danger-600:#B83A2B; --color-danger-700:#9B2C20;
+
+  /* === Ombres chaudes === */
+  --shadow-glow:0 8px 24px rgba(244,160,28,.30);
+}
+
+@layer base {
+  :root{
+    --bg:#EEEEEE;
+    --border-weak:#E7E7E7; --border-strong:#C9C9C9;
+    --ring:0 0 0 3px rgba(244,160,28,.32); --ring-accent:0 0 0 3px rgba(47,161,92,.30);
+    --sh-xs:0 1px 2px rgba(46,38,28,.05); --sh-sm:0 2px 8px rgba(46,38,28,.06);
+    --sh-md:0 8px 20px rgba(46,38,28,.08); --sh-lg:0 16px 40px rgba(46,38,28,.12);
+    --r-xs:4px; --r-sm:8px; --r-full:9999px;
+    /* Sémantiques (texte / fond) */
+    --info:#2D7FF0; --info-bg:#E7F0FE; --info-fg:#1C5FC9;
+    --success:#2FA15C; --success-bg:#ECF8F0; --success-fg:#195A33;
+    --warning:#E0670B; --warning-bg:#FDEBD9; --warning-fg:#9A4A08;
+    --danger:#D64535; --danger-strong:#B83A2B; --danger-bg:#FBE9E6; --danger-fg:#9B2C20;
+    /* Modes de passation — codage par famille */
+    --mode-aoo:#B96A0D; --mode-aoo-bg:#FDECCB;
+    --mode-aor:#B96A0D; --mode-aor-bg:#FDECCB;
+    --mode-gag:#6B4E86; --mode-gag-bg:#EFEAF6;
+    --mode-pso:#4C4C4C; --mode-pso-bg:#EBEBEB;
+    --mode-psc:#4C4C4C; --mode-psc-bg:#EBEBEB;
+    --mode-psl:#4C4C4C; --mode-psl-bg:#EBEBEB;
+    --mode-psd:#4C4C4C; --mode-psd-bg:#EBEBEB;
+  }
+  body {
+    @apply font-sans text-ink antialiased;
+    min-height:100dvh;
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(rgba(15,15,15,.03) 1px,transparent 1.6px),
+      radial-gradient(820px 560px at 8% -6%,rgba(244,160,28,.06),transparent 60%),
+      radial-gradient(720px 620px at 95% 2%,rgba(47,161,92,.045),transparent 58%),
+      radial-gradient(900px 760px at 80% 110%,rgba(15,15,15,.028),transparent 62%);
+    background-size:22px 22px,100% 100%,100% 100%,100% 100%;
+    background-attachment:fixed;
+  }
+}
+
+@layer components {
+  .card{
+        background:var(--color-surface);
+        border:1px solid var(--border-weak);
+        box-shadow:var(--sh-sm);
+        border-radius:var(--r-sm);
+      }
+  .nav-item{
+        @apply flex items-center gap-3 px-3.5 rounded-lg font-semibold text-sm text-ink-2 transition cursor-pointer;
+        min-height:44px; border:1px solid transparent;
+      }
+  .nav-item:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(3px); }
+  .nav-item:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .nav-item.active{
+        @apply text-white;
+        background:linear-gradient(135deg,var(--color-amber-700),var(--color-amber-800));
+        border-color:var(--color-n25); transform:none;
+      }
+  .btn-primary{
+        @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-white font-bold font-heading text-sm cursor-pointer transition;
+        background:var(--color-amber-800); border:1px solid transparent; min-height:40px;
+      }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-primary:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Accent vert — CTA focal « Ajouter » (les 10 %) */
+  .btn-accent{
+        @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-white font-bold font-heading text-sm cursor-pointer transition;
+        background:linear-gradient(135deg,var(--color-green-600),var(--color-green-700)); border:1px solid transparent; min-height:40px;
+      }
+  .btn-accent:hover{ filter:brightness(1.05); }
+  .btn-accent:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Bouton « appliquer » : repos tonal amber-100, survol amber plein */
+  .btn-apply{
+        @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg font-bold font-heading text-sm cursor-pointer; min-height:40px;
+        background:var(--color-amber-100); color:var(--color-amber-800); border:1px solid transparent;
+      }
+  .btn-apply:hover{ background:var(--color-amber-700); color:#fff; }
+  .btn-apply:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .btn-soft{
+        @apply inline-flex items-center justify-center gap-2 px-4 rounded-lg bg-white font-bold font-heading text-sm text-ink-2 transition cursor-pointer; min-height:40px;
+        border:1px solid var(--border-strong);
+      }
+  .btn-soft:hover{ @apply bg-brand-50 text-brand-700; border-color:var(--color-brand-300); }
+  .btn-soft:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .btn-secondary{
+        @apply inline-flex items-center justify-center gap-2 px-4 rounded-lg text-sm font-bold font-heading cursor-pointer transition; min-height:40px;
+        color:var(--color-brand-700); border:1px solid var(--color-brand-300); background:var(--color-brand-50);
+      }
+  .btn-secondary:hover{ background:var(--color-brand-100); border-color:var(--color-brand-500); }
+  .btn-secondary:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Champs */
+      .lbl{ @apply inline text-[14px] font-medium text-muted; }
+      .lbl::after{ content:'\00a0:'; }
+  .field{
+        @apply w-full px-4 rounded-lg border text-sm text-ink transition;
+        height:40px; background:var(--color-n25); border-color:var(--border-weak);
+      }
+  .field:focus{ @apply outline-none; border-color:var(--color-amber-500); box-shadow:var(--ring); background:#fff; }
+  textarea.field{ @apply resize-y py-2.5; height:auto; min-height:92px; }
+  select.field{
+        -webkit-appearance:none; appearance:none; cursor:pointer; padding-right:40px;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%238A8A8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-position:right 12px center; background-size:18px;
+      }
+  /* Interrupteur (toggle) */
+      .switch{ position:relative; display:inline-block; width:42px; height:24px; cursor:pointer; flex:none; }
+  .switch input{ position:absolute; inset:0; opacity:0; margin:0; cursor:pointer; }
+  .switch .track{ display:block; width:100%; height:100%; border-radius:9999px; background:var(--color-n300); transition:background .15s ease; }
+  .switch input:checked ~ .track{ background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600)); }
+  .switch .thumb{ position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:9999px; background:#fff; box-shadow:var(--sh-xs); transition:transform .15s ease; pointer-events:none; }
+  .switch input:checked ~ .thumb{ transform:translateX(18px); }
+  .switch input:focus-visible ~ .track{ outline:none; box-shadow:var(--ring); }
+  /* Toggle inline avec libellé */
+      .toggle-row{ @apply inline-flex items-center; gap:6px; }
+  .toggle-row > span:first-child{ @apply text-[14px] font-medium text-muted; }
+  .toggle-row > span:first-child::after{ content:'\00a0:'; }
+  /* Compteur (stepper) */
+      .stepper{ @apply inline-flex items-center gap-1 rounded-lg border px-1.5 py-1; background:var(--color-surface); border-color:var(--border-weak); }
+  .stepper button{ @apply grid place-items-center w-6 h-6 rounded-lg text-muted-2 transition cursor-pointer; }
+  .stepper button:hover{ @apply bg-brand-50 text-brand-600; }
+  .stepper span{ @apply min-w-6 text-center text-sm font-semibold text-ink-2 tabular-nums; }
+  /* Section accordéon */
+      /* Section (lecture seule) : nom en haut (fond --n50) + items en dessous (fond --n25) */
+      .acc{ border:1px solid transparent; border-radius:var(--r-xs); overflow:hidden; background:var(--color-surface); }
+  .acc-head{ @apply w-full flex items-center gap-2 text-left font-heading font-bold text-[14px] text-ink-2 cursor-pointer px-4 py-3; background:var(--color-n100); transition:background .15s ease, color .15s ease; }
+  .acc:hover .acc-head{ background:var(--color-brand-100); color:var(--color-brand-700); }
+  .acc:hover .acc-body{ background:var(--color-brand-50); }
+  .acc-chev{ @apply w-4 h-4 text-muted-2 shrink-0; transition:transform .15s ease; }
+  .acc.open .acc-chev{ transform:rotate(90deg); }
+  .acc:hover .acc-chev{ color:var(--color-brand-700); }
+  /* Section sélectionnée (cliquée) : filet orange en haut + en-tête tonal (V4), coins droits */
+  /* États harmonisés (2 zones) : survol = en-tête brand-100 + corps brand-50 (sans bord) · sélection = idem + filet brand-500 */
+  .acc.selected{ border-top-width:3px; border-color:var(--color-brand-500) var(--color-brand-100) var(--color-brand-100); border-radius:0; }
+  .acc.selected .acc-head{ background:var(--color-brand-100); color:var(--color-brand-700); box-shadow:none; }
+  .acc.selected .acc-body{ background:var(--color-brand-50); }
+  .acc.selected .acc-chev{ color:var(--color-brand-700); }
+  .acc-body{ @apply flex flex-col gap-1 px-4 py-3; background:var(--color-n25); transition:background .15s ease; }
+  .acc:not(.open) .acc-body{ display:none; }
+  /* Survol des items (même teinte que les sections) */
+  .acc-body > div:not(.lot-acc), .lot-acc-body > div{ margin:0 -8px; padding:5px 8px; border-radius:7px; transition:background .12s ease; }
+  /* Accordéon de lot (sous-section d'allotissement) — vertical, plus compact */
+  .lot-acc{ @apply flex flex-col gap-2; }
+  .lot-acc-head{ @apply flex items-center gap-2 w-full text-left font-heading font-semibold text-sm text-ink cursor-pointer; }
+  .lot-acc-chev{ @apply w-4 h-4 text-muted-2 shrink-0; transition:transform .15s ease; }
+  .lot-acc.open .lot-acc-chev{ transform:rotate(90deg); }
+  .lot-acc-body{ @apply flex flex-col gap-1; }
+  .lot-acc:not(.open) .lot-acc-body{ display:none; }
+  /* Date picker maison (branding) */
+  .dp-pop{ position:absolute; z-index:50; top:calc(100% + 6px); left:0; width:312px; max-width:calc(100vw - 2.5rem); padding:.85rem 1rem; border-radius:var(--r-sm); border:1px solid var(--border-weak); background:#fff; box-shadow:var(--sh-lg); }
+  .dp-head{ @apply flex items-center justify-between mb-2; }
+  .dp-title{ @apply font-heading font-bold text-sm text-ink capitalize; }
+  .dp-nav{ @apply grid place-items-center w-7 h-7 rounded-lg text-muted-2 cursor-pointer; transition:.15s; }
+  .dp-nav:hover{ @apply bg-brand-50 text-brand-600; }
+  .dp-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .dp-dow{ @apply grid place-items-center text-[11px] font-semibold text-muted-2 py-1; }
+  .dp-day{ @apply grid place-items-center rounded-lg text-[13px] text-ink-2 cursor-pointer; aspect-ratio:1; transition:.12s; }
+  .dp-day:hover{ @apply bg-brand-50 text-brand-600; }
+  .dp-day.today{ box-shadow:inset 0 0 0 1px var(--color-brand-300); }
+  .dp-day.sel{ @apply bg-amber-700 text-white font-bold; }
+  /* Sous-menu sidebar */
+      .submenu{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .22s ease; }
+  .submenu.open{ grid-template-rows:1fr; }
+  .submenu > div{ overflow:hidden; }
+  .subitem{ @apply flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-lg font-medium text-sm text-muted transition cursor-pointer; }
+  .subitem:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(2px); }
+  .subitem.active{
+        @apply text-white font-semibold;
+        background:linear-gradient(135deg,var(--color-amber-700),var(--color-amber-800));
+        border:1px solid var(--color-n25); transform:none;
+      }
+  /* Listes déroulantes du header */
+      .dd-panel{
+        @apply absolute left-0 z-30 mt-2 min-w-[132px] p-1.5 rounded-lg flex flex-col gap-0.5;
+        background:var(--color-surface);
+        border:1px solid var(--border-weak); box-shadow:var(--sh-md);
+        opacity:0; transform:translateY(-6px) scale(.97); transform-origin:top; pointer-events:none;
+        transition:opacity .15s ease, transform .15s ease;
+      }
+  .dd-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+  .dd-option{ @apply px-4 py-2 rounded-lg text-sm font-bold text-ink-2 text-center cursor-pointer transition tabular-nums; }
+  .dd-option:hover{ @apply bg-brand-50 text-brand-600; }
+  .dd-option.selected{ @apply bg-brand-50 text-brand-700; }
+  /* Menu « Ajouter une opération » : accent vert (les 10 %) — cf. .dd-add de test_2 */
+  .dd-add .dd-option:hover{ @apply bg-green-50; }
+  .dd-add .dd-option:hover span{ color:var(--color-green-700); }
+  /* En-tête : déclencheurs Gestion / Session (.ddt) + bouton utilisateur (.usr-btn) — hover amber-50 (cf. test_2) */
+  .hdr-trigger{ @apply flex items-center gap-2 h-10 px-2.5 rounded-lg text-ink-2 transition cursor-pointer; border:1px solid var(--border-weak); background:var(--color-surface); }
+  /* champ de formulaire : pas de hover sur le déclencheur (le survol agit sur les items .dd-option) */
+  .hdr-trigger:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Barre de contexte sticky (remplace l'ancien header) */
+  .ctxbar{ background:var(--color-n100); box-shadow:var(--sh-sm); }
+  .ctx-icon{ @apply inline-flex items-center justify-center w-[38px] h-[38px] rounded-lg transition cursor-pointer shrink-0; color:var(--color-ink-2); border:1px solid var(--border-strong); background:var(--color-surface); }
+  .ctx-icon:hover{ background:var(--color-brand-50); color:var(--color-brand-700); border-color:var(--color-brand-300); }
+  .ctx-icon:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .ctx-close{ @apply inline-flex items-center justify-center w-[38px] h-[38px] rounded-lg transition cursor-pointer shrink-0; color:var(--color-brand-600); border:1px solid var(--color-brand-600); background:var(--color-brand-50); }
+  .ctx-close:hover{ background:var(--color-brand-100); color:var(--color-brand-700); border-color:var(--color-brand-700); }
+  .ctx-close:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .mode-badge{ @apply inline-flex items-center font-bold; font-size:11px; letter-spacing:.02em; padding:2px 8px; border-radius:999px; background:var(--color-brand-100); color:var(--color-brand-800); }
+  .acc{ scroll-margin-top:7rem; }
+  .usr-btn{ @apply flex items-center gap-2.5 pl-3 pr-2.5 py-1 rounded-lg transition cursor-pointer; border:1px solid transparent; }
+  .usr-btn:hover{ @apply bg-brand-50; }
+  .usr-btn:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Items du menu utilisateur (cf. .dd-opt.ico de test_2) */
+  .usr-opt{ @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-semibold text-ink-2 transition cursor-pointer; text-decoration:none; }
+  .usr-opt > svg{ @apply w-4 h-4 shrink-0; color:var(--color-muted); }
+  .usr-opt:hover{ @apply bg-brand-50 text-brand-700; }
+  .usr-opt:hover > svg{ color:var(--color-brand-700); }
+  .usr-opt:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .usr-opt-danger{ color:var(--danger-fg); }
+  .usr-opt-danger > svg{ color:var(--danger); }
+  .usr-opt-danger:hover{ background:var(--danger-bg); color:var(--danger); }
+  .usr-opt-danger:hover > svg{ color:var(--danger); }
+  .btn-danger{ @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-white font-bold font-heading text-sm cursor-pointer transition; min-height:40px; background:var(--color-danger-600); border:1px solid transparent; }
+  .btn-danger:hover{ filter:brightness(.94); }
+  .btn-danger:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .btn-warning{ @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-white font-bold font-heading text-sm cursor-pointer transition; min-height:40px; background:var(--color-warning-500); border:1px solid transparent; }
+  .btn-warning:hover{ filter:brightness(.96); }
+  .field::placeholder{ color:var(--color-muted-2); }
+  /* Recherche */
+      .search{ @apply relative; }
+  .search input{ @apply w-full pl-11 pr-4 rounded-lg text-sm text-ink transition; height:40px; background:var(--color-n25); border:1px solid var(--border-strong); }
+  .search input::placeholder{ color:var(--color-muted-2); }
+  .search input:focus{ @apply outline-none bg-white; border-color:var(--color-amber-500); box-shadow:var(--ring); }
+  .search > svg{ @apply w-[18px] h-[18px] text-muted-2 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none; }
+  /* Table */
+  /* Tableau — style repris de la page collecte (en-têtes majuscules, sans fond) */
+  .utbl{ @apply w-full border-collapse text-sm; }
+  .utbl thead th{ @apply text-left font-heading text-xs font-bold tracking-wide text-muted-2 uppercase px-4 pb-4 pt-2; }
+  .utbl tbody tr{ @apply transition; }
+  .utbl tbody tr:hover{ background:var(--color-amber-50); }
+  .utbl tbody td{ @apply px-4 py-4 text-sm text-ink-2 align-top; border-top:1px solid rgba(0,0,0,.06); }
+  .status{ @apply inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold; }
+  .status-actif{ @apply bg-green-50 text-green-700; }
+  .status-off{ @apply bg-danger-50 text-danger-700; }
+  .act-btn{ @apply relative inline-grid place-items-center w-9 h-9 rounded-lg text-muted-2 transition cursor-pointer; }
+  .act-edit:hover{ @apply bg-green-50 text-green-700; }
+  .act-del:hover{ background:var(--color-danger-50); color:var(--color-danger-500); }
+  .act-view:hover{ @apply text-ink; background:var(--color-n100); }
+  .act-btn:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .act-toggle{ @apply text-muted-2; }
+  .act-toggle:hover{ @apply bg-brand-50 text-brand-600; }
+  .act-toggle.is-on{ @apply text-muted-2; }
+  .act-toggle.is-on:hover{ @apply bg-brand-50 text-brand-600; }
+  /* Info-bulle des icônes d'action : libellé = aria-label du bouton. */
+  .act-btn[aria-label]::after{
+        content:attr(aria-label);
+        position:absolute; bottom:calc(100% + 7px); left:50%;
+        transform:translateX(-50%) translateY(3px);
+        background:var(--color-ink); color:#fff; font-size:11px; font-weight:600;
+        line-height:1; white-space:nowrap; padding:5px 8px; border-radius:6px;
+        box-shadow:0 4px 12px var(--border-weak); pointer-events:none;
+        opacity:0; transition:opacity .15s ease, transform .15s ease; z-index:60;
+      }
+  .act-btn[aria-label]::before{
+        content:""; position:absolute; bottom:calc(100% + 2px); left:50%;
+        transform:translateX(-50%); border:5px solid transparent;
+        border-top-color:var(--color-ink); pointer-events:none;
+        opacity:0; transition:opacity .15s ease; z-index:60;
+      }
+  .act-btn[aria-label]:hover::after, .act-btn[aria-label]:focus-visible::after{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .act-btn[aria-label]:hover::before, .act-btn[aria-label]:focus-visible::before{ opacity:1; }
+  /* Pagination */
+      .page-num{ @apply min-w-9 h-9 px-3 inline-grid place-items-center rounded-lg text-sm font-bold text-ink-2 transition cursor-pointer tabular-nums; }
+  .page-num:hover{ @apply bg-brand-50 text-brand-600; }
+  .page-num.active{ @apply text-white; background:var(--color-amber-700); box-shadow:none; }
+  .page-num.active:hover{ @apply text-white; background:var(--color-amber-700); box-shadow:none; }
+  .page-num:focus-visible,.page-link:focus-visible{ outline:none; box-shadow:var(--ring); }
+  .page-num:disabled{ @apply text-muted-2; background:none; cursor:default; }
+  .page-num:disabled:hover{ @apply text-muted-2; background:none; }
+  .page-num.ell{ @apply text-muted-2; cursor:default; }
+  .page-num.ell:hover{ @apply text-muted-2; background:none; }
+  .page-num > svg{ @apply w-4 h-4; }
+  .page-link{ @apply inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-semibold text-ink-2 transition cursor-pointer; }
+  .page-link:hover{ @apply bg-brand-50 text-brand-600; }
+  .page-link:disabled{ @apply text-muted-2; background:none; cursor:default; }
+  /* Onglets */
+      .tab{ @apply px-4 py-2 rounded-full font-heading font-semibold text-sm text-muted transition cursor-pointer; }
+  .tab:hover{ @apply text-ink-2; background:var(--border-weak); }
+  .tab.active{ @apply text-ink; background:var(--border-weak); }
+  /* Modales */
+      .modal-root{ @apply fixed inset-0 z-[100] hidden; }
+  .modal-root.open{ @apply grid place-items-center p-4; }
+  .modal-back{ @apply absolute inset-0; background:rgba(8,20,13,.45); }
+  .umodal{ @apply relative w-full rounded-lg p-6 sm:p-7 flex flex-col max-h-[90dvh] overflow-y-auto; background:var(--color-surface); border:1px solid var(--border-weak); box-shadow:var(--sh-lg); animation:pop .26s cubic-bezier(.2,.8,.2,1); }
+  .umodal[hidden]{ display:none; }
+  .umodal-sm{ max-width:31rem; }
+  .umodal-lg{ max-width:38rem; }
+  .btn-outline-sm{
+        @apply inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-semibold text-ink-2 bg-white transition cursor-pointer;
+        border:1px solid var(--border-weak);
+      }
+  .btn-outline-sm:hover{ @apply bg-brand-50 text-brand-700; border-color:var(--color-brand-200); }
+  /* Boîte icône (+/−) */
+      .icon-box{ @apply inline-grid place-items-center w-8 h-8 rounded-lg text-ink-2 bg-white transition cursor-pointer shrink-0; border:1px solid var(--border-weak); }
+  .icon-box:hover{ @apply bg-brand-50 text-brand-600; border-color:var(--color-brand-200); }
+  /* En-tête de liste */
+      .list-head{ @apply flex items-center justify-between px-4 pt-2 pb-4 font-heading font-bold text-xs tracking-wide text-muted-2 uppercase; }
+  /* Accordéon exercice */
+      .exo{ border-top:1px solid var(--border-weak); }
+  .exo:first-child{ border-top:none; }
+  .exo-head{ @apply w-full flex items-center justify-between gap-3 px-5 py-3.5 cursor-pointer transition; background:rgba(255, 255, 255, 0.4); }
+  .exo.open .exo-head{ background:rgba(255, 255, 255, 0.9); }
+  .exo-chev{ @apply w-4 h-4 text-ink-2 shrink-0; transition:transform .15s ease; }
+  .exo.open .exo-chev{ transform:rotate(90deg); }
+  .exo-title{ @apply font-heading font-bold text-sm text-ink; }
+  .exo-count{ @apply text-sm text-muted-2 font-semibold tabular-nums; }
+  .exo-body{ display:none; padding-left:3rem; }
+  .exo.open .exo-body{ display:block; }
+  /* Item session */
+      .sess-item{ @apply flex items-center justify-between gap-3 px-5 py-3 text-sm; border-top:1px solid var(--border-weak); }
+  .sess-txt{ @apply font-semibold text-ink-2; }
+  /* Bloc session (dans la modale) */
+      .sess-block{ @apply rounded-lg border overflow-hidden; border-color:var(--border-weak); }
+  .sess-head{ @apply w-full flex items-center justify-between gap-3 px-4 py-2.5 cursor-pointer; background:var(--border-weak); }
+  .sess-block-body{ @apply flex flex-col gap-4 p-4; }
+  .sess-block.collapsed .sess-block-body{ display:none; }
+  .pill-role{ @apply inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700; }
+  /* ===== Pills de rôle (sélectionnables) ===== */
+      .role-pill{ @apply inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold text-ink-2 bg-white cursor-pointer transition; border:1px solid var(--border-weak); }
+  .role-pill:hover{ @apply bg-brand-50 text-brand-700; border-color:var(--color-brand-200); }
+  .role-pill.selected{ @apply text-white; border-color:transparent; background:linear-gradient(135deg,var(--color-amber-700),var(--color-amber-800)); }
+  /* ===== Détails en lecture seule ===== */
+      .det{ @apply rounded-lg overflow-hidden border; border-color:var(--border-weak); }
+  .det-head{
+        @apply w-full flex items-center gap-2 px-4 py-2.5 text-left font-heading font-semibold text-sm text-ink cursor-pointer;
+        background:rgba(0,0,0,.04);
+      }
+  .det-head:hover{ background:rgba(0,0,0,.08); }
+  .det-chev{ @apply w-4 h-4 text-ink-2 shrink-0; transition:transform .15s ease; }
+  .det:not(.open) .det-chev{ transform:rotate(-90deg); }
+  .det-body{ @apply flex flex-col gap-2 px-4 py-3 pl-10; background:var(--color-n25); }
+  .det:not(.open) .det-body{ display:none; }
+  .det-row{ @apply text-sm leading-relaxed; }
+  .det-lbl{ @apply font-bold text-ink-2; }
+  .det-val{ @apply text-muted; }
+  /* Tableau (attributaires) */
+      .det-table{ @apply w-full border-collapse text-sm min-w-[560px]; }
+  .det-table th{ @apply text-left font-heading font-bold text-xs tracking-wide text-muted-2 uppercase px-4 pb-4 pt-2; }
+  .det-table td{ @apply px-4 py-2 text-muted; }
+  /* Liste déroulante avec recherche (combobox) */
+      .combo-panel{
+        @apply absolute left-0 top-full z-40 mt-1 w-full p-1.5 rounded-lg flex flex-col;
+        background:#fff; border:1px solid var(--border-weak); box-shadow:var(--sh-md);
+        opacity:0; transform:translateY(-4px); transform-origin:top; pointer-events:none;
+        transition:opacity .15s ease, transform .15s ease;
+      }
+  .combo-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+  .combo-panel.up{ @apply top-auto bottom-full mb-1 mt-0; }
+  .combo-option.on,.combo-option.selected{ @apply bg-brand-50 text-brand-700 font-semibold; }
+  .combo-search{ @apply relative px-1 pb-1.5; }
+  .combo-search > svg{ @apply absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2 pointer-events-none; }
+  .combo-search input{
+        @apply w-full pl-9 pr-3 py-2 rounded-lg border text-sm text-ink-2;
+        background:#fff; border-color:var(--border-weak);
+      }
+  .combo-search input:focus{ @apply outline-none; border-color:var(--color-brand-400); box-shadow:0 0 0 3px var(--color-brand-100); }
+  .combo-list{ @apply flex flex-col gap-0.5 overflow-y-auto; max-height:168px; }
+  .combo-option{ @apply px-3 py-2 rounded-lg text-sm text-ink-2 text-left cursor-pointer transition; }
+  .combo-option:hover{ @apply bg-brand-50 text-brand-700; }
+  .combo-empty{ @apply px-3 py-2 text-sm text-muted-2 text-center; }
+  /* Pilules de statut */
+      .pill{ @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading; }
+  .pill::before{ content:""; @apply w-[7px] h-[7px] rounded-full bg-current; }
+  /* ===== Pills de mode de passation (codage par famille du DS) ===== */
+  .modepill{ @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold font-heading whitespace-nowrap; background:var(--color-surface-3); color:var(--color-ink-2); }
+  .modepill::before{ content:""; @apply w-[6px] h-[6px] rounded-full bg-current; }
+  .mode-aoo{ background:var(--mode-aoo-bg); color:var(--mode-aoo); }
+  .mode-aor{ background:var(--mode-aor-bg); color:var(--mode-aor); }
+  .mode-gag{ background:var(--mode-gag-bg); color:var(--mode-gag); }
+  .mode-pso{ background:var(--mode-pso-bg); color:var(--mode-pso); }
+  .mode-psc{ background:var(--mode-psc-bg); color:var(--mode-psc); }
+  .mode-psl{ background:var(--mode-psl-bg); color:var(--mode-psl); }
+  .mode-psd{ background:var(--mode-psd-bg); color:var(--mode-psd); }
+  /* ===== Badges de statut sémantiques ===== */
+  .badge{ @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold; }
+  .badge::before{ content:""; @apply w-[6px] h-[6px] rounded-full bg-current; }
+  .b-success{ color:var(--success-fg); background:var(--success-bg); }
+  .b-warning{ color:var(--warning-fg); background:var(--warning-bg); }
+  .b-danger{ color:var(--danger-fg); background:var(--danger-bg); }
+  .b-info{ color:var(--info-fg); background:var(--info-bg); }
+  .subitem:focus-visible{ outline:none; box-shadow:var(--ring); }
+  /* Modale de confirmation de suppression */
+      .modal{ position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .modal.open{ opacity:1; pointer-events:auto; }
+  .modal-backdrop{ position:absolute; inset:0; background:var(--border-weak); }
+  .modal-card{
+        position:relative; width:100%; max-width:440px; background:#fff;
+        border:1px solid var(--border-weak); border-radius:var(--r-sm); box-shadow:var(--sh-lg);
+        padding:1.75rem 1.75rem 1.5rem; transform:scale(.95) translateY(10px);
+        transition:transform .22s cubic-bezier(.2,.8,.2,1);
+      }
+  .modal.open .modal-card{ transform:none; }
+  /* Bouton secondaire en danger (contour rouge) */
+      .btn-danger-secondary{
+        @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-sm font-bold font-heading cursor-pointer transition; min-height:40px;
+        color:var(--color-danger-700); border:1px solid var(--color-danger-200); background:var(--color-danger-50);
+      }
+  .btn-danger-secondary:hover{ background:var(--color-danger-100); border-color:var(--color-danger-500); }
+  .btn-danger-secondary:focus-visible{ outline:3px solid var(--color-danger-200); outline-offset:2px; }
+  /* Barre de progression */
+      .bar{ @apply h-2.5 rounded-full overflow-hidden; background:var(--border-weak); }
+  .bar > i{ @apply block h-full rounded-full; transition:width .8s cubic-bezier(.2,.8,.2,1); }
+  /* Messages flash : bordure + bouton fermer + barre de temporisation */
+  .flash{ @apply relative flex items-start gap-2.5 px-4 py-3 rounded-lg text-sm overflow-hidden; border:1px solid transparent; }
+  .flash-ok{ background:var(--color-brand-50); color:var(--color-brand-700); border-color:var(--color-brand-200); }
+  .flash-edit{ background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+  .flash-del{ background:var(--color-danger-50); color:var(--color-danger-700); border-color:var(--color-danger-200); }
+  .flash-err{ background:var(--color-danger-50); color:var(--color-danger-700); border-color:var(--color-danger-200); }
+  .flash-close{ @apply ml-auto shrink-0 grid place-items-center w-6 h-6 -mr-1 rounded-md cursor-pointer transition; opacity:.6; color:inherit; }
+  .flash-close:hover{ opacity:1; background:rgba(0,0,0,.07); }
+  .flash-bar{ @apply absolute left-0 bottom-0 h-[3px]; background:currentColor; opacity:.35; width:100%; }
+  .flash.closing{ opacity:0; transform:translateY(-6px); transition:opacity .3s ease, transform .3s ease; }
+  @keyframes flashbar{ from{ width:100%; } to{ width:0%; } }
+  /* Tailles de CTA (cf. .btn-sm / .btn-lg du fichier de référence) — placées en
+     fin de couche pour primer sur le padding/taille des recettes .btn-* ci-dessus. */
+  .btn-sm{ @apply text-[13px] px-4; min-height:40px; }
+  .btn-lg{ @apply text-[15px] px-6; min-height:50px; }
+}
+
+/* ===== Décor & animations (CSS standard) ===== */
+.bg-decor{display:none}
+.bg-decor::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.14), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.12), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.12), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.14), transparent 60%),
+      linear-gradient(160deg,#f2f5f4,#edf1ef);
+  }
+.bg-decor::after{
+    content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+.chev{transition:transform .15s ease}
+/* Rotation scopée au déclencheur ouvert lui-même : évite que la flèche d'un
+   dropdown réagisse à l'ouverture d'un autre dropdown imbriqué (ex. CTA dans la
+   barre d'outils qui contient aussi le filtre). */
+[data-dd-trigger][aria-expanded="true"] .chev{transform:rotate(180deg)}
+.reveal{
+    opacity:0;transform:translateY(14px);
+    animation-name:rise;animation-duration:.6s;
+    animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards;
+  }
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+    .reveal{animation:none;opacity:1;transform:none}
+    *{transition:none!important}
+  }
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .reveal{animation:none;opacity:1;transform:none} .umodal{animation:none} *{transition:none!important} }
+.combo-chev{transition:transform .15s ease}
+[data-combo-trigger][aria-expanded="true"] .combo-chev{transform:rotate(180deg)}
+/* animation longue (sans animation-delay) pour laisser les utilitaires [animation-delay:…] de Tailwind s'appliquer */
+  .reveal{
+    opacity:0;transform:translateY(14px);
+    animation-name:rise;animation-duration:.6s;
+    animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards;
+  }
+
+  /* ===== Affichage lecture seule (page de détails) ===== */
+  .dval{ display:inline; margin-left:6px; font-size:14px; line-height:1.5; color:var(--color-ink); }
+  .dval-multi{ white-space:pre-wrap; word-break:break-word; }
+  .dval-empty{ color:var(--color-muted-2); }
+  .dbadge{ display:inline-flex; align-items:center; font-weight:600; font-size:13px; padding:2px 10px; border-radius:999px; }
+  .dbadge-yes{ background:var(--color-green-50); color:var(--color-green-700); }
+  .dbadge-no{ background:var(--danger-bg); color:var(--danger-strong); }
+  .hdr-static{ display:inline-flex; align-items:center; gap:6px; height:40px; padding:0 12px; border-radius:8px; font-size:14px; color:var(--color-ink-2); border:1px solid var(--border-weak); background:var(--color-surface); white-space:nowrap; }
+  .hdr-static b{ font-weight:700; color:var(--color-brand-700); font-variant-numeric:tabular-nums; }
+</style>
+</head>
+
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+
+  <!-- Barre latérale commune. État actif piloté par la variable `active`
+     (passée par le contrôleur : 'dashboard' | 'collecte' | 'rapport'
+      | 'comptes' | 'exercice' | 'gestionnaire'). -->
+<aside class="card reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-0 self-start" aria-label="Navigation principale">
+  <div class="px-2 pt-2">
+    <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-brand-600">IT</span></div>
+    <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+  </div>
+  <nav class="flex flex-col gap-2" aria-label="Menu">
+    <span class="font-heading text-[11px] font-bold tracking-[1.5px] text-muted-2 uppercase px-2 pb-1">Pilotage</span>
+
+    <a class="nav-item " href="/operations/dashboard">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>Dashboard</a>
+
+    <a class="nav-item active" href="/operations/collecte">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Collecte</a>
+
+    <a class="nav-item " href="/operations/rapport">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>Rapport</a>
+
+    <div data-admin-group class="">
+      <button class="nav-item w-full justify-between" data-admin-toggle aria-expanded="false" aria-controls="admin-sub">
+        <span class="flex items-center gap-4">
+          <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>
+          Administration
+        </span>
+        <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="submenu " id="admin-sub" role="region" aria-label="Sous-menu Administration">
+        <div>
+          <div class="flex flex-col gap-1 pt-1 pl-4">
+            <a class="subitem " href="/operations/comptes"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.8 18.5a5.2 5.2 0 0 1 10.4 0"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18.4 18.5a5.2 5.2 0 0 0-2.9-4.6"/></svg>comptes</a>
+            <a class="subitem " href="/operations/gestion"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h4"/></svg>gestion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</aside>
+
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+    <!-- Barre de contexte sticky (.ctxbar) : titre + Gestion/Session + repli global,
+     puis rappel (objet · mode · n°BOMP). Dropdowns pilotés par static/js/app.js. -->
+
+<div id="op-detail">
+<input type="hidden" name="mode_passation" value="AOO">
+<input type="hidden" name="ministere" data-min-hidden value="">
+<input type="hidden" name="autorite_contractante" data-gc-hidden value="">
+<input type="hidden" name="nature_operation" data-nature-hidden value="">
+<input type="hidden" name="save_again" data-save-again value="">
+
+<main class="card reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <div class="ctxbar sticky top-0 z-30 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-lg overflow-hidden" style="border-bottom:1px solid var(--border-weak)">
+        <!-- Ligne 1 : (gauche) titre · Gestion · Session   ·   (droite) [Modifier + plier/déplier] · séparateur · fermer -->
+        <div class="flex items-center justify-between gap-4 flex-wrap px-6 sm:px-8 pt-3 sm:pt-4 pb-2.5">
+          <!-- Bloc gauche : titre + contexte (Gestion / Session) -->
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <h1 class="font-heading font-bold text-base sm:text-lg tracking-tight text-ink whitespace-nowrap">Détails de l'opération</h1>
+            <span class="hdr-static">Gestion <b>2026</b></span>
+            <span class="hdr-static">Session <b>4</b></span>
+          </div>
+          <!-- Bloc droite : [Modifier (CTA focal) + plier/déplier] · séparateur · fermer -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="/operations/aoo/operation/edit" class="btn-accent" title="Modifier l'opération">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              Modifier
+            </a>
+            <button type="button" class="ctx-icon" data-toggle-all aria-expanded="true" title="Tout replier" aria-label="Tout replier">
+              <svg data-toggle-all-icon class="w-[18px] h-[18px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+            </button>
+            <span class="w-px h-6 bg-[var(--border-strong)] mx-1 shrink-0" aria-hidden="true"></span>
+            <a class="ctx-close" href="/operations/collecte" title="Retour à la collecte" aria-label="Retour à la collecte">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
+            </a>
+          </div>
+        </div>
+        <!-- Ligne 2 : rappel (lecture seule) objet · mode · n°BOMP -->
+        <div class="flex items-center gap-2 flex-wrap px-6 sm:px-8 py-2 text-[13px]" style="background:var(--color-n25)">
+          <span class="text-muted truncate max-w-[480px]" data-hdr-objet>Travaux de construction et de bitumage de la route Bouaké–Katiola</span>
+          <span class="text-muted-2">·</span>
+          <span class="mode-badge">AOO</span>
+          <span class="text-muted-2">·</span>
+          <span class="text-muted tabular-nums" data-hdr-bomp>N°BOMP 4521</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Contrôleur</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Nom de l'Agent DGMP</label><div class="dval">KOUASSI Yao Marcel</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Date de contrôle</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Date de contrôle</label><div class="dval">14/03/2026</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Ministère</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Ministère</label>
+                <div class="dval">Ministère de l'Équipement et de l'Entretien Routier</div>
+              </div>
+
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Autorité Contractante</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Autorité Contractante</label>
+                <div class="dval">Direction Générale des Infrastructures Routières</div>
+              </div>
+
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Personne Ressource</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Interlocuteur chez l'AC</label><div class="dval">DIABATÉ Aïcha</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Imputation Budgétaire</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Imputation Budgétaire</label><div class="dval">243-2026-512-2151</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant de la dotation / du Crédit</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Montant</label><div class="dval">1 250 000 000</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Numéro de l&#x27;opération</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">N° BOMP</label><div class="dval">4521</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Objet de l&#x27;Opération</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Objet de l'Opération</label><div class="dval">Travaux de construction et de bitumage de la route Bouaké–Katiola</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Nature de l&#x27;opération</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Travaux/ Fournitures/ Prestations</label>
+                <div class="dval">Travaux</div>
+              </div>
+
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+        <!-- Opérations : nombre de lots + objet de chaque lot (placée sous « Nature de l'opération ») -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opérations</button>
+          <div class="acc-body">
+            <div><label class="lbl">Nombre de lots</label>
+              <div class="dval">1</div>
+              <p id="nombre-lots-help" class="text-[12px] text-muted-2 mt-1">Au-delà d'un lot, saisissez l'objet de chaque lot ci-dessous (sinon l'objet de l'opération est repris).</p>
+            </div>
+            <div class="flex flex-col gap-4" data-lot-objets></div>
+            <template data-lot-objet-tpl><div data-lot-objet><label class="lbl">Objet du Lot __LOTNO__</label><div class="dval dval-empty">—</div></div></template>
+          </div>
+        </section>
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Préparation du PPM</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Existence du PPM</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+              
+
+              <div class="toggle-row"><span>Respect du PPM</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant de l&#x27;estimation</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div><label class="lbl">Montant</label><div class="dval dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opération réservée aux PME</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen et validation du DAO par la DGMP</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Date de reception du DAO à la DGMP</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Date de validation du DAO</label><div class="dval dval-empty">—</div></div>
+
+              </div>
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de l&#x27;offre comprise entre 1 et 1,5%</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div style="display:flex;flex-direction:column;gap:1.25rem"><div><label class="lbl">Garantie minimale 1%</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Garantie maximale 1,5%</label><div class="dval dval-empty">—</div></div></div><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication de l&#x27;avis d&#x27;appel d&#x27;offres (AAO)</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Date de publication</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Numéro de l'Avis d'Appel d'Offres</label><div class="dval dval-empty">—</div></div>
+
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Durée de publication</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Nombre de reports</label><div class="dval dval-empty">—</div></div>
+
+              </div>
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Conformité</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence des mandats des répresentants des membres de la COJO</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal d’ouverture des plis</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Existence du PV</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du rapport d’analyse des offres</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Existence du rapport</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO au jugement</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Conformité</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal de jugement des offres</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Existence du PV</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Délai imparti à la COJO pour ses travaux</button>
+          <div class="acc-body">
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Date d'ouverture</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Date de jugement</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Date de dernier jugement en cas de recours</label><div class="dval dval-empty">—</div></div>
+
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Nombre de jugements</label><div class="dval dval-empty">—</div></div>
+
+
+              <div class="toggle-row"><span>Respect du délai</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              </div>
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Attributaire(s)</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div style="display:flex;flex-direction:column;gap:1.25rem"><div><label class="lbl">Raison sociale</label><div class="dval dval-empty">—</div></div><div><label class="lbl">NCC attributaire</label><div class="dval dval-empty">—</div></div></div><input type="hidden" name="lot_0_attributaire_lot" value="1"><div><label class="lbl">Objet</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Montant</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Affichage des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div class="toggle-row"><span>Respect du délai d'affichage</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+              <div><label class="lbl">Date de publication</label><div class="dval dval-empty">—</div></div>
+
+
+              <div><label class="lbl">Support de publication</label><div class="dval dval-empty">—</div></div>
+
+              </div>
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification des résultats aux attributaires</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Information des soumissionnaires non retenus</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Respect du délai de recours éventuels</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence d’un marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Production des pièces fiscales et sociales par l’attributaire</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Exigence du quitus de non redevance dans le DAO</button>
+          <div class="acc-body">
+              
+
+              <div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Conformité du contenu du marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l’attributaire</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date de signature</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l’Autorité Contractante</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date de signature</label><div class="dval">Direction Générale des Infrastructures Routières</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature par l’autorité compétente</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Numérotation du marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Numéro du marché</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant du marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div><label class="lbl">Montant</label><div class="dval dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Ecart entre montant estimatif et montant attribué</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div><label class="lbl">Montant</label><div class="dval dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Situation d&#x27;exécution de la ligne budgetaire après passation</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Montant disponible</label><div class="dval dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen préalable à l&#x27;approbation</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div style="display:flex;flex-direction:column;gap:1.25rem"><div><label class="lbl">Date de soumission du projet de marché à la DGMP</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Date de vaidation du projet de marché par la DGMP</label><div class="dval dval-empty">—</div></div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Approbation du marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date d'approbation</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Autorité approbatrice ou organe approbateur compétent</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l’approbation du marché au titulaire</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date de reception par le titulaire</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de bonne exécution</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Enregistrement du marché</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date d'enregistrement</label><div class="dval dval-empty">—</div></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Transmission de 02 exemplaires du contrat à la DGMP</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l’ordre de service de démarrage</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Constat</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Date sur l'accusé de reception</label><div class="dval dval-empty">—</div></div><div class="toggle-row"><span>Conforme</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence et exhaustivité de l’archivage des documents</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <div class="lot-acc open" data-lot-block><button type="button" class="lot-acc-head" data-acc-toggle><svg class="lot-acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Lot 1<span data-objet-label="0" class="font-normal text-muted-2"></span></button><div class="lot-acc-body"><div class="toggle-row"><span>Existence</span><span class="dbadge dbadge-yes">Oui</span></div><div class="toggle-row"><span>Exhaustivité</span><span class="dbadge dbadge-yes">Oui</span></div><div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div></div></div>
+          </div>
+        </section>
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Temps total pour la conduite de l’opération</button>
+          <div class="acc-body">
+              
+
+              <div><label class="lbl">Nombre de jours</label><div class="dval dval-empty">—</div></div>
+
+              
+              
+
+              <div><label class="lbl">Observations</label><div class="dval dval-multi dval-empty">—</div></div>
+
+              
+          </div>
+        </section>
+
+
+        <div class="hidden" data-lot-markers></div>
+        <script>window.__ALLOT_STATE__ = {};</script>
+
+      </div>
+    </main>
+
+</div>
+
+    <!-- Pied de page commun -->
+<footer class="card reveal [animation-delay:260ms] flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+  <span class="text-[13px] text-muted font-medium"><b class="text-ink-2 font-bold">DGMP</b> © 2026. Tous droits réservés.</span>
+  <nav class="flex gap-6" aria-label="Liens du pied de page">
+    <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Mentions légales</a>
+    <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Confidentialité</a>
+    <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Support</a>
+  </nav>
+</footer>
+  </div>
+</div>
+
+<script>
+// Page de détails — interactions minimales (lecture seule)
+document.addEventListener('click', function (e) {
+  var head = e.target.closest('[data-acc-toggle]');
+  if (!head) return;
+  var box = head.closest('.acc, .lot-acc');
+  if (box) box.classList.toggle('open');
+  // Mise en valeur de la section cliquée (sélection unique)
+  if (head.classList.contains('acc-head')) {
+    var sel = head.closest('.acc');
+    document.querySelectorAll('.acc.selected').forEach(function (s) { s.classList.remove('selected'); });
+    if (sel) sel.classList.add('selected');
+  }
+});
+(function () {
+  var btn = document.querySelector('[data-toggle-all]');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var accs = Array.prototype.slice.call(document.querySelectorAll('.acc'));
+    var anyOpen = accs.some(function (a) { return a.classList.contains('open'); });
+    accs.forEach(function (a) { a.classList.toggle('open', !anyOpen); });
+    btn.setAttribute('aria-expanded', String(!anyOpen));
+    var lbl = !anyOpen ? 'Tout replier' : 'Tout déplier';
+    btn.setAttribute('title', lbl); btn.setAttribute('aria-label', lbl);
+    var ic = btn.querySelector('[data-toggle-all-icon]');
+    if (ic) ic.style.transform = !anyOpen ? '' : 'rotate(180deg)';
+  });
+})();
+</script>
+
+</body>
+</html>

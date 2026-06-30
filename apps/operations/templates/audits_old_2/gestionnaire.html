@@ -1,0 +1,371 @@
+[[extend 'audits/layout.html']]
+
+[[block title]]Gestionnaire de crédits — AUDIT a posteriori[[end]]
+
+[[block main]]
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6">
+
+      <!-- Onglets -->
+      <div class="flex items-center gap-1 border-b border-black/[.08]" role="tablist" aria-label="Vues">
+        <button class="tab" data-tab="min" role="tab" aria-selected="false" aria-controls="panel-min">Ministère</button>
+        <button class="tab active" data-tab="gc" role="tab" aria-selected="true" aria-controls="panel-gc">Gestionnaire de credit</button>
+      </div>
+
+      <!-- ============ PANNEAU : MINISTÈRE ============ -->
+      <div id="panel-min" data-panel="min" role="tabpanel" hidden class="flex flex-col gap-5">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des ministères</h1>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un ministère" data-search="min" aria-label="Rechercher un ministère">
+          </div>
+          <button class="btn-primary" data-add="min">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un ministère
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+          <table class="utbl">
+            <thead><tr><th>Ministères</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="min">
+              <tr data-name="Ministre de l'Emploi et de la Protection Sociale" data-abbr="MEPS">
+                <td><div class="font-bold text-ink">Ministre de l'Emploi et de la Protection Sociale</div><div class="text-muted text-[13px]">MEPS</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Ministre de l'Intérieur et de la Sécurité" data-abbr="MIS">
+                <td><div class="font-bold text-ink">Ministre de l'Intérieur et de la Sécurité</div><div class="text-muted text-[13px]">MIS</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora" data-abbr="MAEIAD">
+                <td><div class="font-bold text-ink">Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora</div><div class="text-muted text-[13px]">MAEIAD</div></td>
+                <td><span class="status status-off" data-status>Desactivé</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle is-on" data-toggle aria-label="Activer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+          <button class="page-link" disabled><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</button>
+          <button class="page-num active" aria-current="page">1</button>
+          <button class="page-num">2</button><button class="page-num">3</button>
+          <span class="px-1.5 text-muted-2 select-none">…</span>
+          <button class="page-num">67</button><button class="page-num">68</button>
+          <button class="page-link">Next<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </nav>
+      </div>
+
+      <!-- ============ PANNEAU : GESTIONNAIRE DE CREDIT ============ -->
+      <div id="panel-gc" data-panel="gc" role="tabpanel" class="flex flex-col gap-5">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des gestionnaires de crédits</h1>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un gestionnaire" data-search="gc" aria-label="Rechercher un gestionnaire de crédit">
+          </div>
+          <button class="btn-primary" data-add="gc">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un gestionnaire de credit
+          </button>
+        </div>
+
+        <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+          <table class="utbl">
+            <thead><tr><th>Gestionnaires de crédits</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="gc">
+              <tr data-name="Direction de la lutte contre le tabac" data-abbr="DLT" data-min="Ministère de la Santé (MS)">
+                <td><div class="font-bold text-ink">Direction de la lutte contre le tabac - DLT</div><div class="text-muted text-[13px]">Ministère de la Santé (MS)</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Direction de la lutte contre la criminalité" data-abbr="DLC" data-min="Ministère de l'Intérieur et de la Sécurité (MIS)">
+                <td><div class="font-bold text-ink">Direction de la lutte contre la criminalité - DLC</div><div class="text-muted text-[13px]">Ministère de l'Intérieur et de la Sécurité (MIS)</div></td>
+                <td><span class="status status-actif" data-status>Actif</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div></td>
+              </tr>
+              <tr data-name="Direction de l'Intégration Africaine et de la Diaspora" data-abbr="DIAD" data-min="Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)">
+                <td><div class="font-bold text-ink">Direction de l'Intégration Africaine et de la Diaspora - DIAD</div><div class="text-muted text-[13px]">Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)</div></td>
+                <td><span class="status status-off" data-status>Desactivé</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle is-on" data-toggle aria-label="Activer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <nav class="flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+          <button class="page-link" disabled><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Previous</button>
+          <button class="page-num active" aria-current="page">1</button>
+          <button class="page-num">2</button><button class="page-num">3</button>
+          <span class="px-1.5 text-muted-2 select-none">…</span>
+          <button class="page-num">67</button><button class="page-num">68</button>
+          <button class="page-link">Next<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+        </nav>
+      </div>
+    </main>
+
+<!-- ============ MODALES ============ -->
+<div class="modal-root" data-modal-root>
+  <div class="modal-back" data-modal-close></div>
+
+  <!-- Ministère : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="min-form" hidden role="dialog" aria-modal="true" aria-labelledby="min-form-title">
+    <h2 id="min-form-title" data-min-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un ministère</h2>
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="m-nom">Nom</label><textarea id="m-nom" data-m-nom class="field resize-y min-h-[80px]" rows="2" placeholder="Ex. Garde des Sceaux, Ministre de la justice et des droits de l'Homme"></textarea></div>
+      <div><label class="lbl" for="m-abbr">Abrégé</label><input id="m-abbr" data-m-abbr class="field" type="text" placeholder="Ex. MJDH"></div>
+      <div class="flex items-center gap-3" data-m-activer-row>
+        <label class="switch"><input type="checkbox" data-m-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="min-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-min-form-btn>Ajouter le ministère</span></button>
+    </div>
+  </div>
+
+  <!-- Gestionnaire : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="gc-form" hidden role="dialog" aria-modal="true" aria-labelledby="gc-form-title">
+    <h2 id="gc-form-title" data-gc-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un gestionnaire de crédit</h2>
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="g-nom">Nom</label><textarea id="g-nom" data-g-nom class="field resize-y min-h-[80px]" rows="2" placeholder="Ex. Direction de la lutte contre le tabac"></textarea></div>
+      <div><label class="lbl" for="g-abbr">Abrégé</label><input id="g-abbr" data-g-abbr class="field" type="text" placeholder="Ex. DLT"></div>
+      <div><label class="lbl" for="g-min">Ministère</label>
+        <select id="g-min" data-g-min class="field cursor-pointer">
+          <option value="" disabled selected>Choisir ministère</option>
+          <option>Ministère de la Santé (MS)</option>
+          <option>Ministère de l'Intérieur et de la Sécurité (MIS)</option>
+          <option>Ministre de l'Emploi et de la Protection Sociale (MEPS)</option>
+          <option>Ministre d'État, Ministre des Affaires Étrangères, de l'Intégration Africaine et de la Diaspora (MEMAEIAD)</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-3" data-g-activer-row>
+        <label class="switch"><input type="checkbox" data-g-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="gc-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-gc-form-btn>Ajouter le gestionnaire</span></button>
+    </div>
+  </div>
+
+  <!-- Confirmation : suppression -->
+  <div class="umodal umodal-sm" data-modal="confirm-delete" hidden role="dialog" aria-modal="true" aria-labelledby="cdel-title">
+    <h2 id="cdel-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-danger" data-confirm="delete"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>Supprimer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : activation -->
+  <div class="umodal umodal-sm" data-modal="confirm-activate" hidden role="dialog" aria-modal="true" aria-labelledby="cact-title">
+    <h2 id="cact-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous activer ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-primary" data-confirm="activate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg>Activer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : désactivation -->
+  <div class="umodal umodal-sm" data-modal="confirm-deactivate" hidden role="dialog" aria-modal="true" aria-labelledby="cdea-title">
+    <h2 id="cdea-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous desactiver ?</h2>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-warning" data-confirm="deactivate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg>Desactiver</button>
+    </div>
+  </div>
+</div>
+[[end]]
+
+[[block js]]
+<script>
+var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var XBOX   = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>';
+  var ZAP_OFF = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/>';
+  var ZAP_ON  = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>';
+  function toggleBtnHtml(isOn){
+    return '<button class="act-btn act-toggle'+(isOn?' is-on':'')+'" data-toggle aria-label="'+(isOn?'Activer':'Désactiver')+'"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+(isOn?ZAP_ON:ZAP_OFF)+'</svg></button>';
+  }
+  function actionsCell(isOn){
+    return '<div class="flex items-center justify-end gap-1.5"><button class="act-btn act-edit" aria-label="Modifier">'+PENCIL+'</button><button class="act-btn act-del" aria-label="Supprimer">'+XBOX+'</button>'+toggleBtnHtml(isOn)+'</div>';
+  }
+
+  /* ---- Onglets ---- */
+  document.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function(t){ var on=(t===tab); t.classList.toggle('active',on); t.setAttribute('aria-selected', on?'true':'false'); });
+      document.querySelectorAll('[data-panel]').forEach(function(p){ p.hidden = (p.getAttribute('data-panel') !== name); });
+    });
+  });
+
+/* ===== Modales ===== */
+  var modalRoot = document.querySelector('[data-modal-root]');
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+  var currentRow=null, currentToggleBtn=null, currentEntity='min', formMode='add';
+
+  function openModal(name){ Object.keys(modals).forEach(function(k){ modals[k].hidden = (k!==name); }); modalRoot.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(){ modalRoot.classList.remove('open'); Object.keys(modals).forEach(function(k){ modals[k].hidden=true; }); document.body.style.overflow=''; currentRow=null; currentToggleBtn=null; }
+  modalRoot.querySelectorAll('[data-modal-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  function phraseOf(entity){ return entity==='min' ? 'ce ministère' : 'ce gestionnaire de crédit'; }
+  function nameOf(row){ return row.getAttribute('data-name') || ''; }
+
+  /* ---- Bascule de statut ---- */
+  function setStatus(row, btn, actif){
+    var pill = row.querySelector('[data-status]'); var svg = btn ? btn.querySelector('svg') : null;
+    if (actif){ pill.classList.remove('status-off'); pill.classList.add('status-actif'); pill.textContent='Actif';
+      if(btn){ btn.classList.remove('is-on'); btn.setAttribute('aria-label','Désactiver'); if(svg) svg.innerHTML=ZAP_OFF; } }
+    else { pill.classList.remove('status-actif'); pill.classList.add('status-off'); pill.textContent='Desactivé';
+      if(btn){ btn.classList.add('is-on'); btn.setAttribute('aria-label','Activer'); if(svg) svg.innerHTML=ZAP_ON; } }
+  }
+
+  /* ---- Confirmations (suppression / activation / désactivation) ---- */
+  function openConfirm(entity, kind, row){
+    currentEntity=entity; currentRow=row; currentToggleBtn=row.querySelector('[data-toggle]');
+    var verb = kind==='delete'?'supprimer':(kind==='activate'?'activer':'desactiver');
+    var modalName = 'confirm-'+kind; var modal = modals[modalName];
+    modal.querySelector('[data-confirm-title]').textContent = 'Voulez-vous '+verb+' '+phraseOf(entity)+' ?';
+    modal.querySelector('[data-confirm-name]').textContent = nameOf(row);
+    openModal(modalName);
+  }
+
+  /* ===== Formulaire Ministère ===== */
+  var minTitle=modalRoot.querySelector('[data-min-form-title]'), minBtn=modalRoot.querySelector('[data-min-form-btn]');
+  var mNom=modalRoot.querySelector('[data-m-nom]'), mAbbr=modalRoot.querySelector('[data-m-abbr]'), mActiverRow=modalRoot.querySelector('[data-m-activer-row]'), mActiver=modalRoot.querySelector('[data-m-activer]');
+  function openMinForm(mode, row){
+    formMode=mode; currentEntity='min'; currentRow=row||null;
+    minTitle.textContent = mode==='edit' ? 'Mettre à jour un ministère' : 'Ajouter un ministère';
+    minBtn.textContent   = mode==='edit' ? 'Mettre à jour le ministère' : 'Ajouter le ministère';
+    mActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){ mNom.value=nameOf(row); mAbbr.value=row.getAttribute('data-abbr')||''; }
+    else { mNom.value=''; mAbbr.value=''; mActiver.checked=true; }
+    openModal('min-form');
+  }
+  function submitMinForm(){
+    var nom=mNom.value.trim()||'Nouveau ministère'; var abbr=mAbbr.value.trim();
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr);
+      currentRow.querySelector('td .font-bold').textContent=nom;
+      currentRow.querySelector('td .text-muted').textContent=abbr;
+    } else {
+      var isOn = !mActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="status '+(isOn?'status-off':'status-actif')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=nom; tr.querySelector('.text-muted').textContent=abbr;
+      document.querySelector('[data-list="min"]').appendChild(tr); wireRow(tr,'min');
+    }
+  }
+
+  /* ===== Formulaire Gestionnaire ===== */
+  var gcTitle=modalRoot.querySelector('[data-gc-form-title]'), gcBtn=modalRoot.querySelector('[data-gc-form-btn]');
+  var gNom=modalRoot.querySelector('[data-g-nom]'), gAbbr=modalRoot.querySelector('[data-g-abbr]'), gMin=modalRoot.querySelector('[data-g-min]'), gActiverRow=modalRoot.querySelector('[data-g-activer-row]'), gActiver=modalRoot.querySelector('[data-g-activer]');
+  function openGcForm(mode, row){
+    formMode=mode; currentEntity='gc'; currentRow=row||null;
+    gcTitle.textContent = mode==='edit' ? 'Mettre à jour un gestionnaire de crédit' : 'Ajouter un gestionnaire de crédit';
+    gcBtn.textContent   = mode==='edit' ? 'Mettre à jour le gestionnaire' : 'Ajouter le gestionnaire';
+    gActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){
+      gNom.value=nameOf(row); gAbbr.value=row.getAttribute('data-abbr')||'';
+      var min=row.getAttribute('data-min')||''; gMin.value = min; if (gMin.value!==min) gMin.selectedIndex=0;
+    } else { gNom.value=''; gAbbr.value=''; gMin.selectedIndex=0; gActiver.checked=true; }
+    openModal('gc-form');
+  }
+  function submitGcForm(){
+    var nom=gNom.value.trim()||'Nouveau gestionnaire'; var abbr=gAbbr.value.trim(); var min=(gMin.value||'Ministère non défini');
+    var line1 = nom + (abbr ? ' - '+abbr : '');
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr); currentRow.setAttribute('data-min',min);
+      currentRow.querySelector('td .font-bold').textContent=line1;
+      currentRow.querySelector('td .text-muted').textContent=min;
+    } else {
+      var isOn = !gActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr); tr.setAttribute('data-min',min);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="status '+(isOn?'status-off':'status-actif')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=line1; tr.querySelector('.text-muted').textContent=min;
+      document.querySelector('[data-list="gc"]').appendChild(tr); wireRow(tr,'gc');
+    }
+  }
+
+  function openForm(entity, mode, row){ if (entity==='min') openMinForm(mode,row); else openGcForm(mode,row); }
+
+  /* ---- Câblage des lignes ---- */
+  function wireRow(row, entity){
+    row.querySelector('.act-edit').addEventListener('click', function(){ openForm(entity,'edit',row); });
+    row.querySelector('.act-del').addEventListener('click', function(){ openConfirm(entity,'delete',row); });
+    var tog = row.querySelector('[data-toggle]');
+    if (tog) tog.addEventListener('click', function(){
+      var actif = row.querySelector('[data-status]').classList.contains('status-actif');
+      openConfirm(entity, actif ? 'deactivate' : 'activate', row);
+    });
+  }
+  document.querySelectorAll('[data-list="min"] tr').forEach(function(r){ wireRow(r,'min'); });
+  document.querySelectorAll('[data-list="gc"] tr').forEach(function(r){ wireRow(r,'gc'); });
+
+  document.querySelector('[data-add="min"]').addEventListener('click', function(){ openMinForm('add'); });
+  document.querySelector('[data-add="gc"]').addEventListener('click', function(){ openGcForm('add'); });
+
+  /* ---- Recherche ---- */
+  document.querySelectorAll('[data-search]').forEach(function(input){
+    var list = document.querySelector('[data-list="'+input.getAttribute('data-search')+'"]');
+    input.addEventListener('input', function(){
+      var q = input.value.trim().toLowerCase();
+      list.querySelectorAll('tr').forEach(function(tr){
+        var txt = (tr.textContent || '').toLowerCase();
+        tr.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ---- Confirmations ---- */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type==='delete' && currentRow) currentRow.remove();
+      else if (type==='activate' && currentRow) setStatus(currentRow, currentToggleBtn, true);
+      else if (type==='deactivate' && currentRow) setStatus(currentRow, currentToggleBtn, false);
+      else if (type==='min-form') submitMinForm();
+      else if (type==='gc-form') submitGcForm();
+      closeModal();
+    });
+  });
+</script>
+[[end]]

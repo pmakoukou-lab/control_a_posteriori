@@ -1,0 +1,27 @@
+<!-- Barre latérale commune. État actif piloté par la variable `active`
+     (passée par le contrôleur : 'dashboard' | 'collecte' | 'rapport'
+      | 'comptes' | 'exercice' | 'gestionnaire'). -->
+[[ active = globals().get('active', '') ]]
+[[ admin_active = active in ('comptes', 'gestion', 'administration') ]]
+<aside class="glass reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-4 self-start" aria-label="Navigation principale">
+  <div class="px-2 pt-2">
+    <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">CONTR<span class="text-brand-600">OL</span></div>
+    <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+  </div>
+  <nav class="flex flex-col gap-2" aria-label="Menu">
+    <a class="nav-item [[='active' if active=='dashboard' else '']]" href="[[=URL('dashboard')]]">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>Dashboard</a>
+
+    <a class="nav-item [[='active' if active=='collecte' else '']]" href="[[=URL('collecte')]]">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Collecte</a>
+
+    <a class="nav-item [[='active' if active=='rapport' else '']]" href="[[=URL('rapport')]]">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>Rapport</a>
+
+    [[ _acc = globals().get('access') ]]
+    [[ if _acc and _acc.has_role('Administrateur'): ]]
+    <a class="nav-item [[='active' if admin_active else '']]" href="[[=URL('administration')]]">
+      <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>Administration</a>
+    [[ pass ]]
+  </nav>
+</aside>

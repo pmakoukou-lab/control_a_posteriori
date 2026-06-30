@@ -1,0 +1,17 @@
+Réinitialisation du mot de passe — AUDIT a posteriori
+
+Bonjour [[=user_name]],
+
+Vous avez demandé à réinitialiser le mot de passe de votre compte sur la
+plateforme d'audit a posteriori des marchés publics (DGMP).
+
+Ouvrez ce lien pour choisir un nouveau mot de passe :
+[[=link]]
+
+Ce lien expire dans [[=ttl_hours]] heure(s) et ne peut servir qu'une seule fois.
+Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : votre mot
+de passe restera inchangé.
+
+—
+DGMP — Direction Générale des Marchés Publics, République de Côte d'Ivoire.
+E-mail automatique, merci de ne pas répondre à ce message.

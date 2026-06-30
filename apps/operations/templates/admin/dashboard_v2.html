@@ -1,0 +1,1098 @@
+[[extend 'base.html']]
+
+[[block content]]
+
+<style>
+  /* ── Inter font ─────────────────────────────────────── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+
+  /* ── Quixotic tokens ────────────────────────────────── */
+  :root {
+    --brand:        #1A6B3C;
+    --brand-hover:  #155730;
+    --brand-muted:  #A8D9B8;
+    --brand-tint:   #E6F5EC;
+    --success:      #4CAF50;
+    --bg-page:      #F2F2F2;
+    --bg-card:      #FFFFFF;
+    --border:       #EBEBEB;
+    --text-1:       #1A1A1A;
+    --text-2:       #6B7280;
+    --text-3:       #AAAAAA;
+  }
+
+  /* ── Scrollbar discret ──────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-page); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+
+<div class="relative pt-[70px] h-screen" style="background:#F2F2F2;">
+
+  <!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+  <header style="background:#FFFFFF; border-bottom:1px solid #EBEBEB;"
+          class="flex py-1 px-4 sm:px-7 min-h-[70px] tracking-wide z-[110] fixed top-0 w-full items-center">
+    <div class="flex items-center justify-between gap-4 w-full">
+
+      <!-- Logo -->
+      <a href="[[=URL('admin/dashboard')]]">
+        <img src="https://readymadeui.com/readymadeui.svg" alt="logo" class="w-36" />
+      </a>
+
+      <!-- Right side -->
+      <div class="flex items-center gap-3">
+
+        <!-- Notification icons -->
+        <div class="w-9 h-9 flex items-center justify-center rounded-xl relative cursor-pointer"
+             style="background:#E6F5EC;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px]"
+               style="fill:#1A6B3C;" viewBox="0 0 24 24">
+            <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 0 0-2
+                     0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/>
+          </svg>
+          <span class="absolute w-4 h-4 flex items-center justify-center -right-1 -top-1
+                       text-[9px] rounded-full font-semibold text-white"
+                style="background:#1A6B3C; font-size:9px;">3</span>
+        </div>
+
+        <div class="w-9 h-9 flex items-center justify-center rounded-xl relative cursor-pointer"
+             style="background:#E6F5EC;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px]"
+               style="fill:none; stroke:#1A6B3C;" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span class="absolute w-4 h-4 flex items-center justify-center -right-1 -top-1
+                       text-[9px] rounded-full font-semibold text-white"
+                style="background:#1A6B3C;">4</span>
+        </div>
+
+        <!-- Avatar dropdown -->
+        <div class="relative flex shrink-0 group ml-1">
+          <img src="https://readymadeui.com/team-1.webp" alt="avatar"
+               class="w-9 h-9 rounded-full cursor-pointer"
+               style="border:2px solid #EBEBEB;" />
+          <div class="hidden group-hover:block absolute top-10 right-0 w-52 z-50 rounded-2xl p-2"
+               style="background:#FFFFFF; border:1px solid #EBEBEB; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+            <a href="javascript:void(0)"
+               class="flex items-center gap-2 p-2 rounded-lg text-[13px] font-medium cursor-pointer"
+               style="color:#1A1A1A;"
+               onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:none;stroke:#6B7280;"
+                   viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+              </svg>
+              Account
+            </a>
+            <hr style="border-color:#EBEBEB; margin:4px -8px;">
+            <a href="javascript:void(0)"
+               class="flex items-center gap-2 p-2 rounded-lg text-[13px] cursor-pointer"
+               style="color:#6B7280;"
+               onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:none;stroke:#AAAAAA;"
+                   viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════ LAYOUT ═══════════════════════════ -->
+  <div class="flex h-[calc(100vh-70px)]">
+
+    <!-- ──────────── SIDEBAR ──────────── -->
+    <aside class="w-[250px] flex-shrink-0 flex flex-col overflow-y-auto"
+           style="background:#FFFFFF; border-right:1px solid #EBEBEB;">
+
+      <div class="py-5 px-4">
+
+        <p class="text-[11px] font-semibold uppercase tracking-[0.08em] px-3 mb-3"
+           style="color:#1A6B3C;">Administration</p>
+
+        <ul class="space-y-1">
+          <li>
+            <a href="[[=URL('admin/dashboard')]]"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium
+                      transition-colors cursor-pointer"
+               style="color:#1A1A1A; background:#E6F5EC;">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:#1A6B3C;"
+                   viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="[[=URL('admin/dashboard', 'user')]]"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium
+                      transition-colors cursor-pointer"
+               style="color:#6B7280;"
+               onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:#6B7280;"
+                   viewBox="0 0 512 512">
+                <path d="M256 269.507c-42.871 0-77.754-34.882-77.754-77.753C178.246 148.879 213.13 114 256
+                         114s77.754 34.879 77.754 77.754c0 42.871-34.883 77.754-77.754 77.754z
+                         M437.02 74.98C388.668 26.63 324.379 0 256 0S123.332 26.629 74.98 74.98
+                         C26.63 123.332 0 187.621 0 256s26.629 132.668 74.98 181.02
+                         C123.332 485.37 187.621 512 256 512s132.668-26.629 181.02-74.98
+                         C485.37 388.668 512 324.379 512 256s-26.629-132.668-74.98-181.02z
+                         M111.105 429.297c8.454-72.735 70.989-128.89 144.895-128.89 38.96 0
+                         75.598 15.179 103.156 42.734 23.281 23.285 37.965 53.687 41.742 86.152
+                         C361.641 462.172 311.094 482 256 482s-105.637-19.824-144.895-52.703z"/>
+              </svg>
+              Utilisateurs
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium
+                      transition-colors cursor-pointer"
+               style="color:#6B7280;"
+               onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                   style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Permissions
+            </a>
+          </li>
+          <li>
+            <a href="javascript:void(0)"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium
+                      transition-colors cursor-pointer"
+               style="color:#6B7280;"
+               onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                   style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.07 4.93A10 10 0 1 0 4.93 19.07"/>
+                <path d="M19.07 4.93l-7.07 7.07"/>
+              </svg>
+              Paramètres
+            </a>
+          </li>
+        </ul>
+
+        <div class="mt-8 pt-6" style="border-top:1px solid #EBEBEB;">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.08em] px-3 mb-3"
+             style="color:#AAAAAA;">Compte</p>
+          <ul class="space-y-1">
+            <li>
+              <a href="javascript:void(0)"
+                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] cursor-pointer"
+                 style="color:#6B7280;"
+                 onmouseover="this.style.background='#F2F2F2'" onmouseout="this.style.background=''">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                     style="fill:none;stroke:#AAAAAA;" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Déconnexion
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ──────────── MAIN ──────────── -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+
+      <!-- Scrollable content -->
+      <div class="flex-1 overflow-y-auto p-6">
+
+        [[if page == 'index':]]
+        <!-- ─── DASHBOARD HOME ─── -->
+        <div class="mb-6">
+          <h1 class="text-[32px] font-bold" style="color:#1A1A1A;">
+            Welcome Back, <span style="color:#AAAAAA;">Admin</span>
+          </h1>
+        </div>
+
+        [[elif page == 'user':]]
+        <!-- ─── USERS TABLE ─── -->
+        <div id="homeContent" class="tab-content block">
+
+          <!-- Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+
+            <!-- Search -->
+            <div class="flex items-center px-4 py-2 rounded-xl max-w-xs w-full"
+                 style="background:#FFFFFF; border:1px solid #EBEBEB;">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 flex-shrink-0"
+                   style="fill:#AAAAAA;" viewBox="0 0 192.904 192.904">
+                <path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831
+                         C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767
+                         36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079
+                         47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803z
+                         M15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189
+                         66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689
+                         15 81.193z"/>
+              </svg>
+              <input type="text" placeholder="Search users..."
+                     class="w-full outline-none bg-transparent text-[13px]"
+                     style="color:#1A1A1A;"
+                     onfocus="this.closest('div').style.borderColor='#1A6B3C'"
+                     onblur="this.closest('div').style.borderColor='#EBEBEB'" />
+            </div>
+
+            <!-- Add user button -->
+            <a href="[[=URL('admin/dashboard', 'add-user')]]"
+               class="inline-flex items-center text-[13px] font-semibold px-4 py-2 rounded-xl
+                      cursor-pointer transition-all"
+               style="background:#1A1A1A; color:#FFFFFF;"
+               onmouseover="this.style.background='#333333'"
+               onmouseout="this.style.background='#1A1A1A'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2"
+                   style="fill:none;stroke:#FFFFFF;" viewBox="0 0 24 24"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Add user
+            </a>
+          </div>
+
+          <!-- Table card -->
+          <div class="rounded-2xl overflow-hidden" style="background:#FFFFFF; border:1px solid #EBEBEB;">
+            <table class="min-w-full">
+
+              <!-- Head -->
+              <thead>
+                <tr style="background:#F2F2F2; border-bottom:1px solid #EBEBEB;">
+                  <th class="px-5 py-3 text-left">
+                    <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider"
+                         style="color:#AAAAAA;">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:#AAAAAA;"
+                           viewBox="0 0 512 512">
+                        <path d="M256 269.507c-42.871 0-77.754-34.882-77.754-77.753C178.246 148.879
+                                 213.13 114 256 114s77.754 34.879 77.754 77.754c0 42.871-34.883
+                                 77.754-77.754 77.754zM437.02 74.98C388.668 26.63 324.379 0 256
+                                 0S123.332 26.629 74.98 74.98C26.63 123.332 0 187.621 0 256s26.629
+                                 132.668 74.98 181.02C123.332 485.37 187.621 512 256 512s132.668-26.629
+                                 181.02-74.98C485.37 388.668 512 324.379 512 256s-26.629-132.668
+                                 -74.98-181.02zM111.105 429.297c8.454-72.735 70.989-128.89 144.895
+                                 -128.89 38.96 0 75.598 15.179 103.156 42.734 23.281 23.285 37.965
+                                 53.687 41.742 86.152C361.641 462.172 311.094 482 256 482s-105.637
+                                 -19.824-144.895-52.703zM256 32a85.188 85.188 0 1 1-85.188 85.188
+                                 A85.284 85.284 0 0 1 256 32z"/>
+                      </svg>
+                      Users
+                    </div>
+                  </th>
+                  <th class="px-5 py-3 text-left">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider"
+                          style="color:#AAAAAA;">Roles</span>
+                  </th>
+                  <th class="px-5 py-3 text-left">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider"
+                          style="color:#AAAAAA;">Permissions</span>
+                  </th>
+                  <th class="px-5 py-3 text-left">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider"
+                          style="color:#AAAAAA;">Status</span>
+                  </th>
+                  <th class="px-5 py-3 text-center">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider"
+                          style="color:#AAAAAA;">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+
+              <!-- Body -->
+              <tbody>
+
+                <!-- Row active -->
+                <tr style="border-bottom:1px solid #EBEBEB;"
+                    onmouseover="this.style.background='#F2F2F2'"
+                    onmouseout="this.style.background=''">
+                  <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                      <img src="https://readymadeui.com/profile_4.webp"
+                           class="w-9 h-9 rounded-full flex-shrink-0" />
+                      <div>
+                        <p class="text-[13px] font-semibold" style="color:#1A1A1A;">Gladys Jones</p>
+                        <p class="text-[11px]" style="color:#AAAAAA;">gladys@example.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3 text-[13px]" style="color:#6B7280;">admin</td>
+                  <td class="px-5 py-3 text-[13px]" style="color:#6B7280;">Product Owner</td>
+                  <td class="px-5 py-3">
+                    <span class="inline-flex items-center gap-1.5 text-[13px] px-2.5 py-1 rounded-lg"
+                          style="color:#6B7280; border:1px solid #EBEBEB;">
+                      <span class="w-1.5 h-1.5 rounded-full" style="background:#4CAF50;"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td class="px-5 py-3">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </button>
+                      <button class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button class="p-1.5 rounded-lg cursor-pointer transition-colors"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Row inactive -->
+                <tr onmouseover="this.style.background='#F2F2F2'"
+                    onmouseout="this.style.background=''">
+                  <td class="px-5 py-3">
+                    <div class="flex items-center gap-3">
+                      <img src="https://readymadeui.com/profile_4.webp"
+                           class="w-9 h-9 rounded-full flex-shrink-0" />
+                      <div>
+                        <p class="text-[13px] font-semibold" style="color:#1A1A1A;">Marcus Lee</p>
+                        <p class="text-[11px]" style="color:#AAAAAA;">marcus@example.com</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3 text-[13px]" style="color:#6B7280;">manager</td>
+                  <td class="px-5 py-3 text-[13px]" style="color:#6B7280;">Product Owner</td>
+                  <td class="px-5 py-3">
+                    <span class="inline-flex items-center gap-1.5 text-[13px] px-2.5 py-1 rounded-lg"
+                          style="color:#6B7280; border:1px solid #EBEBEB;">
+                      <span class="w-1.5 h-1.5 rounded-full" style="background:#E57373;"></span>
+                      Inactive
+                    </span>
+                  </td>
+                  <td class="px-5 py-3">
+                    <div class="flex items-center justify-center gap-1">
+                      <button class="p-1.5 rounded-lg cursor-pointer"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </button>
+                      <button class="p-1.5 rounded-lg cursor-pointer"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button class="p-1.5 rounded-lg cursor-pointer"
+                              onmouseover="this.style.background='#F2F2F2'"
+                              onmouseout="this.style.background=''">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                          <path d="M10 11v6M14 11v6"/>
+                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex flex-wrap items-center justify-between mt-5 gap-4">
+            <p class="text-[13px]" style="color:#AAAAAA;">Showing 1 to 2 of 100 entries</p>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2">
+                <span class="text-[13px]" style="color:#AAAAAA;">Display</span>
+                <select class="text-[13px] px-2 h-8 rounded-lg outline-none"
+                        style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                        onfocus="this.style.borderColor='#1A6B3C'"
+                        onblur="this.style.borderColor='#EBEBEB'">
+                  <option>10</option><option>20</option><option>50</option><option>100</option>
+                </select>
+              </div>
+              <ul class="flex items-center gap-1">
+                <li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer"
+                    style="background:#F2F2F2; border:1px solid #EBEBEB;"
+                    onmouseover="this.style.background='#EBEBEB'"
+                    onmouseout="this.style.background='#F2F2F2'">
+                  <svg class="w-3.5 h-3.5" style="fill:none;stroke:#AAAAAA;"
+                       viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"/>
+                  </svg>
+                </li>
+                <li class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] font-semibold
+                           cursor-pointer text-white" style="background:#1A1A1A;">1</li>
+                <li class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] cursor-pointer"
+                    style="color:#6B7280; border:1px solid #EBEBEB;"
+                    onmouseover="this.style.borderColor='#1A1A1A'"
+                    onmouseout="this.style.borderColor='#EBEBEB'">2</li>
+                <li class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] cursor-pointer"
+                    style="color:#6B7280; border:1px solid #EBEBEB;"
+                    onmouseover="this.style.borderColor='#1A1A1A'"
+                    onmouseout="this.style.borderColor='#EBEBEB'">3</li>
+                <li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer"
+                    style="background:#F2F2F2; border:1px solid #EBEBEB;"
+                    onmouseover="this.style.background='#EBEBEB'"
+                    onmouseout="this.style.background='#F2F2F2'">
+                  <svg class="w-3.5 h-3.5" style="fill:none;stroke:#AAAAAA;"
+                       viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Groups -->
+        <div id="settingContent" class="tab-content hidden max-w-2xl">
+          <h4 class="text-[15px] font-semibold" style="color:#1A1A1A;">Content Management</h4>
+          <p class="text-[13px] mt-2 leading-relaxed" style="color:#6B7280;">
+            Manage your uploaded documents, posts, and drafts here.
+          </p>
+        </div>
+
+        <!-- Tab: Permissions -->
+        <div id="profileContent" class="tab-content hidden max-w-2xl">
+          <h4 class="text-[15px] font-semibold" style="color:#1A1A1A;">Your Profile</h4>
+          <p class="text-[13px] mt-2 leading-relaxed" style="color:#6B7280;">
+            Update personal information and manage your preferences.
+          </p>
+        </div>
+
+        [[pass]]
+      </div><!-- /scrollable -->
+
+      <!-- ─── TAB BAR ─── -->
+      [[if page == 'user':]]
+      <div class="py-3 flex justify-center"
+           style="background:#FFFFFF; border-top:1px solid #EBEBEB;">
+        <ul class="flex gap-1.5 p-1 rounded-full"
+            style="background:#FFFFFF; border:1px solid #EBEBEB;
+                   box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+
+          <li id="homeTab"
+              class="tab flex items-center gap-2 py-2.5 px-5 rounded-full text-[14px] font-semibold
+                     cursor-pointer transition-all text-white"
+              style="background:#1A1A1A;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:#FFFFFF;"
+                 viewBox="0 0 512 512">
+              <path d="M256 269.507c-42.871 0-77.754-34.882-77.754-77.753C178.246 148.879 213.13 114
+                       256 114s77.754 34.879 77.754 77.754c0 42.871-34.883 77.754-77.754 77.754z
+                       M437.02 74.98C388.668 26.63 324.379 0 256 0S123.332 26.629 74.98 74.98
+                       C26.63 123.332 0 187.621 0 256s26.629 132.668 74.98 181.02
+                       C123.332 485.37 187.621 512 256 512s132.668-26.629 181.02-74.98
+                       C485.37 388.668 512 324.379 512 256s-26.629-132.668-74.98-181.02z
+                       M111.105 429.297c8.454-72.735 70.989-128.89 144.895-128.89 38.96 0
+                       75.598 15.179 103.156 42.734 23.281 23.285 37.965 53.687 41.742 86.152
+                       C361.641 462.172 311.094 482 256 482s-105.637-19.824-144.895-52.703z"/>
+            </svg>
+            Users
+          </li>
+
+          <li id="settingTab"
+              class="tab flex items-center gap-2 py-2.5 px-5 rounded-full text-[14px] font-medium
+                     cursor-pointer transition-all"
+              style="color:#6B7280;"
+              onmouseover="if(!this.classList.contains('active-tab')) this.style.background='#F2F2F2'"
+              onmouseout="if(!this.classList.contains('active-tab')) this.style.background=''">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="fill:#6B7280;"
+                 viewBox="0 0 640 512">
+              <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304
+                       178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7
+                       C13.3 512 0 498.7 0 482.3zM609.3 512H471.4c5.4-9.4 8.6-20.3 8.6-32v-8
+                       c0-60.7-27.1-115.2-69.8-151.8c2.4-.1 4.7-.2 7.1-.2h61.4C567.8 320 640 392.2
+                       640 481.3c0 17-13.8 30.7-30.7 30.7zM432 256c-31 0-59-12.6-79.3-32.9
+                       C372.4 196.5 384 163.6 384 128c0-26.8-6.3-52.1-17.4-74.5C389.1 42.1 411.1
+                       36 432 36a112 112 0 1 1 0 224z"/>
+            </svg>
+            Groups
+          </li>
+
+          <li id="profileTab"
+              class="tab flex items-center gap-2 py-2.5 px-5 rounded-full text-[14px] font-medium
+                     cursor-pointer transition-all"
+              style="color:#6B7280;"
+              onmouseover="if(!this.classList.contains('active-tab')) this.style.background='#F2F2F2'"
+              onmouseout="if(!this.classList.contains('active-tab')) this.style.background=''">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                 style="fill:none;stroke:#6B7280;" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Permissions
+          </li>
+
+        </ul>
+      </div>
+      [[pass]]
+
+      <!-- ─── ADD USER FORM ─── -->
+      [[if page == 'add-user':]]
+      <div class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-2xl mx-auto rounded-2xl overflow-hidden"
+             style="background:#FFFFFF; border:1px solid #EBEBEB;">
+
+          <!-- Form header -->
+          <div class="flex items-center gap-3 px-6 py-5"
+               style="border-bottom:1px solid #EBEBEB;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                 style="fill:none;stroke:#AAAAAA;" viewBox="0 0 24 24"
+                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+              <path d="M16 11h6m-3-3v6"/>
+            </svg>
+            <h1 class="text-[18px] font-semibold" style="color:#1A1A1A;">Create User Account</h1>
+          </div>
+
+          <form action="" novalidate>
+            <div class="px-6 py-6 space-y-8">
+
+              <!-- Section: User Info -->
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-[13px] font-semibold text-right pt-2"
+                     style="color:#6B7280;">User Information</div>
+                <div class="md:col-span-2 space-y-4">
+
+                  <!-- First Name -->
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">
+                      First Name</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-2.5" style="color:#AAAAAA;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:currentColor;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="8" r="4"/>
+                          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                        </svg>
+                      </span>
+                      <input type="text" name="first_name"
+                             class="w-full pl-10 pr-4 py-2 rounded-xl text-[13px] outline-none
+                                    transition-all"
+                             style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                             onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                             onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                    </div>
+                  </div>
+
+                  <!-- Last Name -->
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">
+                      Last Name</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-2.5" style="color:#AAAAAA;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:currentColor;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <circle cx="12" cy="8" r="4"/>
+                          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                        </svg>
+                      </span>
+                      <input type="text" name="last_name"
+                             class="w-full pl-10 pr-4 py-2 rounded-xl text-[13px] outline-none"
+                             style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                             onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                             onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                    </div>
+                  </div>
+
+                  <!-- Phone -->
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">
+                      Phone Number</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-2.5" style="color:#AAAAAA;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                             style="fill:none;stroke:currentColor;" viewBox="0 0 24 24"
+                             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3.09 5.18
+                                   2 2 0 0 1 5.11 3h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .7 2.81
+                                   2 2 0 0 1-.45 2.11L9.91 10.09a16 16 0 0 0 6 6l.45-.45
+                                   a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/>
+                        </svg>
+                      </span>
+                      <input type="text" name="phone"
+                             class="w-full pl-10 pr-4 py-2 rounded-xl text-[13px] outline-none"
+                             style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                             onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                             onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Security -->
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-[13px] font-semibold text-right pt-2"
+                     style="color:#6B7280;">Security</div>
+                <div class="md:col-span-2 space-y-4">
+                  <!-- Username / Email / Password / Confirm — même pattern -->
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">Username</label>
+                    <input type="text" name="username"
+                           class="w-full px-4 py-2 rounded-xl text-[13px] outline-none"
+                           style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                  </div>
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">Email</label>
+                    <input type="email" name="email"
+                           class="w-full px-4 py-2 rounded-xl text-[13px] outline-none"
+                           style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                  </div>
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">Password</label>
+                    <input type="password" name="password"
+                           class="w-full px-4 py-2 rounded-xl text-[13px] outline-none"
+                           style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                  </div>
+                  <div>
+                    <label class="block text-[13px] font-medium mb-1" style="color:#6B7280;">
+                      Confirm Password</label>
+                    <input type="password" name="confirm_password"
+                           class="w-full px-4 py-2 rounded-xl text-[13px] outline-none"
+                           style="color:#1A1A1A; background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'"/>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Section: Roles & Permissions -->
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-[13px] font-semibold text-right pt-2"
+                     style="color:#6B7280;">Rôles & permissions</div>
+                <div class="md:col-span-2 space-y-4">
+
+                  <!-- ROLES pill-select -->
+                  <div id="role-wrapper" class="group/role">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="text-[13px] font-medium" style="color:#6B7280;">Rôles</label>
+                      <button id="role-select-all" type="button"
+                              class="invisible group-focus-within/role:visible text-[12px] font-semibold
+                                     cursor-pointer" style="color:#1A6B3C;">
+                        Tout sélectionner
+                      </button>
+                    </div>
+                    <div class="relative" id="role-container">
+                      <div id="role-select-box" tabindex="0"
+                           class="min-h-[42px] pl-3 pr-3 py-1.5 rounded-xl flex flex-wrap gap-2
+                                  items-center cursor-pointer outline-none"
+                           style="background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'">
+                        <span id="role-placeholder" class="inline-flex items-center gap-1.5 text-[13px]"
+                              style="color:#AAAAAA;">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                               style="fill:none;stroke:#AAAAAA;" viewBox="0 0 24 24"
+                               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                          </svg>
+                          Sélectionner les rôles...
+                        </span>
+                        <div id="role-selected-tags" class="flex flex-wrap gap-1.5"></div>
+                        <button id="role-clear-all" type="button"
+                                class="hidden ml-auto text-[11px] cursor-pointer"
+                                style="color:#AAAAAA;">Tout effacer</button>
+                      </div>
+                      <div id="role-dropdown"
+                           class="hidden absolute z-50 w-full mt-1 rounded-2xl overflow-hidden"
+                           style="background:#FFFFFF; border:1px solid #EBEBEB;
+                                  box-shadow:0 8px 24px rgba(0,0,0,0.10);">
+                        <div class="p-2" style="border-bottom:1px solid #EBEBEB; background:#F2F2F2;">
+                          <input type="text" id="role-search" placeholder="Rechercher..."
+                                 class="w-full px-3 py-1.5 text-[13px] rounded-lg outline-none"
+                                 style="background:#FFFFFF; border:1px solid #EBEBEB; color:#1A1A1A;"
+                                 onfocus="this.style.borderColor='#1A6B3C'"
+                                 onblur="this.style.borderColor='#EBEBEB'"/>
+                        </div>
+                        <div id="role-pills-container"
+                             class="p-3 flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                          <label class="role-item cursor-pointer" data-name="administrateur">
+                            <input type="checkbox" name="roles[]" value="admin"
+                                   class="peer sr-only" style="margin:0;position:absolute"/>
+                            <div class="px-4 py-1.5 rounded-full text-[13px] font-medium transition-all
+                                        peer-checked:text-white"
+                                 style="background:#F2F2F2; color:#6B7280;"
+                                 data-pill="role">Administrateur</div>
+                          </label>
+                          <label class="role-item cursor-pointer" data-name="éditeur">
+                            <input type="checkbox" name="roles[]" value="editor"
+                                   class="peer sr-only" style="margin:0;position:absolute"/>
+                            <div class="px-4 py-1.5 rounded-full text-[13px] font-medium transition-all
+                                        peer-checked:text-white"
+                                 style="background:#F2F2F2; color:#6B7280;"
+                                 data-pill="role">Éditeur</div>
+                          </label>
+                          <label class="role-item cursor-pointer" data-name="contributeur">
+                            <input type="checkbox" name="roles[]" value="contributor"
+                                   class="peer sr-only" style="margin:0;position:absolute"/>
+                            <div class="px-4 py-1.5 rounded-full text-[13px] font-medium transition-all
+                                        peer-checked:text-white"
+                                 style="background:#F2F2F2; color:#6B7280;"
+                                 data-pill="role">Contributeur</div>
+                          </label>
+                          <label class="role-item cursor-pointer" data-name="modérateur">
+                            <input type="checkbox" name="roles[]" value="moderator"
+                                   class="peer sr-only" style="margin:0;position:absolute"/>
+                            <div class="px-4 py-1.5 rounded-full text-[13px] font-medium transition-all
+                                        peer-checked:text-white"
+                                 style="background:#F2F2F2; color:#6B7280;"
+                                 data-pill="role">Modérateur</div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- PERMISSIONS pill-select -->
+                  <div id="perm-wrapper" class="group/perm">
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="text-[13px] font-medium" style="color:#6B7280;">Permissions</label>
+                      <button id="perm-select-all" type="button"
+                              class="invisible group-focus-within/perm:visible text-[12px] font-semibold
+                                     cursor-pointer" style="color:#1A6B3C;">
+                        Tout sélectionner
+                      </button>
+                    </div>
+                    <div class="relative" id="perm-container">
+                      <div id="perm-select-box" tabindex="0"
+                           class="min-h-[42px] pl-3 pr-3 py-1.5 rounded-xl flex flex-wrap gap-2
+                                  items-center cursor-pointer outline-none"
+                           style="background:#FFFFFF; border:1px solid #EBEBEB;"
+                           onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"
+                           onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'">
+                        <span id="perm-placeholder" class="inline-flex items-center gap-1.5 text-[13px]"
+                              style="color:#AAAAAA;">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                               style="fill:none;stroke:#AAAAAA;" viewBox="0 0 24 24"
+                               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                          </svg>
+                          Gérer les permissions...
+                        </span>
+                        <div id="perm-selected-tags" class="flex flex-wrap gap-1.5"></div>
+                        <button id="perm-clear-all" type="button"
+                                class="hidden ml-auto text-[11px] cursor-pointer"
+                                style="color:#AAAAAA;">Tout effacer</button>
+                      </div>
+                      <div id="perm-dropdown"
+                           class="hidden absolute z-50 w-full mt-1 rounded-2xl overflow-hidden"
+                           style="background:#FFFFFF; border:1px solid #EBEBEB;
+                                  box-shadow:0 8px 24px rgba(0,0,0,0.10);">
+                        <div class="p-2" style="border-bottom:1px solid #EBEBEB; background:#F2F2F2;">
+                          <input type="text" id="perm-search" placeholder="Filtrer..."
+                                 class="w-full px-3 py-1.5 text-[13px] rounded-lg outline-none"
+                                 style="background:#FFFFFF; border:1px solid #EBEBEB; color:#1A1A1A;"
+                                 onfocus="this.style.borderColor='#1A6B3C'"
+                                 onblur="this.style.borderColor='#EBEBEB'"/>
+                        </div>
+                        <div class="p-3 space-y-5 max-h-56 overflow-y-auto">
+                          <div class="permission-category">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest mb-2"
+                                style="color:#AAAAAA;">Contenu</h3>
+                            <div class="flex flex-wrap gap-2">
+                              <label class="perm-item cursor-pointer" data-name="voir">
+                                <input type="checkbox" name="permissions[]" value="view"
+                                       class="peer sr-only" style="margin:0;position:absolute"/>
+                                <div class="px-3 py-1.5 rounded-full text-[13px] font-medium transition-all"
+                                     style="background:#F2F2F2; color:#6B7280;"
+                                     data-pill="perm">Voir</div>
+                              </label>
+                              <label class="perm-item cursor-pointer" data-name="modifier">
+                                <input type="checkbox" name="permissions[]" value="edit"
+                                       class="peer sr-only" style="margin:0;position:absolute"/>
+                                <div class="px-3 py-1.5 rounded-full text-[13px] font-medium transition-all"
+                                     style="background:#F2F2F2; color:#6B7280;"
+                                     data-pill="perm">Modifier</div>
+                              </label>
+                              <label class="perm-item cursor-pointer" data-name="supprimer">
+                                <input type="checkbox" name="permissions[]" value="delete"
+                                       class="peer sr-only" style="margin:0;position:absolute"/>
+                                <div class="px-3 py-1.5 rounded-full text-[13px] font-medium transition-all"
+                                     style="background:#F2F2F2; color:#6B7280;"
+                                     data-pill="perm">Supprimer</div>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="permission-category">
+                            <h3 class="text-[10px] font-bold uppercase tracking-widest mb-2"
+                                style="color:#AAAAAA;">Utilisateurs</h3>
+                            <div class="flex flex-wrap gap-2">
+                              <label class="perm-item cursor-pointer" data-name="inviter">
+                                <input type="checkbox" name="permissions[]" value="invite"
+                                       class="peer sr-only" style="margin:0;position:absolute"/>
+                                <div class="px-3 py-1.5 rounded-full text-[13px] font-medium transition-all"
+                                     style="background:#F2F2F2; color:#6B7280;"
+                                     data-pill="perm">Inviter</div>
+                              </label>
+                              <label class="perm-item cursor-pointer" data-name="bannir">
+                                <input type="checkbox" name="permissions[]" value="ban"
+                                       class="peer sr-only" style="margin:0;position:absolute"/>
+                                <div class="px-3 py-1.5 rounded-full text-[13px] font-medium transition-all"
+                                     style="background:#F2F2F2; color:#6B7280;"
+                                     data-pill="perm">Bannir</div>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Section: Activation -->
+              <div class="grid md:grid-cols-3 gap-6 items-center">
+                <div class="text-[13px] font-semibold text-right" style="color:#6B7280;">
+                  Activation</div>
+                <div class="md:col-span-2 flex items-center gap-3">
+                  <span class="text-[13px] font-medium" style="color:#6B7280;">Confirmer</span>
+                  <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input type="checkbox" id="activation-toggle" class="sr-only peer"/>
+                    <div class="w-10 h-6 rounded-full transition-colors peer-checked:bg-[#1A6B3C]"
+                         style="background:#EBEBEB;" id="toggle-track"></div>
+                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow
+                                transition-transform peer-checked:translate-x-4"></div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Form footer -->
+            <div class="flex justify-between items-center px-6 py-4"
+                 style="border-top:1px solid #EBEBEB;">
+              <button type="button"
+                      class="px-4 py-2 rounded-xl text-[13px] font-medium cursor-pointer transition-colors"
+                      style="color:#6B7280; background:#F2F2F2; border:none;"
+                      onmouseover="this.style.background='#EBEBEB'"
+                      onmouseout="this.style.background='#F2F2F2'">
+                Close
+              </button>
+              <button type="submit"
+                      class="px-10 py-2 rounded-xl text-[13px] font-semibold cursor-pointer
+                             transition-colors text-white"
+                      style="background:#1A1A1A;"
+                      onmouseover="this.style.background='#333333'"
+                      onmouseout="this.style.background='#1A1A1A'">
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      [[pass]]
+
+    </main>
+  </div><!-- /flex layout -->
+</div>
+
+
+<!-- ═══════════════════════ SCRIPTS ═══════════════════════ -->
+<script>
+/* ── pill checked state avec les couleurs Quixotic ─────── */
+function setPillColor(pill, checked) {
+  if (checked) {
+    pill.style.background = '#1A6B3C';
+    pill.style.color = '#FFFFFF';
+  } else {
+    pill.style.background = '#F2F2F2';
+    pill.style.color = '#6B7280';
+  }
+}
+
+document.querySelectorAll('[data-pill]').forEach(pill => {
+  const cb = pill.closest('label').querySelector('input[type="checkbox"]');
+  setPillColor(pill, cb.checked);
+  cb.addEventListener('change', () => setPillColor(pill, cb.checked));
+});
+
+/* ── initPillSelect ──────────────────────────────────────── */
+function initPillSelect({ containerId, selectBoxId, dropdownId, searchId,
+    selectedTagsId, placeholderId, itemClass, menuKey,
+    selectAllBtnId, clearAllBtnId, buildTagLabel }) {
+
+  const container   = document.getElementById(containerId);
+  const selectBox   = document.getElementById(selectBoxId);
+  const dropdown    = document.getElementById(dropdownId);
+  const searchInput = document.getElementById(searchId);
+  const tagsCont    = document.getElementById(selectedTagsId);
+  const placeholder = document.getElementById(placeholderId);
+  const clearAllBtn = clearAllBtnId ? document.getElementById(clearAllBtnId) : null;
+  const checkboxes  = container.querySelectorAll('input[type="checkbox"]');
+
+  function updateUI() {
+    tagsCont.innerHTML = '';
+    const selected = Array.from(checkboxes).filter(cb => cb.checked);
+    placeholder.classList.toggle('hidden', selected.length > 0);
+    if (clearAllBtn) clearAllBtn.classList.toggle('hidden', selected.length === 0);
+    selected.forEach(cb => {
+      const tag = document.createElement('span');
+      tag.style.cssText = `display:inline-flex;align-items:center;gap:4px;padding:2px 10px;
+        border-radius:999px;font-size:12px;font-weight:500;
+        background:#E6F5EC;color:#1A6B3C;border:1px solid #A8D9B8;`;
+      tag.innerHTML = `${buildTagLabel(cb)}
+        <button type="button" style="margin-left:2px;cursor:pointer;font-weight:700;
+          color:#1A6B3C;background:none;border:none;line-height:1;">×</button>`;
+      tag.querySelector('button').onclick = (e) => {
+        e.stopPropagation();
+        cb.checked = false;
+        const pill = cb.closest('label').querySelector('[data-pill]');
+        if (pill) setPillColor(pill, false);
+        updateUI();
+      };
+      tagsCont.appendChild(tag);
+    });
+  }
+
+  selectBox.onclick = (e) => {
+    e.stopPropagation();
+    if (!dropdown.classList.toggle('hidden')) searchInput.focus();
+    window.dispatchEvent(new CustomEvent('close-all-menus', { detail: menuKey }));
+  };
+  window.addEventListener('close-all-menus', (e) => {
+    if (e.detail !== menuKey) dropdown.classList.add('hidden');
+  });
+  document.addEventListener('click', (e) => {
+    if (!container.contains(e.target)) dropdown.classList.add('hidden');
+  });
+  searchInput.oninput = (e) => {
+    const q = e.target.value.toLowerCase();
+    container.querySelectorAll(itemClass).forEach(item => {
+      item.classList.toggle('hidden', !item.dataset.name.includes(q));
+    });
+    container.querySelectorAll('.permission-category').forEach(cat => {
+      const any = Array.from(cat.querySelectorAll(itemClass)).some(i => !i.classList.contains('hidden'));
+      cat.classList.toggle('hidden', !any);
+    });
+  };
+  if (selectAllBtnId) {
+    document.getElementById(selectAllBtnId).onclick = (e) => {
+      e.stopPropagation();
+      const visible = Array.from(checkboxes).filter(
+        cb => !cb.closest(itemClass).classList.contains('hidden'));
+      const allChecked = visible.every(cb => cb.checked);
+      visible.forEach(cb => {
+        cb.checked = !allChecked;
+        const pill = cb.closest('label').querySelector('[data-pill]');
+        if (pill) setPillColor(pill, cb.checked);
+      });
+      updateUI();
+      searchInput.focus();
+    };
+  }
+  if (clearAllBtn) {
+    clearAllBtn.onclick = (e) => {
+      e.stopPropagation();
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+        const pill = cb.closest('label').querySelector('[data-pill]');
+        if (pill) setPillColor(pill, false);
+      });
+      updateUI();
+    };
+  }
+  checkboxes.forEach(cb => cb.addEventListener('change', () => {
+    const pill = cb.closest('label').querySelector('[data-pill]');
+    if (pill) setPillColor(pill, cb.checked);
+    updateUI();
+  }));
+  updateUI();
+}
+
+initPillSelect({
+  containerId:'role-container', selectBoxId:'role-select-box', dropdownId:'role-dropdown',
+  searchId:'role-search', selectedTagsId:'role-selected-tags', placeholderId:'role-placeholder',
+  itemClass:'.role-item', menuKey:'role',
+  selectAllBtnId:'role-select-all', clearAllBtnId:'role-clear-all',
+  buildTagLabel: (cb) => cb.closest('label').querySelector('div').textContent.trim(),
+});
+initPillSelect({
+  containerId:'perm-container', selectBoxId:'perm-select-box', dropdownId:'perm-dropdown',
+  searchId:'perm-search', selectedTagsId:'perm-selected-tags', placeholderId:'perm-placeholder',
+  itemClass:'.perm-item', menuKey:'perm',
+  selectAllBtnId:'perm-select-all', clearAllBtnId:'perm-clear-all',
+  buildTagLabel: (cb) => {
+    const label = cb.closest('label').querySelector('div').textContent.trim();
+    const cat   = cb.closest('.permission-category');
+    const group = cat ? cat.querySelector('h3').textContent.trim() : '';
+    return `${label} · ${group}`;
+  },
+});
+
+/* ── Tabs ─────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const targetId = tab.id.replace('Tab', 'Content');
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.tab').forEach(t => {
+        t.style.background = '';
+        t.style.color = '#6B7280';
+        t.classList.remove('font-semibold');
+        t.classList.add('font-medium');
+      });
+      document.getElementById(targetId)?.classList.remove('hidden');
+      tab.style.background = '#1A1A1A';
+      tab.style.color = '#FFFFFF';
+      tab.classList.add('font-semibold');
+      tab.classList.remove('font-medium');
+    });
+  });
+});
+</script>
+
+[[end]]

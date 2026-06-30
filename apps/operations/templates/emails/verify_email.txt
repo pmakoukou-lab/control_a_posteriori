@@ -1,0 +1,13 @@
+
+
+[[# ✓ clés exactes passées par AppMailer ]]
+Bonjour {first_name} {last_name},
+
+Merci pour votre inscription sur MonApplication.
+Cliquez sur ce lien pour confirmer votre adresse email :
+
+{link}
+
+Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+
+L'équipe MonApplication

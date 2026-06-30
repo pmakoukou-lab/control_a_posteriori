@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collecte — AUDIT a posteriori</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Runtime Tailwind v4 (aperçu). En production : compile via la CLI Tailwind v4. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- ============================================================
+     app.css  →  à coller tel quel dans ton projet py4web
+     (@import "tailwindcss";  puis ce @theme + @layer components)
+     ============================================================ -->
+<style type="text/tailwindcss">
+  @theme {
+    /* Polices */
+    --font-sans:    "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Baloo 2", system-ui, sans-serif;
+    --font-heading: "Outfit", system-ui, sans-serif;
+
+    /* Marque — vert (#1A6B3C au cœur) */
+    --color-brand-50:#ecfdf3;  --color-brand-100:#d3f7e2; --color-brand-200:#9af0c0;
+    --color-brand-300:#5fe49a; --color-brand-400:#2bc46a; --color-brand-500:#1e9e54;
+    --color-brand-600:#1a6b3c; --color-brand-700:#155c36; --color-brand-800:#114a2c;
+    --color-brand-900:#0d3a22;
+
+    /* Encre / texte */
+    --color-ink:#0f1b14; --color-ink-2:#2b3a31;
+    --color-muted:#5d6e63; --color-muted-2:#93a399;
+
+    /* Verre */
+    --color-glass:rgba(255,255,255,.66);
+    --color-glassb:rgba(255,255,255,.85);
+
+    /* Ombres */
+    --shadow-glass:0 8px 32px rgba(18,70,42,.10),0 2px 8px rgba(18,70,42,.05);
+    --shadow-glasslg:0 18px 48px rgba(18,70,42,.16),0 6px 16px rgba(18,70,42,.08);
+    --shadow-glow:0 8px 24px rgba(30,158,84,.38);
+
+    /* Danger — sémantique rouge → bg-danger-600, text-danger-600… */
+    --color-danger-50:#fef2f2;  --color-danger-100:#fee2e2; --color-danger-200:#fecaca;
+    --color-danger-500:#ef4444; --color-danger-600:#dc2626; --color-danger-700:#b91c1c;
+  }
+
+  @layer base {
+    body { @apply font-sans text-ink antialiased; background:#e7efe9; }
+  }
+
+  @layer components {
+    /* Surface glassmorphism réutilisable */
+    .glass{
+      background:var(--color-glass);
+      -webkit-backdrop-filter:blur(22px) saturate(150%);
+      backdrop-filter:blur(22px) saturate(150%);
+      border:1px solid var(--color-glassb);
+      box-shadow:var(--shadow-glass);
+      border-radius:1.5rem;
+    }
+
+    /* Navigation */
+    .nav-item{
+      @apply flex items-center gap-4 px-4 py-3 rounded-2xl font-semibold text-ink-2
+             transition cursor-pointer;
+      border:1px solid transparent;
+    }
+    .nav-item:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(3px); box-shadow:0 4px 14px rgba(18,70,42,.10); }
+    .nav-item:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .nav-item.active{
+      @apply text-white;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow);
+      border-color:rgba(255,255,255,.4); transform:none;
+    }
+
+    /* Boutons */
+    .btn-primary{
+      @apply inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold
+             font-heading text-sm cursor-pointer transition;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow); border:none;
+    }
+    .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(30,158,84,.45); }
+    .btn-soft{
+      @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50
+             border border-glassb font-bold font-heading text-sm text-ink-2 transition cursor-pointer;
+    }
+    /* Bouton secondaire — vert (couleur primaire) */
+    .btn-secondary{
+      @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold cursor-pointer transition;
+      color:var(--color-brand-600);
+      border:1px solid var(--color-brand-300);
+      background:rgba(255,255,255,.55);
+    }
+    .btn-secondary:hover{ background:var(--color-brand-50); border-color:var(--color-brand-500); box-shadow:0 4px 14px rgba(18,70,42,.10); }
+    .btn-secondary:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+
+    /* Champs de formulaire (filtre) */
+    .field{
+      @apply w-full px-4 py-2.5 rounded-xl border text-sm text-ink-2 transition;
+      background:rgba(255,255,255,.7); border-color:rgba(15,27,20,.12);
+    }
+    .field:focus{ @apply outline-none; border-color:var(--color-brand-400); box-shadow:0 0 0 3px var(--color-brand-100); background:#fff; }
+    select.field{
+      -webkit-appearance:none; appearance:none; cursor:pointer; padding-right:40px;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%235d6e63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 12px center; background-size:18px;
+    }
+
+    /* Liste déroulante avec recherche (combobox) */
+    .combo-panel{
+      @apply absolute left-0 top-full z-40 mt-1 w-full p-1.5 rounded-xl flex flex-col;
+      background:#fff; border:1px solid rgba(15,27,20,.10); box-shadow:var(--shadow-glasslg);
+      opacity:0; transform:translateY(-4px); transform-origin:top; pointer-events:none;
+      transition:opacity .15s ease, transform .15s ease;
+    }
+    .combo-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+    .combo-search{ @apply relative px-1 pb-1.5; }
+    .combo-search > svg{ @apply absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2 pointer-events-none; }
+    .combo-search input{
+      @apply w-full pl-9 pr-3 py-2 rounded-lg border text-sm text-ink-2;
+      background:#fff; border-color:rgba(15,27,20,.12);
+    }
+    .combo-search input:focus{ @apply outline-none; border-color:var(--color-brand-400); box-shadow:0 0 0 3px var(--color-brand-100); }
+    .combo-list{ @apply flex flex-col gap-0.5 overflow-y-auto; max-height:168px; }
+    .combo-option{ @apply px-3 py-2 rounded-lg text-sm text-ink-2 text-left cursor-pointer transition; }
+    .combo-option:hover{ @apply bg-brand-50 text-brand-700; }
+    .combo-empty{ @apply px-3 py-2 text-sm text-muted-2 text-center; }
+
+    /* Pilules de statut */
+    .pill{ @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-heading; }
+    .pill::before{ content:""; @apply w-[7px] h-[7px] rounded-full bg-current; }
+
+    /* Sous-menu sidebar (Administration) — animation de hauteur sans saut */
+    .submenu{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+    .submenu.open{ grid-template-rows:1fr; }
+    .submenu > div{ overflow:hidden; }
+    .subitem{ @apply flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl font-medium text-sm text-muted transition cursor-pointer; }
+    .subitem:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(2px); }
+    .subitem:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .subitem.active{
+      @apply text-white font-semibold;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow);
+      border:1px solid rgba(255,255,255,.4); transform:none;
+    }
+
+    /* Listes déroulantes du header (Gestion / Session) */
+    .dd-panel{
+      @apply absolute left-0 z-30 mt-2 min-w-[132px] p-1.5 rounded-2xl flex flex-col gap-0.5;
+      background:rgba(255,255,255,.98);
+      -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+      border:1px solid rgba(15,27,20,.06); box-shadow:var(--shadow-glasslg);
+      opacity:0; transform:translateY(-6px) scale(.97); transform-origin:top; pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+    }
+    .dd-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+    .dd-option{ @apply px-4 py-2 rounded-xl text-sm font-bold text-ink-2 text-center cursor-pointer transition tabular-nums; }
+    .dd-option:hover{ @apply bg-brand-50 text-brand-600; }
+    .dd-option.selected{ @apply bg-brand-500 text-white; }
+
+    /* Modale de confirmation de suppression */
+    .modal{ position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+    .modal.open{ opacity:1; pointer-events:auto; }
+    .modal-backdrop{ position:absolute; inset:0; background:rgba(15,27,20,.38); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); }
+    .modal-card{
+      position:relative; width:100%; max-width:430px; background:#fff;
+      border:1px solid var(--color-glassb); border-radius:1.5rem; box-shadow:var(--shadow-glasslg);
+      padding:1.75rem 1.75rem 1.5rem; transform:scale(.95) translateY(10px);
+      transition:transform .22s cubic-bezier(.2,.8,.2,1);
+    }
+    .modal.open .modal-card{ transform:none; }
+    .btn-danger{
+      @apply inline-flex items-center gap-2 px-5 py-3 rounded-full text-white font-bold font-heading text-sm cursor-pointer transition;
+      background:linear-gradient(135deg,var(--color-danger-500),var(--color-danger-600)); border:none;
+      box-shadow:0 8px 20px rgba(220,38,38,.32);
+    }
+    .btn-danger:hover{ transform:translateY(-1px); box-shadow:0 12px 26px rgba(220,38,38,.45); }
+    /* Bouton secondaire en danger (contour rouge) */
+    .btn-danger-secondary{
+      @apply inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold font-heading cursor-pointer transition;
+      color:var(--color-danger-600); border:1px solid var(--color-danger-200); background:rgba(254,242,242,.55);
+    }
+    .btn-danger-secondary:hover{ background:var(--color-danger-50); border-color:var(--color-danger-500); box-shadow:0 4px 14px rgba(220,38,38,.14); }
+    .btn-danger-secondary:focus-visible{ outline:3px solid var(--color-danger-200); outline-offset:2px; }
+  }
+</style>
+
+<!-- Décor + animations (CSS simple) -->
+<style>
+  .bg-decor{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg-decor::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.55), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.42), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.50), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.20), transparent 60%),
+      linear-gradient(160deg,#eef5f0,#e3efe7);
+  }
+  .bg-decor::after{
+    content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+  .chev{transition:transform .25s ease}
+  .is-open .chev{transform:rotate(180deg)}
+  .combo-chev{transition:transform .2s ease}
+  [data-combo-trigger][aria-expanded="true"] .combo-chev{transform:rotate(180deg)}
+  /* animation longue (sans animation-delay) pour laisser les utilitaires [animation-delay:…] de Tailwind s'appliquer */
+  .reveal{
+    opacity:0;transform:translateY(14px);
+    animation-name:rise;animation-duration:.6s;
+    animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{animation:none;opacity:1;transform:none}
+    *{transition:none!important}
+  }
+</style>
+</head>
+
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+
+<!-- Shell : sidebar | contenu + footer. gap/padding = 16px (rythme 8px) -->
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] min-[860px]:grid-rows-[1fr_auto]
+            gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="glass reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-4 self-start"
+         aria-label="Navigation principale">
+    <div class="px-2 pt-2">
+      <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-brand-600">IT</span></div>
+      <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+    </div>
+    <nav class="flex flex-col gap-2 min-[860px]:flex-col max-[860px]:flex-row max-[860px]:flex-wrap" aria-label="Menu">
+      <span class="font-heading text-[11px] font-bold tracking-[1.5px] text-muted-2 uppercase px-2 pb-1 w-full">Pilotage</span>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item active" href="#" aria-current="page">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        Collecte
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>
+        Rapport
+      </a>
+      <div data-admin-group>
+        <button class="nav-item w-full justify-between" data-admin-toggle aria-expanded="false" aria-controls="admin-sub">
+          <span class="flex items-center gap-4">
+            <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>
+            Administration
+          </span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="submenu" id="admin-sub" role="region" aria-label="Sous-menu Administration">
+          <div>
+            <div class="flex flex-col gap-1 pt-1">
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.8 18.5a5.2 5.2 0 0 1 10.4 0"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18.4 18.5a5.2 5.2 0 0 0-2.9-4.6"/></svg>
+                comptes
+              </a>
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16"/><path d="M8.5 3.5v3M15.5 3.5v3"/><path d="m9 14 2 2 4-4"/></svg>
+                exercice budgétaire
+              </a>
+              <a class="subitem" href="#">
+                <svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h4"/></svg>
+                Gestionnaire de crédits
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ CONTENU ============ -->
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+
+    <!-- ---- HEADER ---- -->
+    <header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+            <span class="font-heading font-bold text-sm text-ink">Gestion</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2026</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2026</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2025</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2024</button>
+          </div>
+        </div>
+
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session">
+            <span class="font-heading font-bold text-sm text-ink">Session</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0 min-w-[100px]" data-dd-panel role="listbox" aria-label="Session">
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">1</button>
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">3</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="grid place-items-center w-9 h-9 rounded-full text-white bg-gradient-to-br from-brand-400 to-teal-500 shadow-md" aria-hidden="true">
+          <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+        </span>
+        <button class="btn-soft hover:bg-rose-100 hover:text-rose-500" aria-label="Se déconnecter">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Quitter
+        </button>
+      </div>
+    </header>
+
+    <!-- ---- MAIN PAGE : COLLECTE ---- -->
+    <main class="glass reveal [animation-delay:190ms] p-8 flex flex-col gap-6 min-h-[560px]">
+
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="font-heading font-bold text-[30px] tracking-tight text-ink">Liste des exercices budgétaires</h1>
+          <p class="text-sm text-muted mt-1">Gestion 2026, Session 2 — 1 358 opérations collectées</p>
+        </div>
+      </div>
+
+      <!-- Barre d'outils -->
+      <div class="relative flex items-center justify-between gap-4 flex-wrap" data-dropdown>
+        <div class="flex items-center gap-4 flex-wrap flex-1 min-w-0">
+          <div class="relative w-full max-w-[320px]">
+            <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Rechercher une opération…" aria-label="Rechercher"
+                   class="w-full pl-11 pr-4 py-2.5 rounded-full bg-white/70 border border-black/[.12] text-sm text-ink placeholder:text-muted-2 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 focus:bg-white transition">
+          </div>
+
+          <!-- Filtre -->
+          <button class="flex items-center gap-2 text-sm font-semibold text-ink-2 hover:text-brand-600 transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="true" aria-expanded="false">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M18 6h2M4 12h2M11 12h9M4 18h6M15 18h5"/><circle cx="15.5" cy="6" r="2"/><circle cx="8.5" cy="12" r="2"/><circle cx="12.5" cy="18" r="2"/></svg>
+            <span class="underline underline-offset-4 decoration-2 decoration-brand-500">Filtre</span>
+          </button>
+
+          <div class="dd-panel left-0 right-0 top-full w-auto max-w-none p-4 gap-3" data-dd-panel role="region" aria-label="Filtres de recherche">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+              <!-- Ministère (liste avec recherche) -->
+              <div class="relative" data-combo>
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">Ministère</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option>Ministère de la santé et de l'hygiène publique</button>
+                    <button type="button" class="combo-option" data-combo-option>Ministère de l'équipement et de l'entretien routier</button>
+                    <button type="button" class="combo-option" data-combo-option>Ministère de l'éducation nationale</button>
+                    <button type="button" class="combo-option" data-combo-option>Ministère de l'économie et des finances</button>
+                    <button type="button" class="combo-option" data-combo-option>Ministère de la transition numérique</button>
+                    <button type="button" class="combo-option" data-combo-option>Ministère des eaux et forêts</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gestionnaire de crédit (liste avec recherche) -->
+              <div class="relative" data-combo>
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">Gestionnaire de crédit</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un gestionnaire">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option>Direction générale de la tuberculose</button>
+                    <button type="button" class="combo-option" data-combo-option>Direction des infrastructures routières</button>
+                    <button type="button" class="combo-option" data-combo-option>Direction de l'informatique et des systèmes</button>
+                    <button type="button" class="combo-option" data-combo-option>Direction de la santé scolaire</button>
+                    <button type="button" class="combo-option" data-combo-option>Direction de l'hydraulique humaine</button>
+                    <button type="button" class="combo-option" data-combo-option>Direction des études et de la planification</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Imputation (liste avec recherche) -->
+              <div class="relative" data-combo>
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">Imputation</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une imputation">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option>Investissement — 6.1.1</button>
+                    <button type="button" class="combo-option" data-combo-option>Investissement — 6.2.3</button>
+                    <button type="button" class="combo-option" data-combo-option>Fonctionnement — 2.1.0</button>
+                    <button type="button" class="combo-option" data-combo-option>Fonctionnement — 2.4.5</button>
+                    <button type="button" class="combo-option" data-combo-option>Transfert — 4.3.1</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mode de passation (liste simple) -->
+              <select class="field" aria-label="Mode de passation">
+                <option value="">Mode de passation</option>
+                <option>AOR</option>
+                <option>AOO</option>
+                <option>DRPR</option>
+                <option>AMI</option>
+              </select>
+            </div>
+
+            <label class="flex items-center gap-2 text-sm font-semibold text-ink-2 cursor-pointer select-none py-1">
+              <input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer"> Région
+            </label>
+            <button class="btn-primary w-full justify-center" data-dd-search>
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              Rechercher
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button class="btn-secondary">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M10 11v6M14 11v6"/></svg>
+            delete all
+          </button>
+          <button class="btn-secondary">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V4h10v4"/><path d="M7 18H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="15" width="10" height="6" rx="1"/></svg>
+            Imprimer
+          </button>
+          <button class="btn-secondary">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/></svg>
+            exporter
+          </button>
+          <button class="btn-primary">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            ajouter une opération
+          </button>
+        </div>
+      </div>
+
+      <!-- Tableau des opérations -->
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse min-w-[880px]">
+          <thead>
+            <tr class="[&>th]:text-left [&>th]:font-heading [&>th]:text-xs [&>th]:font-bold [&>th]:tracking-wide [&>th]:text-muted-2 [&>th]:uppercase [&>th]:px-4 [&>th]:pb-4 [&>th]:pt-2">
+              <th class="w-10"><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer" aria-label="Tout sélectionner"></th>
+              <th>N° Opération</th>
+              <th>Date de création</th>
+              <th>Gestionnaire de crédit</th>
+              <th>Opérations</th>
+              <th>Mode de passation</th>
+              <th class="text-right pr-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="[&>tr]:transition [&>tr:hover]:bg-white/55 [&_td]:px-4 [&_td]:py-4 [&_td]:text-sm [&_td]:text-ink-2 [&_td]:border-t [&_td]:border-black/[.06] [&_td]:align-top">
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300001</td>
+              <td class="text-muted whitespace-nowrap">3 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction générale de la tuberculose</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de la santé et de la recherche médicale moderne et culturelle</div></td>
+              <td><div class="font-bold text-ink-2">Travaux de construction des hôpitaux</div><div class="text-[12.5px] text-muted-2 mt-0.5">Travaux</div></td>
+              <td><span class="pill bg-teal-100 text-teal-700">AOR</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300002</td>
+              <td class="text-muted whitespace-nowrap">3 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction des infrastructures routières</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de l'équipement et de l'entretien routier</div></td>
+              <td><div class="font-bold text-ink-2">Réhabilitation de l'axe Abidjan–Yamoussoukro</div><div class="text-[12.5px] text-muted-2 mt-0.5">Travaux</div></td>
+              <td><span class="pill bg-violet-100 text-violet-700">AOO</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300003</td>
+              <td class="text-muted whitespace-nowrap">4 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction de l'informatique et des systèmes</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de la transition numérique et de la digitalisation</div></td>
+              <td><div class="font-bold text-ink-2">Acquisition de serveurs et de licences</div><div class="text-[12.5px] text-muted-2 mt-0.5">Fournitures</div></td>
+              <td><span class="pill bg-amber-100 text-amber-700">DRPR</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300004</td>
+              <td class="text-muted whitespace-nowrap">5 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction de la santé scolaire et universitaire</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de l'éducation nationale et de l'alphabétisation</div></td>
+              <td><div class="font-bold text-ink-2">Fourniture de kits scolaires</div><div class="text-[12.5px] text-muted-2 mt-0.5">Fournitures</div></td>
+              <td><span class="pill bg-teal-100 text-teal-700">AOR</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300005</td>
+              <td class="text-muted whitespace-nowrap">6 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction de l'hydraulique humaine</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de l'eau et des forêts</div></td>
+              <td><div class="font-bold text-ink-2">Construction de forages ruraux</div><div class="text-[12.5px] text-muted-2 mt-0.5">Travaux</div></td>
+              <td><span class="pill bg-blue-100 text-blue-600">AMI</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" aria-label="Sélectionner"></td>
+              <td class="font-semibold tabular-nums whitespace-nowrap">2026060300006</td>
+              <td class="text-muted whitespace-nowrap">7 juin 2026</td>
+              <td><div class="font-bold text-ink-2">Direction des études et de la planification</div><div class="text-[12.5px] text-muted-2 mt-0.5 max-w-[260px]">Ministère de l'économie, des finances et du budget</div></td>
+              <td><div class="font-bold text-ink-2">Étude de faisabilité du barrage hydroélectrique</div><div class="text-[12.5px] text-muted-2 mt-0.5">Prestations intellectuelles</div></td>
+              <td><span class="pill bg-violet-100 text-violet-700">AOO</span></td>
+              <td>
+                <div class="flex items-center justify-end gap-1">
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></button>
+                  <button class="grid place-items-center w-9 h-9 rounded-lg text-muted-2 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-center gap-1 pt-2 flex-wrap">
+        <button class="flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold text-muted-2 cursor-default" disabled>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          Previous
+        </button>
+        <button class="grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold text-white bg-brand-500 shadow-glow tabular-nums cursor-pointer" aria-current="page">1</button>
+        <button class="grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold text-ink-2 hover:bg-brand-50 hover:text-brand-600 transition tabular-nums cursor-pointer">2</button>
+        <button class="grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold text-ink-2 hover:bg-brand-50 hover:text-brand-600 transition tabular-nums cursor-pointer">3</button>
+        <span class="px-2 text-muted-2 font-bold">…</span>
+        <button class="grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold text-ink-2 hover:bg-brand-50 hover:text-brand-600 transition tabular-nums cursor-pointer">67</button>
+        <button class="grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold text-ink-2 hover:bg-brand-50 hover:text-brand-600 transition tabular-nums cursor-pointer">68</button>
+        <button class="flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold text-ink-2 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer">
+          Next
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="glass reveal [animation-delay:260ms] min-[860px]:col-start-2 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+    <span class="text-[13.5px] text-muted font-medium"><b class="text-ink-2 font-bold">DGMP</b> © 2026. Tous droits réservés.</span>
+    <nav class="flex gap-6" aria-label="Liens du pied de page">
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Mentions légales</a>
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Confidentialité</a>
+      <a href="#" class="text-[13px] text-muted-2 font-semibold hover:text-brand-600">Support</a>
+    </nav>
+  </footer>
+</div>
+
+<!-- ============ MODALE DE SUPPRESSION ============ -->
+<div class="modal" data-del-modal aria-hidden="true">
+  <div class="modal-backdrop" data-m-backdrop></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="del-title">
+    <h2 id="del-title" class="font-heading font-bold text-lg text-ink leading-snug">Êtes-vous sûr de vouloir supprimer l'opération N°<span data-m-num>BOMP</span> ?</h2>
+
+    <div class="mt-5 flex flex-col gap-4">
+      <p class="text-sm leading-relaxed"><b class="font-bold text-ink-2" data-m-objet>objet</b> <span class="text-muted-2">(<span data-m-type>type de marché</span>)</span></p>
+      <p class="text-sm leading-relaxed"><b class="font-bold text-ink-2" data-m-gest>gestionnaire de crédit</b> <span class="text-muted-2">(<span data-m-min>ministère</span>)</span></p>
+    </div>
+
+    <div class="mt-7 flex items-center justify-between gap-3">
+      <button class="btn-danger-secondary" data-m-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a4 4 0 0 1 0 8h-3"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-m-confirm>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ---- Activation des liens de navigation ---- */
+  function clearActive(){
+    document.querySelectorAll('.nav-item[href], .subitem').forEach(function(n){
+      n.classList.remove('active'); n.removeAttribute('aria-current');
+    });
+  }
+  document.querySelectorAll('.nav-item[href], .subitem').forEach(function(item){
+    item.addEventListener('click', function(e){
+      e.preventDefault();
+      clearActive();
+      item.classList.add('active'); item.setAttribute('aria-current','page');
+    });
+  });
+
+  /* ---- Sous-menu Administration (repliable) ---- */
+  document.querySelectorAll('[data-admin-toggle]').forEach(function(btn){
+    var group = btn.closest('[data-admin-group]');
+    var sub   = group.querySelector('.submenu');
+    btn.addEventListener('click', function(){
+      var open = sub.classList.toggle('open');
+      group.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* ---- Listes déroulantes (Gestion / Session / Filtre) ---- */
+  var dropdowns = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+
+  function closeCombos(scope){
+    (scope || document).querySelectorAll('[data-combo-panel].open').forEach(function(cp){
+      cp.classList.remove('open');
+      var t = cp.parentElement.querySelector('[data-combo-trigger]');
+      if (t) t.setAttribute('aria-expanded','false');
+    });
+  }
+
+  function closeAllDropdowns(except){
+    dropdowns.forEach(function(dd){
+      if (dd === except) return;
+      dd.classList.remove('is-open');
+      var p = dd.querySelector('[data-dd-panel]');
+      var t = dd.querySelector('[data-dd-trigger]');
+      if (p) p.classList.remove('open');
+      if (t) t.setAttribute('aria-expanded','false');
+      closeCombos(dd);
+    });
+  }
+
+  dropdowns.forEach(function(dd){
+    var trigger = dd.querySelector('[data-dd-trigger]');
+    var panel   = dd.querySelector('[data-dd-panel]');
+    var valueEl = dd.querySelector('[data-dd-value]');
+    if (!trigger || !panel) return;
+
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      var willOpen = !panel.classList.contains('open');
+      closeAllDropdowns(dd);
+      panel.classList.toggle('open', willOpen);
+      dd.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    /* Clic dans le panneau : ne le ferme pas, mais referme les listes de recherche */
+    panel.addEventListener('click', function(e){
+      e.stopPropagation();
+      closeCombos(panel);
+    });
+
+    panel.querySelectorAll('[data-dd-option]').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        panel.querySelectorAll('[data-dd-option]').forEach(function(o){
+          o.classList.remove('selected'); o.setAttribute('aria-selected','false');
+        });
+        opt.classList.add('selected'); opt.setAttribute('aria-selected','true');
+        if (valueEl) valueEl.textContent = opt.textContent.trim();
+        closeAllDropdowns();
+      });
+    });
+
+    var searchBtn = panel.querySelector('[data-dd-search]');
+    if (searchBtn) searchBtn.addEventListener('click', function(){ closeAllDropdowns(); });
+  });
+
+  /* ---- Listes déroulantes avec recherche (combobox) ---- */
+  document.querySelectorAll('[data-combo]').forEach(function(combo){
+    var trigger = combo.querySelector('[data-combo-trigger]');
+    var cpanel  = combo.querySelector('[data-combo-panel]');
+    var input   = combo.querySelector('[data-combo-input]');
+    var label   = combo.querySelector('[data-combo-label]');
+    var list    = combo.querySelector('[data-combo-list]');
+    var options = Array.prototype.slice.call(combo.querySelectorAll('[data-combo-option]'));
+    var empty   = null;
+    if (!trigger || !cpanel) return;
+
+    function closeCombo(){ cpanel.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    function openCombo(){
+      closeCombos(combo.closest('[data-dd-panel]') || document);
+      cpanel.classList.add('open');
+      trigger.setAttribute('aria-expanded','true');
+      if (input){ input.value=''; filterOpts(''); setTimeout(function(){ input.focus(); }, 10); }
+    }
+    function filterOpts(q){
+      q = q.trim().toLowerCase();
+      var shown = 0;
+      options.forEach(function(o){
+        var ok = o.textContent.toLowerCase().indexOf(q) > -1;
+        o.classList.toggle('hidden', !ok);
+        if (ok) shown++;
+      });
+      if (!empty){ empty = document.createElement('div'); empty.className='combo-empty'; empty.textContent='Aucun résultat'; list.appendChild(empty); }
+      empty.classList.toggle('hidden', shown > 0);
+    }
+
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (cpanel.classList.contains('open')) closeCombo(); else openCombo();
+    });
+    if (input){
+      input.addEventListener('click', function(e){ e.stopPropagation(); });
+      input.addEventListener('input', function(){ filterOpts(input.value); });
+    }
+    options.forEach(function(o){
+      o.addEventListener('click', function(e){
+        e.stopPropagation();
+        label.textContent = o.textContent;
+        label.classList.remove('text-muted-2');
+        label.classList.add('text-ink-2');
+        closeCombo();
+      });
+    });
+  });
+
+  /* Fermeture au clic extérieur + touche Échap */
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAllDropdowns(); });
+
+  /* ---- Modale de suppression ---- */
+  (function(){
+    var modal = document.querySelector('[data-del-modal]');
+    if (!modal) return;
+    var elNum   = modal.querySelector('[data-m-num]');
+    var elObjet = modal.querySelector('[data-m-objet]');
+    var elType  = modal.querySelector('[data-m-type]');
+    var elGest  = modal.querySelector('[data-m-gest]');
+    var elMin   = modal.querySelector('[data-m-min]');
+    var currentRow = null;
+
+    function txt(el){ return el ? el.textContent.trim() : ''; }
+
+    function openModal(row){
+      currentRow = row;
+      var tds = row.children;                       /* 0:case 1:n° 2:date 3:gestionnaire 4:opération … */
+      elNum.textContent = txt(tds[1]);
+      var g = tds[3].querySelectorAll('div');
+      elGest.textContent = txt(g[0]); elMin.textContent = txt(g[1]);
+      var o = tds[4].querySelectorAll('div');
+      elObjet.textContent = txt(o[0]); elType.textContent = txt(o[1]);
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      currentRow = null;
+    }
+
+    document.querySelectorAll('button[aria-label="Supprimer"]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var row = btn.closest('tr');
+        if (row) openModal(row);
+      });
+    });
+
+    modal.querySelectorAll('[data-m-close], [data-m-backdrop]').forEach(function(el){
+      el.addEventListener('click', closeModal);
+    });
+    modal.querySelector('[data-m-confirm]').addEventListener('click', function(){
+      if (currentRow) currentRow.remove();   /* suppression visuelle (statique) */
+      closeModal();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+  })();
+</script>
+</body>
+</html>

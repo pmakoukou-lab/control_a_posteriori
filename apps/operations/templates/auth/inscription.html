@@ -1,0 +1,193 @@
+[[extend 'base.html']]
+
+[[block content]]
+<div class="md:min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl mx-auto shadow-[0_2px_10px_-3px_rgba(14,14,14,0.3)] rounded-xl overflow-hidden bg-white">
+        <div class="grid md:grid-cols-5 items-center">
+            
+            <div class="md:col-span-2 max-md:order-1 relative before:absolute before:inset-0 before:bg-blue-800/70 overflow-hidden w-full h-full">
+                <div class="md:aspect-[6/10] max-sm:aspect-[6/7]">
+                    <img src="https://readymadeui.com/images/real-estate-img.webp" class="w-full h-full object-cover" alt="signup-image" />
+                </div>
+                <div class="absolute inset-0 m-auto flex items-end justify-center max-md:text-center">
+                    <div class="bg-gradient-to-t from-black/50 via-black/50 to-transparent p-6 w-full text-white">
+                        <h1 class="text-3xl font-semibold">Rejoignez-nous</h1>
+                        <p class="text-slate-300 text-[15px] mt-6 leading-relaxed">
+                            Créez votre compte pour accéder à vos outils personnalisés.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-3 w-full p-6 md:p-8 max-w-lg mx-auto">
+                <form action="" method="POST" novalidate>
+                    <!-- CSRF Protection py4web -->
+                    <input type="hidden" name="_formkey" value="[[=form.formkey]]" />
+                    <input type="hidden" name="_formname" value="[[=form.form_name]]" />
+
+                    <div class="mb-8">
+                        <h2 class="text-slate-900 text-2xl font-semibold">Inscrivez-vous maintenant</h2>
+                    </div>
+
+                    [[if form.errors.get('_error'):]]
+                        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm text-red-700 font-medium">
+                                    [[=form.errors['_error']]]
+                                </p>
+                            </div>
+                        </div>
+                    [[pass]]
+
+                    <div class="space-y-6">
+                        
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['username'] ]]
+                                [[if form.table.username.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">([[=form.table.username.comment]])</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="username" type="text" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Entrer nom utilisateur" value="[[=form.vars.get('username', '') ]]" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 24 24"><circle cx="10" cy="7" r="6"></circle><path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('username'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['username']]]</span>
+                            [[pass]]
+                        </div>
+                        
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['last_name'] ]]
+                                [[if form.table.last_name.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">([[=form.table.last_name.comment]])</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="last_name" type="text" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Entrer nom" value="[[=form.vars.get('last_name', '') ]]" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 24 24"><circle cx="10" cy="7" r="6"></circle><path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('last_name'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['last_name']]]</span>
+                            [[pass]]
+                        </div>
+
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['first_name'] ]]
+                                [[if form.table.first_name.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">([[=form.table.first_name.comment]])</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="first_name" type="text" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Entrer prénoms" value="[[=form.vars.get('first_name', '') ]]" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 24 24"><circle cx="10" cy="7" r="6"></circle><path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('first_name'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['first_name']]]</span>
+                            [[pass]]
+                        </div>
+
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['email'] ]]
+                                [[if form.table.email.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">[[=form.table.email.comment]]</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="email" type="email" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Entrer email" value="[[=form.vars.get('email', '') ]]" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('email'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['email']]]</span>
+                            [[pass]]
+                        </div>
+
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['phone_number'] ]]
+                                [[if form.table.phone_number.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">[[=form.table.phone_number.comment]]</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="phone_number" type="text" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Format +225..." value="[[=form.vars.get('phone_number', '') ]]" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('phone_number'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['phone_number']]]</span>
+                            [[pass]]
+                        </div>
+
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">
+                                [[=form.custom.labels['password'] ]]
+                                [[if form.table.password.comment:]]
+                                    <span class="text-slate-500 text-[12px] font-normal ml-1">([[=form.table.password.comment]])</span>
+                                [[pass]]
+                            </label>
+                            <div class="relative flex items-center">
+                                <input name="password" type="password" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Entrer mot de passe" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 128 128"><path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('password'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['password']]]</span>
+                            [[pass]]
+                        </div>
+
+                        <div>
+                            <label class="text-slate-900 text-sm font-medium block">Confirmer mot de passe</label>
+                            <div class="relative flex items-center">
+                                <input name="password_confirm" type="password" required
+                                    class="w-full text-sm text-slate-900 border-b border-slate-300 focus:border-blue-600 pr-8 pb-1 py-3 outline-none"
+                                    placeholder="Confirmer mot de passe" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 128 128"><path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994z"/></svg>
+                            </div>
+                            [[if form.custom.errors.get('password_confirm'):]]
+                                <span class="text-red-500 text-xs mt-1 block">[[=form.custom.errors['password_confirm']]]</span>
+                            [[pass]]
+                        </div>
+
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit"
+                            class="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer">
+                            Créer un compte
+                        </button>
+                    </div>
+                    
+                    <p class="text-slate-600 text-sm mt-6 text-center">
+                        Déjà inscrit ? <a href="[[=URL('connexion')]]" class="text-blue-600 font-medium hover:underline ml-1">Connectez-vous</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="grid md:grid-rows-2 items-center">
+        <h2 class="text-slate-900 text-xl font-semibold">Continuez avec</h2>
+        <div class="grid md:grid-rows-3 items-center">
+            <div>google</div>
+            <div>yahoo</div>
+            <div>facebook</div>
+        </div>
+    </div>
+</div>
+[[end]]

@@ -1,0 +1,499 @@
+[[extend 'audits/layout.html']]
+
+[[block title]]Ajout d'une opération — AUDIT a posteriori[[end]]
+
+[[block main]]
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <!-- En-tête du formulaire -->
+      <div class="flex items-center justify-between gap-4 flex-wrap pb-4 border-b border-black/[.07]">
+        <h1 class="font-heading font-bold text-2xl tracking-tight text-ink whitespace-nowrap">Ajout d'une ligne auditée</h1>
+        <p class="text-sm font-semibold text-ink-2 text-center flex-1 min-w-[220px]">Travaux de la construction des hôpitaux de la commune de Bouaké</p>
+        <div class="relative shrink-0">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg>
+          <input type="text" class="field pl-10 w-[160px]" value="12 juin 2026" aria-label="Date">
+        </div>
+      </div>
+
+      <!-- ====== SECTIONS ====== -->
+      <div class="flex flex-col gap-3">
+
+        <!-- 1. Opérations -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opérations</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Auditeur</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Personne ressource</label><input type="text" class="field" placeholder="Placeholder"></div>
+            </div>
+            <div><label class="lbl">Ministère</label><select class="field"><option>Sélectionner</option></select></div>
+            <div><label class="lbl">Gestionnaire de crédit</label><select class="field"><option>Sélectionner</option></select></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Imputation</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Dotation</label><input type="text" class="field" placeholder="Placeholder"></div>
+            </div>
+            <div><label class="lbl">Objet</label><textarea class="field" rows="2" placeholder="Placeholder"></textarea></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Mode de passation</label><select class="field"><option>Sélectionner</option></select></div>
+              <div><label class="lbl">Type de marché</label><select class="field"><option>Sélectionner</option></select></div>
+            </div>
+            <div><label class="lbl">Observations pour mode de passation</label><textarea class="field" rows="2" placeholder="Placeholder"></textarea></div>
+            <div><label class="lbl">N° du DGMP</label><input type="text" class="field" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 2. Préparation PPM / PPPM -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Préparation PPM / PPPM</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="toggle-row"><span>Existence du PPM</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Respect du PPM</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+              <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Montant de l'estimation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant de l'estimation</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" class="field" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 4. Opération réservée aux PME -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opération réservée aux PME</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 5. Examen et validation du DAO par la DGMP -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen et validation du DAO par la DGMP</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Date de réception du DAO à la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div><label class="lbl">Date de validation du DAO</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 6. Garantie de l'offre -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de l'offre comprise entre 1 et 1,5%</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Garantie minimale 1%</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Garantie maximale 1,5%</label><input type="text" class="field" placeholder="Placeholder"></div>
+            </div>
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 7. Publication de l'avis d'appel d'offres (AAO) -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication de l'avis d'appel d'offres (AAO)</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Date de réception du DAO à la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div><label class="lbl">Numéro de l'avis d'appel d'Offres</label><input type="text" class="field" placeholder="Placeholder"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+              <div><label class="lbl">Durée de publication</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Nombre de reports</label><div class="stepper" data-stepper><button type="button" data-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button><span data-stepper-val>0</span><button type="button" data-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 8. Existence de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 9. Existence des mandats des représentants des membres de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence des mandats des représentants des membres de la COJO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 10. Existence du procès-verbal d'ouverture des plis -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal d'ouverture des plis</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence du PV</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 11. Existence du rapport d'analyse des offres -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du rapport d'analyse des offres</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence de rapport</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 12. Existence de la COJO au jugement -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO au jugement</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 13. Existence du procès-verbal de jugement des offres -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal de jugement des offres</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence du PV</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 14. Délai imparti à la COJO pour ses travaux -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Délai imparti à la COJO pour ses travaux</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Date d'ouverture</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div><label class="lbl">Date de jugement</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+              <div><label class="lbl">Date de dernier jugement en cas de recours</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div><label class="lbl">Nombre de reports</label><div class="stepper" data-stepper><button type="button" data-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button><span data-stepper-val>0</span><button type="button" data-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+            </div>
+            <div class="toggle-row"><span>Respect du délai</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 15. Attributaire(s) -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Attributaire(s)</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div class="col-span-2 sm:col-span-1"><label class="lbl">Raison sociale</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">NCC attributaire</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Lot</label><input type="text" class="field" placeholder="1"></div>
+              <div><label class="lbl">Montant</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div class="col-span-2 sm:col-span-1"><label class="lbl">Observations</label><input type="text" class="field" placeholder="Placeholder"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 16. Affichage des résultats des travaux de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Affichage des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+            <div class="flex items-center gap-8 flex-wrap">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Respect du délai d'affichage</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 17. Publication des résultats des travaux de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Support de publication</label><input type="text" class="field" placeholder="Placeholder"></div>
+              <div><label class="lbl">Date de publication</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 18. Notification des résultats aux attributaires -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification des résultats aux attributaires</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de réception du DAO à la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 19. Information des soumissionnaires non retenus -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Information des soumissionnaires non retenus</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 20. Respect du délai de recours éventuels -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Respect du délai de recours éventuels</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 21. Existence d'un marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence d'un marché</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 22. Production des pièces fiscales et sociales par l'attributaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Production des pièces fiscales et sociales par l'attributaire</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 23. Exigence du quitus de non redevance dans le DAO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Exigence du quitus de non redevance dans le DAO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 24. Conformité du contenu du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Conformité du contenu du marché</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 25. Signature du marché par l'attributaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l'attributaire</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de signature</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 26. Signature du marché par l'Autorité Contractante -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l'Autorité Contractante</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de signature</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 27. Signature par l'autorité compétente -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature par l'autorité compétente</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 28. Numérotation du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Numérotation du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Numéro marché</label><input type="text" class="field" placeholder="2026-03-03/01-234"></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 29. Montant du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant du marché</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" class="field" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 30. Écart entre montant estimatif et montant attribué -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Écart entre montant estimatif et montant attribué</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" class="field" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 31. Situation d'exécution de la ligne budgétaire après passation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Situation d'exécution de la ligne budgétaire après passation</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant disponible</label><input type="text" class="field" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 32. Examen préalable à l'approbation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen préalable à l'approbation</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Date de soumission du projet de marché à la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div><label class="lbl">Date de validation du projet de marché par la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 33. Approbation du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Approbation du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de signature</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 34. Autorité approbatrice ou organe approbateur compétent -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Autorité approbatrice ou organe approbateur compétent</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 35. Notification de l'approbation du marché au titulaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l'approbation du marché au titulaire</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de réception par le titulaire</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 36. Garantie de bonne exécution -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de bonne exécution</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 37. Enregistrement du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Enregistrement du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date d'enregistrement</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 38. Transmission de 02 exemplaires du contrat à la DGMP -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Transmission de 02 exemplaires du contrat à la DGMP</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 39. Notification de l'ordre de service de démarrage -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l'ordre de service de démarrage</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-4 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Date de réception du DAO à la DGMP</label><div class="relative"><svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg><input type="text" class="field pl-10" placeholder="12/12/2020"></div></div>
+              <div class="toggle-row"><span>Conforme</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observation</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+        <!-- 40. Existence et exhaustivité de l'archivage des documents -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence et exhaustivité de l'archivage des documents</button>
+          <div class="acc-body">
+            <div class="flex items-center gap-8 flex-wrap">
+              <div class="toggle-row"><span>Existence</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Exhaustivité</span><label class="switch"><input type="checkbox" checked><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observation</label><textarea class="field" rows="2" placeholder="Valeur"></textarea></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+[[end]]
+
+[[block footer]]
+<footer class="glass reveal [animation-delay:260ms] min-[860px]:col-start-2 sticky bottom-4 z-40 flex items-center justify-between gap-3 flex-wrap px-6 py-4">
+    <button class="btn-soft">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Fermer
+    </button>
+    <div class="flex items-center gap-3 flex-wrap">
+      <button class="btn-secondary">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Enregistrer et ajouter une nouvelle opération
+      </button>
+      <button class="btn-primary">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Enregistrer
+      </button>
+    </div>
+  </footer>
+[[end]]
+
+[[block js]]
+<script>
+/* ---- Accordéon des sections ---- */
+  document.querySelectorAll('[data-acc-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.closest('.acc').classList.toggle('open'); });
+  });
+
+  /* ---- Compteurs (stepper) ---- */
+  document.querySelectorAll('[data-stepper]').forEach(function(st){
+    var val = st.querySelector('[data-stepper-val]');
+    st.querySelector('[data-dec]').addEventListener('click', function(){ val.textContent = Math.max(0, (parseInt(val.textContent,10)||0) - 1); });
+    st.querySelector('[data-inc]').addEventListener('click', function(){ val.textContent = (parseInt(val.textContent,10)||0) + 1; });
+  });
+</script>
+[[end]]

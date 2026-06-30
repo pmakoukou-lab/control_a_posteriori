@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Détails de l'opération — AUDIT a posteriori</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Runtime Tailwind v4 (aperçu). En production : compile via la CLI Tailwind v4. -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --font-sans:    "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Baloo 2", system-ui, sans-serif;
+    --font-heading: "Outfit", system-ui, sans-serif;
+
+    --color-brand-50:#ecfdf3;  --color-brand-100:#d3f7e2; --color-brand-200:#9af0c0;
+    --color-brand-300:#5fe49a; --color-brand-400:#2bc46a; --color-brand-500:#1e9e54;
+    --color-brand-600:#1a6b3c; --color-brand-700:#155c36; --color-brand-800:#114a2c;
+    --color-brand-900:#0d3a22;
+
+    --color-ink:#0f1b14; --color-ink-2:#2b3a31;
+    --color-muted:#5d6e63; --color-muted-2:#93a399;
+
+    --color-glass:rgba(255,255,255,.66);
+    --color-glassb:rgba(255,255,255,.85);
+
+    --shadow-glass:0 8px 32px rgba(18,70,42,.10),0 2px 8px rgba(18,70,42,.05);
+    --shadow-glasslg:0 18px 48px rgba(18,70,42,.16),0 6px 16px rgba(18,70,42,.08);
+    --shadow-glow:0 8px 24px rgba(30,158,84,.38);
+
+    /* Danger — sémantique rouge */
+    --color-danger-50:#fef2f2; --color-danger-500:#ef4444; --color-danger-600:#dc2626; --color-danger-700:#b91c1c;
+  }
+
+  @layer base {
+    body { @apply font-sans text-ink antialiased; background:#e7efe9; }
+  }
+
+  @layer components {
+    .glass{
+      background:var(--color-glass);
+      -webkit-backdrop-filter:blur(22px) saturate(150%);
+      backdrop-filter:blur(22px) saturate(150%);
+      border:1px solid var(--color-glassb);
+      box-shadow:var(--shadow-glass);
+      border-radius:1.5rem;
+    }
+
+    .nav-item{
+      @apply flex items-center gap-4 px-4 py-3 rounded-2xl font-semibold text-ink-2 transition cursor-pointer;
+      border:1px solid transparent;
+    }
+    .nav-item:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(3px); box-shadow:0 4px 14px rgba(18,70,42,.10); }
+    .nav-item:focus-visible{ outline:3px solid var(--color-brand-300); outline-offset:2px; }
+    .nav-item.active{
+      @apply text-white;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow); border-color:rgba(255,255,255,.4); transform:none;
+    }
+
+    .btn-primary{
+      @apply inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold font-heading text-sm cursor-pointer transition;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow); border:none;
+    }
+    .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(30,158,84,.45); }
+    .btn-soft{
+      @apply inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb font-bold font-heading text-sm text-ink-2 transition cursor-pointer;
+    }
+
+    /* Sous-menu sidebar */
+    .submenu{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+    .submenu.open{ grid-template-rows:1fr; }
+    .submenu > div{ overflow:hidden; }
+    .subitem{ @apply flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl font-medium text-sm text-muted transition cursor-pointer; }
+    .subitem:hover{ @apply bg-brand-50 text-brand-700; transform:translateX(2px); }
+    .subitem.active{
+      @apply text-white font-semibold;
+      background:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-600));
+      box-shadow:var(--shadow-glow); border:1px solid rgba(255,255,255,.4); transform:none;
+    }
+
+    /* Listes déroulantes du header */
+    .dd-panel{
+      @apply absolute left-0 z-30 mt-2 min-w-[132px] p-1.5 rounded-2xl flex flex-col gap-0.5;
+      background:rgba(255,255,255,.98);
+      -webkit-backdrop-filter:blur(14px) saturate(140%); backdrop-filter:blur(14px) saturate(140%);
+      border:1px solid rgba(15,27,20,.06); box-shadow:var(--shadow-glasslg);
+      opacity:0; transform:translateY(-6px) scale(.97); transform-origin:top; pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+    }
+    .dd-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+    .dd-option{ @apply px-4 py-2 rounded-xl text-sm font-bold text-ink-2 text-center cursor-pointer transition tabular-nums; }
+    .dd-option:hover{ @apply bg-brand-50 text-brand-600; }
+    .dd-option.selected{ @apply bg-brand-500 text-white; }
+
+    /* ===== Détails en lecture seule ===== */
+    .det{ @apply rounded-xl overflow-hidden border; border-color:rgba(15,27,20,.06); }
+    .det-head{
+      @apply w-full flex items-center gap-2 px-4 py-2.5 text-left font-heading font-semibold text-sm text-ink cursor-pointer;
+      background:#d6dad7;
+    }
+    .det-head:hover{ background:#cdd2cf; }
+    .det-chev{ @apply w-4 h-4 text-ink-2 shrink-0; transition:transform .25s ease; }
+    .det:not(.open) .det-chev{ transform:rotate(-90deg); }
+    .det-body{ @apply flex flex-col gap-2 px-4 py-3 pl-10; background:rgba(255,255,255,.4); }
+    .det:not(.open) .det-body{ display:none; }
+    .det-row{ @apply text-sm leading-relaxed; }
+    .det-lbl{ @apply font-bold text-ink-2; }
+    .det-val{ @apply text-muted; }
+    /* Tableau (attributaires) */
+    .det-table{ @apply w-full border-collapse text-sm min-w-[560px]; }
+    .det-table th{ @apply text-left font-heading font-bold text-xs tracking-wide text-ink-2 uppercase px-3 pb-2; }
+    .det-table td{ @apply px-3 py-2 text-muted; }
+  }
+</style>
+
+<style>
+  .bg-decor{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg-decor::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.55), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.42), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.50), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.20), transparent 60%),
+      linear-gradient(160deg,#eef5f0,#e3efe7);
+  }
+  .bg-decor::after{
+    content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+  .chev{transition:transform .25s ease}
+  .is-open .chev{transform:rotate(180deg)}
+  .reveal{
+    opacity:0;transform:translateY(14px);
+    animation-name:rise;animation-duration:.6s;
+    animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:forwards;
+  }
+  @keyframes rise{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){ .reveal{animation:none;opacity:1;transform:none} *{transition:none!important} }
+</style>
+</head>
+
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] min-[860px]:grid-rows-[1fr_auto]
+            gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="glass reveal [animation-delay:40ms] flex flex-col gap-8 p-6 min-[860px]:sticky min-[860px]:top-4 self-start"
+         aria-label="Navigation principale">
+    <div class="px-2 pt-2">
+      <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-brand-600">IT</span></div>
+      <div class="font-heading font-medium text-[13px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+    </div>
+    <nav class="flex flex-col gap-2 min-[860px]:flex-col max-[860px]:flex-row max-[860px]:flex-wrap" aria-label="Menu">
+      <span class="font-heading text-[11px] font-bold tracking-[1.5px] text-muted-2 uppercase px-2 pb-1 w-full">Pilotage</span>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5"/><path d="M12 5v1.5M5.6 7.5l1 1M18.4 7.5l-1 1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item active" href="#" aria-current="page">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        Collecte
+      </a>
+      <a class="nav-item" href="#">
+        <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 4v3h6V4"/><path d="M9 12v4M12 10v6M15 13v3"/></svg>
+        Rapport
+      </a>
+      <div data-admin-group>
+        <button class="nav-item w-full justify-between" data-admin-toggle aria-expanded="false" aria-controls="admin-sub">
+          <span class="flex items-center gap-4">
+            <svg class="w-[22px] h-[22px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H4a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5.66 9.4a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10a1.7 1.7 0 0 0 1-1.56V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10a1.7 1.7 0 0 0 1.56 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.03z"/></svg>
+            Administration
+          </span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="submenu" id="admin-sub" role="region" aria-label="Sous-menu Administration">
+          <div>
+            <div class="flex flex-col gap-1 pt-1">
+              <a class="subitem" href="#"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.8 18.5a5.2 5.2 0 0 1 10.4 0"/><path d="M16 5.5a3 3 0 0 1 0 5"/><path d="M18.4 18.5a5.2 5.2 0 0 0-2.9-4.6"/></svg>comptes</a>
+              <a class="subitem" href="#"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/><path d="M4 9.5h16"/><path d="M8.5 3.5v3M15.5 3.5v3"/><path d="m9 14 2 2 4-4"/></svg>exercice budgétaire</a>
+              <a class="subitem" href="#"><svg class="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 14.5h4"/></svg>Gestionnaire de crédits</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ============ CONTENU ============ -->
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+
+    <!-- ---- HEADER ---- -->
+    <header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+            <span class="font-heading font-bold text-sm text-ink">Gestion</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2026</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2026</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2025</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">2024</button>
+          </div>
+        </div>
+        <div class="relative" data-dropdown>
+          <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session">
+            <span class="font-heading font-bold text-sm text-ink">Session</span>
+            <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2</span>
+            <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dd-panel left-auto right-0 min-w-[100px]" data-dd-panel role="listbox" aria-label="Session">
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">1</button>
+            <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">3</button>
+            <button class="dd-option" data-dd-option role="option" aria-selected="false">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="grid place-items-center w-9 h-9 rounded-full text-white bg-gradient-to-br from-brand-400 to-teal-500 shadow-md" aria-hidden="true">
+          <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+        </span>
+        <button class="btn-soft hover:bg-rose-100 hover:text-rose-500" aria-label="Se déconnecter">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Quitter
+        </button>
+      </div>
+    </header>
+
+    <!-- ---- MAIN : DÉTAILS ---- -->
+    <main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <!-- En-tête -->
+      <div class="flex items-center gap-6 flex-wrap pb-4 border-b border-black/[.07]">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink whitespace-nowrap">Opération 2026060300001</h1>
+        <p class="text-sm font-semibold text-ink-2">Travaux de la construction des hôpitaux de la commune de Bouaké</p>
+      </div>
+
+      <!-- ====== SECTIONS (lecture seule) ====== -->
+      <div class="flex flex-col gap-2.5">
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Opération</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Auditeur :</span> <span class="det-val">KOUASSI Kouadio Kassy</span></div>
+            <div class="det-row"><span class="det-lbl">Personne ressource :</span> <span class="det-val">YAYA Yobouet</span></div>
+            <div class="det-row"><span class="det-lbl">Ministère :</span> <span class="det-val">Ministère de la construction</span></div>
+            <div class="det-row"><span class="det-lbl">Gestionnaire de crédit :</span> <span class="det-val">CHU de Bouaké</span></div>
+            <div class="det-row"><span class="det-lbl">Imputation :</span> <span class="det-val">1234567890</span></div>
+            <div class="det-row"><span class="det-lbl">Dotation :</span> <span class="det-val">100 000 000</span></div>
+            <div class="det-row"><span class="det-lbl">Objet :</span> <span class="det-val">Travaux de construction des hôpitaux des CHU de Bouaké</span></div>
+            <div class="det-row"><span class="det-lbl">Type de marché :</span> <span class="det-val">Travaux</span></div>
+            <div class="det-row"><span class="det-lbl">Mode de passation :</span> <span class="det-val">AAO - Appel d'offres ouvert</span></div>
+            <div class="det-row"><span class="det-lbl">Observations pour mode de passation :</span> <span class="det-val">RAS</span></div>
+            <div class="det-row"><span class="det-lbl">N° du BOMP :</span> <span class="det-val">2310</span></div>
+            <div class="det-row"><span class="det-lbl">Date opération :</span> <span class="det-val">12/10/2026</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Préparation PPM / PPPM</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Existence du PPM :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+            <div class="det-row"><span class="det-lbl">Respect du PPM :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Montant de l'estimation</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Montant :</span> <span class="det-val">1 000 000 000</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Opération réservée aux PME</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Examen et validation du DAO par la DGMP</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de réception du DAO à la DGMP :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Date de validation du DAO :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Garantie de l'offre comprise entre 1 et 1,5%</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Garantie minimale 1% :</span> <span class="det-val">14 000 000</span></div>
+            <div class="det-row"><span class="det-lbl">Garantie maximale 1,5% :</span> <span class="det-val">20 000 000</span></div>
+            <div class="det-row"><span class="det-lbl">Conforme :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Publication de l'avis d'appel d'offres (AAO)</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de réception du DAO à la DGMP :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Numéro de l'Avis d'Appel d'Offres :</span> <span class="det-val">OT 286/26</span></div>
+            <div class="det-row"><span class="det-lbl">Durée de publication :</span> <span class="det-val">30</span></div>
+            <div class="det-row"><span class="det-lbl">Nombre de reports :</span> <span class="det-val">0</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence de la COJO</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Conformité :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence des mandats des représentants des membres de la COJO</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Conformité :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence du procès-verbal d'ouverture des plis</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Conformité :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence du rapport d'analyse des offres</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Conformité :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence de la COJO au jugement</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Conformité :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence du procès-verbal de jugement des offres</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Existence du PV :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Délai imparti à la COJO pour ses travaux</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Date d'ouverture :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Date de jugement :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Date de dernier jugement en cas de recours :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Nombre de reports :</span> <span class="det-val">0</span></div>
+            <div class="det-row"><span class="det-lbl">Respect du délai :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Attributaire(s)</button>
+          <div class="det-body">
+            <div class="overflow-x-auto">
+              <table class="det-table">
+                <thead><tr><th>Raison sociale</th><th>NCC attributaire</th><th>Lot</th><th>Montant</th><th>Observations</th></tr></thead>
+                <tbody>
+                  <tr><td>SOGEST</td><td>123456Z</td><td>1</td><td>1 200 000 000</td><td>RAS</td></tr>
+                  <tr><td>SOGEST</td><td>123456Z</td><td>2</td><td>1 200 000 000</td><td>RAS</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Notification des résultats aux attributaires</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de réception du DAO à la DGMP :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Information des soumissionnaires non retenus</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Respect du délai de recours éventuels</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence d'un marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Production des pièces fiscales et sociales par l'attributaire</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Exigence du quitus de non redevance dans le DAO</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Conformité du contenu du marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Signature du marché par l'attributaire</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de signature :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Signature du marché par l'Autorité Contractante</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de signature :</span> <span class="det-val">12/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Signature par l'autorité compétente</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Numérotation du marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Numéro marché :</span> <span class="det-val">2026-05-03/02-234</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Montant du marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Montant :</span> <span class="det-val">1 000 000 000</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Écart entre montant estimatif et montant attribué</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Montant :</span> <span class="det-val">1 000 000 000</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Situation d'exécution de la ligne budgétaire après passation</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Montant disponible :</span> <span class="det-val">1 000 000 000</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Examen préalable à l'approbation</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de soumission du projet de marché à la DGMP :</span> <span class="det-val">12/12/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Date de validation du projet de marché par la DGMP :</span> <span class="det-val">12/12/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Approbation du marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de signature :</span> <span class="det-val">26/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Autorité approbatrice ou organe approbateur compétent</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Notification de l'approbation du marché au titulaire</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de réception par le titulaire :</span> <span class="det-val">26/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Garantie de bonne exécution</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Enregistrement du marché</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date d'enregistrement :</span> <span class="det-val">26/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Transmission de 02 exemplaires du contrat à la DGMP</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">valeur</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Notification de l'ordre de service de démarrage</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Constat :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Date de réception du DAO à la DGMP :</span> <span class="det-val">12/12/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Conforme :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>Existence et exhaustivité de l'archivage des documents</button>
+          <div class="det-body">
+            <div class="det-row"><span class="det-lbl">Existence :</span> <span class="det-val">Oui</span></div>
+            <div class="det-row"><span class="det-lbl">Exhaustivité :</span> <span class="det-val">26/10/2026</span></div>
+            <div class="det-row"><span class="det-lbl">Observations :</span> <span class="det-val">RAS</span></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ============ BARRE D'ACTIONS (sticky) ============ -->
+  <footer class="glass reveal [animation-delay:260ms] min-[860px]:col-start-2 sticky bottom-4 z-40 flex items-center justify-between gap-3 flex-wrap px-6 py-4">
+    <button class="btn-soft">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Fermer
+    </button>
+    <button class="btn-primary">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg>
+      Modifier
+    </button>
+  </footer>
+</div>
+
+<script>
+  /* ---- Navigation : état actif ---- */
+  function clearActive(){
+    document.querySelectorAll('.nav-item[href], .subitem').forEach(function(n){ n.classList.remove('active'); n.removeAttribute('aria-current'); });
+  }
+  document.querySelectorAll('.nav-item[href], .subitem').forEach(function(item){
+    item.addEventListener('click', function(e){ e.preventDefault(); clearActive(); item.classList.add('active'); item.setAttribute('aria-current','page'); });
+  });
+
+  /* ---- Sous-menu Administration ---- */
+  document.querySelectorAll('[data-admin-toggle]').forEach(function(btn){
+    var group = btn.closest('[data-admin-group]'); var sub = group.querySelector('.submenu');
+    btn.addEventListener('click', function(){
+      var open = sub.classList.toggle('open');
+      group.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* ---- Listes déroulantes du header ---- */
+  var dropdowns = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+  function closeAllDropdowns(except){
+    dropdowns.forEach(function(dd){
+      if (dd === except) return;
+      dd.classList.remove('is-open');
+      var p = dd.querySelector('[data-dd-panel]'); var t = dd.querySelector('[data-dd-trigger]');
+      if (p) p.classList.remove('open'); if (t) t.setAttribute('aria-expanded','false');
+    });
+  }
+  dropdowns.forEach(function(dd){
+    var trigger = dd.querySelector('[data-dd-trigger]');
+    var panel   = dd.querySelector('[data-dd-panel]');
+    var valueEl = dd.querySelector('[data-dd-value]');
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      var willOpen = !panel.classList.contains('open');
+      closeAllDropdowns(dd);
+      panel.classList.toggle('open', willOpen);
+      dd.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+    panel.querySelectorAll('[data-dd-option]').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        panel.querySelectorAll('[data-dd-option]').forEach(function(o){ o.classList.remove('selected'); o.setAttribute('aria-selected','false'); });
+        opt.classList.add('selected'); opt.setAttribute('aria-selected','true');
+        if (valueEl) valueEl.textContent = opt.textContent.trim();
+        closeAllDropdowns();
+      });
+    });
+  });
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAllDropdowns(); });
+
+  /* ---- Sections repliables ---- */
+  document.querySelectorAll('[data-acc-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){ btn.closest('.det').classList.toggle('open'); });
+  });
+</script>
+</body>
+</html>

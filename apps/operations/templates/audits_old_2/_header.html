@@ -1,0 +1,41 @@
+<!-- En-tête commun : sélecteurs Gestion / Session + déconnexion -->
+<header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-4">
+  <div class="flex items-center gap-4 flex-wrap">
+    <div class="relative" data-dropdown>
+      <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+              data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+        <span class="font-heading font-bold text-sm text-ink">Gestion</span>
+        <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2026</span>
+        <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dd-panel left-auto right-0" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+        <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2026</button>
+        <button class="dd-option" data-dd-option role="option" aria-selected="false">2025</button>
+        <button class="dd-option" data-dd-option role="option" aria-selected="false">2024</button>
+      </div>
+    </div>
+    <div class="relative" data-dropdown>
+      <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/50 border border-glassb hover:bg-white hover:shadow-glass transition cursor-pointer"
+              data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session">
+        <span class="font-heading font-bold text-sm text-ink">Session</span>
+        <span class="font-bold text-sm text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full tabular-nums" data-dd-value>2</span>
+        <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dd-panel left-auto right-0 min-w-[100px]" data-dd-panel role="listbox" aria-label="Session">
+        <button class="dd-option" data-dd-option role="option" aria-selected="false">1</button>
+        <button class="dd-option selected" data-dd-option role="option" aria-selected="true">2</button>
+        <button class="dd-option" data-dd-option role="option" aria-selected="false">3</button>
+        <button class="dd-option" data-dd-option role="option" aria-selected="false">4</button>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="grid place-items-center w-9 h-9 rounded-full text-white bg-gradient-to-br from-brand-400 to-teal-500 shadow-md" aria-hidden="true">
+      <svg class="w-[22px] h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+    </span>
+    <a class="btn-soft hover:bg-rose-100 hover:text-rose-500" href="[[=URL('logout')]]" aria-label="Se déconnecter">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+      Quitter
+    </a>
+  </div>
+</header>

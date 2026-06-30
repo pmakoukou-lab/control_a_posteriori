@@ -1,0 +1,121 @@
+mode,colonne_excel,section,sous_section,code_pydal,type
+aoo,A,N°,N°,numero_ordre,integer
+aoo,B,Contrôleur,Nom de l'Agent DGMP,agent_dgmp,string
+aoo,C,Date de contrôle,Date de contrôle,date_controle,date
+aoo,D,Ministère,Ministère,ministere,string
+aoo,E,Autorité Contractante,Autorité Contractante,autorite_contractante,string
+aoo,F,Personne Ressource,Interlocuteur chez l'AC,interlocuteur_ac,string
+aoo,G,Imputation Budgétaire,Imputation Budgétaire,imputation_budgetaire,string
+aoo,H,Montant de la dotation / du Crédit,Montant,montant_dotation_credit,double
+aoo,I,Numéro de l'opération,N° de l'AOO,n_aoo,string
+aoo,J,Objet de l'Opération,Objet de l'Opération,objet_operation,string
+aoo,K,Nature de l'opération,Travaux/ Fournitures/ Prestations,nature_operation,string
+aoo,L,Nature de l'opération,Observations,nature_operation_observation,text
+aoo,M,Préparation du PPM,Existence du PPM,ppm_existence,boolean
+aoo,N,Préparation du PPM,Observations,ppm_existence_observation,text
+aoo,O,Préparation du PPM,Respect du PPM,ppm_respect,boolean
+aoo,P,Préparation du PPM,Observations,ppm_respect_observation,text
+aoo,Q,Montant de l'estimation,Montant,montant_estimation,double
+aoo,R,Opération réservée aux PME,Constat,operation_reservee_pme_constat,boolean
+aoo,S,Opération réservée aux PME,Observations,operation_reservee_pme_observations,text
+aoo,T,Examen et validation du DAO par la DGMP,Constat,examen_validation_dao_dgmp_constat,boolean
+aoo,U,Examen et validation du DAO par la DGMP,Date de reception du DAO à la DGMP,examen_validation_dao_dgmp_date_reception,date
+aoo,V,Examen et validation du DAO par la DGMP,Date de validation du DAO,examen_validation_dao_dgmp_date_validation,date
+aoo,W,Examen et validation du DAO par la DGMP,Observations,examen_validation_dao_dgmp_observation,text
+aoo,X,"Garantie de l'offre comprise entre 1 et 1,5%",Garantie minimale 1%,garantie_offre_minimale,"decimal(14,2)"
+aoo,Y,"Garantie de l'offre comprise entre 1 et 1,5%","Garantie maximale 1,5%",garantie_offre_maximale,"decimal(14,2)"
+aoo,Z,"Garantie de l'offre comprise entre 1 et 1,5%",Constat,garantie_offre_constat,boolean
+aoo,AA,"Garantie de l'offre comprise entre 1 et 1,5%",Observations,garantie_offre_observation,text
+aoo,AB,Publication de l'avis d'appel d'offres (AAO),Constat,publication_aao_constat,boolean
+aoo,AC,Publication de l'avis d'appel d'offres (AAO),Date de publication,publication_aao_date,date
+aoo,AD,Publication de l'avis d'appel d'offres (AAO),Numéro de l'Avis d'Appel d'Offres,publication_aao_num,string
+aoo,AE,Publication de l'avis d'appel d'offres (AAO),Durée de publication,publication_aao_duree,integer
+aoo,AF,Publication de l'avis d'appel d'offres (AAO),Nombre de reports,publication_aao_nb_report,integer
+aoo,AG,Publication de l'avis d'appel d'offres (AAO),Observations,publication_aao_observation,text
+aoo,AH,Existence de la COJO,Conformité,existence_cojo_conformite,boolean
+aoo,AI,Existence de la COJO,Observations,existence_cojo_observations,text
+aoo,AJ,Existence des mandats des répresentants des membres de la COJO,Constat,existence_mandats_representants_membres_constat,boolean
+aoo,AK,Existence des mandats des répresentants des membres de la COJO,Observations,existence_mandats_representants_membres_observations,text
+aoo,AL,Existence du procès-verbal d’ouverture des plis,Existence du PV,existence_pv_ouv_exist,boolean
+aoo,AM,Existence du procès-verbal d’ouverture des plis,Observations,existence_pv_ouv_obs,text
+aoo,AN,Existence du rapport d’analyse des offres,Existence du rapport,existence_rapport_analyse_offres,boolean
+aoo,AO,Existence du rapport d’analyse des offres,Observations,existence_rapport_analyse_offres_observations,text
+aoo,AP,Existence de la COJO au jugement,Conformité,existence_cojo_jugement_conformite,boolean
+aoo,AQ,Existence de la COJO au jugement,Observations,existence_cojo_jugement_observations,text
+aoo,AR,Existence du procès-verbal de jugement des offres,Existence du PV,existence_pv_jug_exist,boolean
+aoo,AS,Existence du procès-verbal de jugement des offres,Observations,existence_pv_jug_obs,text
+aoo,AT,Délai imparti à la COJO pour ses travaux,Date d'ouverture,delai_impart_cojo_trvx_date_ouv,date
+aoo,AU,Délai imparti à la COJO pour ses travaux,Date de jugement,delai_impart_cojo_trvx_date_jug,date
+aoo,AV,Délai imparti à la COJO pour ses travaux,Date de dernier jugement en cas de recours,delai_impart_cojo_trvx_dern_recours,date
+aoo,AW,Délai imparti à la COJO pour ses travaux,Nombre de jugements,delai_impart_cojo_trvx_nb_jug,integer
+aoo,AX,Délai imparti à la COJO pour ses travaux,Respect du délai,delai_impart_cojo_trvx_respect_delai,boolean
+aoo,AY,Délai imparti à la COJO pour ses travaux,Observations,delai_impart_cojo_trvx_observation,text
+aoo,AZ,Attributaire(s),Raison sociale,attributaire_nom,string
+aoo,BA,Attributaire(s),NCC attributaire,attributaire_ncc,string
+aoo,BB,Attributaire(s),Lot,attributaire_lot,string
+aoo,BC,Attributaire(s),Montant,attributaire_montant,double
+aoo,BD,Attributaire(s),Observations,attributaire_observation,text
+aoo,BE,Affichage des résultats des travaux de la COJO,Constat,affich_resultat_trvx_cojo_constat,boolean
+aoo,BF,Affichage des résultats des travaux de la COJO,Respect du délai d'affichage,affich_resultat_trvx_cojo_respect_delai,boolean
+aoo,BG,Affichage des résultats des travaux de la COJO,Observations,affich_resultat_trvx_cojo_observation,text
+aoo,BH,Publication des résultats des travaux de la COJO,Constat,pub_resultat_trvx_cojo_constat,boolean
+aoo,BI,Publication des résultats des travaux de la COJO,Date de publication,pub_resultat_trvx_cojo_date,date
+aoo,BJ,Publication des résultats des travaux de la COJO,Support de publication,pub_resultat_trvx_cojo_support_pub,string
+aoo,BK,Publication des résultats des travaux de la COJO,Observations,pub_resultat_trvx_cojo_observation,text
+aoo,BL,Notification des résultats aux attributaires,Constat,notification_resultats_attributaires_constat,boolean
+aoo,BM,Notification des résultats aux attributaires,Date,notification_resultats_attributaires_date,date
+aoo,BN,Notification des résultats aux attributaires,Observations,notification_resultats_attributaires_observations,text
+aoo,BO,Information des soumissionnaires non retenus,Constat,information_soumissionnaires_non_retenus_constat,boolean
+aoo,BP,Information des soumissionnaires non retenus,Observations,information_soumissionnaires_non_retenus_observations,text
+aoo,BQ,Respect du délai de recours éventuels,Constat,respect_delai_recours_eventuels_constat,boolean
+aoo,BR,Respect du délai de recours éventuels,Observations,respect_delai_recours_eventuels_observations,text
+aoo,BS,Existence d’un marché,Constat,existence_marche_constat,boolean
+aoo,BT,Existence d’un marché,Observations,existence_marche_observations,text
+aoo,BU,Production des pièces fiscales et sociales par l’attributaire,Constat,production_pieces_fiscales_sociales_constat,boolean
+aoo,BV,Production des pièces fiscales et sociales par l’attributaire,Observations,production_pieces_fiscales_sociales_observations,text
+aoo,BW,Exigence du quitus de non redevance dans le DAO,Constat,exigence_quitus_non_redevance_constat,boolean
+aoo,BX,Exigence du quitus de non redevance dans le DAO,Observations,exigence_quitus_non_redevance_observations,text
+aoo,BY,Conformité du contenu du marché,Constat,conformite_contenu_marche_constat,boolean
+aoo,BZ,Conformité du contenu du marché,Observations,conformite_contenu_marche_observations,text
+aoo,CA,Signature du marché par l’attributaire,Constat,signature_marche_attributaire_constat,boolean
+aoo,CB,Signature du marché par l’attributaire,Date de signature,signature_marche_attributaire_date_signature,date
+aoo,CC,Signature du marché par l’attributaire,Observations,signature_marche_attributaire_observations,text
+aoo,CD,Signature du marché par l’Autorité Contractante,Constat,signature_marche_autorite_contractante_constat,boolean
+aoo,CE,Signature du marché par l’Autorité Contractante,Date de signature,signature_marche_autorite_contractante_date_signature,date
+aoo,CF,Signature du marché par l’Autorité Contractante,Observations,signature_marche_autorite_contractante_observations,text
+aoo,CG,Signature par l’autorité compétente,Constat,signature_autorite_competente_constat,boolean
+aoo,CH,Signature par l’autorité compétente,Observations,signature_autorite_competente_observations,text
+aoo,CI,Numérotation du marché,Constat,numerotation_marche_constat,boolean
+aoo,CJ,Numérotation du marché,Numéro du marché,numerotation_marche,string
+aoo,CK,Numérotation du marché,Observations,numerotation_marche_observation,text
+aoo,CL,Montant du marché,Montant,montant_marche,double
+aoo,CM,Ecart entre montant estimatif et montant attribué,Montant,ecart_entre_montant_estimatif,double
+aoo,CN,Situation d'exécution de la ligne budgetaire après passation,Montant disponible,situation_execution_ligne_budgetaire_montant_disponible,double
+aoo,CO,Examen préalable à l'approbation,Constat,exam_prealable_approb_constat,boolean
+aoo,CP,Examen préalable à l'approbation,Date de soumission du projet de marché à la DGMP,exam_prealable_approb_date_soumission,date
+aoo,CQ,Examen préalable à l'approbation,Date de vaidation du projet de marché par la DGMP,exam_prealable_approb_date_validation,date
+aoo,CR,Examen préalable à l'approbation,Observations,exam_prealable_approb_observation,text
+aoo,CS,Approbation du marché,Constat,approbation_marche_constat,boolean
+aoo,CT,Approbation du marché,Date d'approbation,approbation_marche_date,date
+aoo,CU,Approbation du marché,Observations,approbation_marche_observation,text
+aoo,CV,Autorité approbatrice ou organe approbateur compétent,Constat,organe_approbateur_constat,boolean
+aoo,CW,Autorité approbatrice ou organe approbateur compétent,Observations,organe_approbateur_observation,text
+aoo,CX,Notification de l’approbation du marché au titulaire,Constat,notif_approbation_titulaire_constat,boolean
+aoo,CY,Notification de l’approbation du marché au titulaire,Date de reception par le titulaire,notif_approbation_titulaire_date,date
+aoo,CZ,Notification de l’approbation du marché au titulaire,Observations,notif_approbation_titulaire_observation,text
+aoo,DA,Garantie de bonne exécution,Constat,garantie_bonne_execution_constat,boolean
+aoo,DB,Garantie de bonne exécution,Observations,garantie_bonne_execution_observations,text
+aoo,DC,Enregistrement du marché,Constat,enregistrement_marche_constat,boolean
+aoo,DD,Enregistrement du marché,Date d'enregistrement,enregistrement_marche_date,date
+aoo,DE,Enregistrement du marché,Observations,enregistrement_marche_observation,text
+aoo,DF,Transmission de 02 exemplaires du contrat à la DGMP,Constat,transmission_02_exemplaires_contrat_constat,boolean
+aoo,DG,Transmission de 02 exemplaires du contrat à la DGMP,Observations,transmission_02_exemplaires_contrat_observations,text
+aoo,DH,Notification de l’ordre de service de démarrage,Constat,notif_ordre_demarrage_constat,boolean
+aoo,DI,Notification de l’ordre de service de démarrage,Date sur l'accusé de reception,notif_ordre_demarrage_date_accuse_recept,date
+aoo,DJ,Notification de l’ordre de service de démarrage,Conforme,notif_ordre_demarrage_conforme,boolean
+aoo,DK,Notification de l’ordre de service de démarrage,Observations,notif_ordre_demarrage_observation,text
+aoo,DL,Existence et exhaustivité de l’archivage des documents,Existence,existence_exhaustivite_existence,boolean
+aoo,DM,Existence et exhaustivité de l’archivage des documents,Exhaustivité,existence_exhaustivite_exhaustivite,boolean
+aoo,DN,Existence et exhaustivité de l’archivage des documents,Observations,existence_exhaustivite_observation,text
+aoo,DO,Temps total pour la conduite de l’opération,Nombre de jours,temps_total_operation_nb_jours,integer
+aoo,DP,Temps total pour la conduite de l’opération,Observations,temps_total_operation_observation,text

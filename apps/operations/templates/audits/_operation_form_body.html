@@ -1,0 +1,183 @@
+[[
+  def _v(name): return data.get(name, '')
+  _min = data.get('ministere') or {}
+  _gc  = data.get('autorite_contractante') or {}
+  _nat = data.get('nature_operation') or {}
+  _gd_annee = next((e['annee'] for e in globals().get('exercice_options', []) if e['id'] == gestion_default), '')
+  _sd_label = next((s['label'] for s in globals().get('session_options', []) if s['id'] == session_default), '')
+]]
+<form method="post" action="[[=edit_url if is_edit else add_url]]" id="op-form">
+<input type="hidden" name="mode_passation" value="[[=mode]]">
+<input type="hidden" name="ministere" data-min-hidden value="[[=_min.get('id','')]]">
+<input type="hidden" name="autorite_contractante" data-gc-hidden value="[[=_gc.get('id','')]]">
+<input type="hidden" name="nature_operation" data-nature-hidden value="[[=_nat.get('id','')]]">
+<input type="hidden" name="save_again" data-save-again value="">
+
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <div class="ctxbar sticky top-0 z-30 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-lg overflow-hidden" style="border-bottom:1px solid var(--border-weak)">
+        <!-- Ligne 1 : (gauche) titre · Gestion · Session   ·   (droite) plier · séparateur · fermer -->
+        <div class="flex items-center justify-between gap-4 flex-wrap px-6 sm:px-8 pt-3 sm:pt-4 pb-2.5">
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <h1 class="font-heading font-bold text-base sm:text-lg tracking-tight text-ink whitespace-nowrap">[[='Modification' if is_edit else "Ajout"]] d'une opération</h1>
+            <!-- Gestion (exercice budgétaire) — liste déroulante DS (cf. collecte) -->
+            <input type="hidden" name="gestion" data-gestion-hidden value="[[=gestion_default]]">
+            <div class="relative" data-dropdown data-gestion-dd>
+              <button type="button" class="hdr-trigger" data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+                <span class="text-sm font-semibold">Gestion</span>
+                <span class="text-sm font-bold text-brand-700 tabular-nums" data-dd-value>[[=_gd_annee]]</span>
+                <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="dd-panel left-0 min-w-[120px]" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+                [[ for e in globals().get('exercice_options', []): ]]
+                <button type="button" class="dd-option [[='selected' if e['id']==gestion_default else '']]" data-dd-option data-id="[[=e['id'] ]]" role="option" aria-selected="[[='true' if e['id']==gestion_default else 'false']]">[[=e['annee'] ]]</button>
+                [[ pass ]]
+              </div>
+            </div>
+            <!-- Session — dépend de la gestion sélectionnée -->
+            <input type="hidden" name="session" data-session-hidden value="[[=session_default]]">
+            <div class="relative" data-dropdown data-session-dd>
+              <button type="button" class="hdr-trigger" data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Session budgétaire">
+                <span class="text-sm font-semibold">Session</span>
+                <span class="text-sm font-bold text-brand-700 tabular-nums" data-dd-value>[[=_sd_label]]</span>
+                <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="dd-panel left-0 min-w-[140px]" data-dd-panel role="listbox" aria-label="Session budgétaire">
+                [[ for s in globals().get('session_options', []): ]]
+                <button type="button" class="dd-option [[='selected' if s['id']==session_default else '']]" data-dd-option data-id="[[=s['id'] ]]" data-gestion="[[=s['gestion'] ]]" role="option" aria-selected="[[='true' if s['id']==session_default else 'false']]">[[=s['label'] ]]</button>
+                [[ pass ]]
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" class="ctx-icon" data-toggle-all aria-expanded="true" title="Tout replier" aria-label="Tout replier">
+              <svg data-toggle-all-icon class="w-[18px] h-[18px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+            </button>
+            <span class="w-px h-6 bg-[var(--border-strong)] mx-1 shrink-0" aria-hidden="true"></span>
+            <a class="ctx-close" href="[[=URL('collecte')]]" title="Retour à la collecte" aria-label="Retour à la collecte">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
+            </a>
+          </div>
+        </div>
+        <!-- Ligne 2 : rappel (mis à jour pendant la saisie) objet · mode · n° BOMP -->
+        <div class="flex items-center gap-2 flex-wrap px-6 sm:px-8 py-2 text-[13px]" style="background:var(--color-n25)">
+          <span class="text-muted truncate max-w-[480px]" data-hdr-objet>[[=_v('objet_operation') or '—']]</span>
+          <span class="text-muted-2">·</span>
+          <span class="mode-badge">[[=mode]]</span>
+          <span class="text-muted-2">·</span>
+          <span class="text-muted tabular-nums" data-hdr-bomp>N°BOMP [[=_v('n_bomp') or '—']]</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        [[ for _typ, _skey, stitle, fields in all_sections: ]]
+        [[ if _typ == 'op': ]]
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>[[=stitle]]</button>
+          <div class="acc-body">
+            [[ for _row in group_rows(fields): ]]
+              [[ if len(_row) > 1: ]]<div style="display:grid;grid-template-columns:repeat([[=len(_row)]],minmax(0,1fr));gap:1rem">[[ pass ]]
+              [[ for name, label, kind in _row: ]]
+
+              [[ if kind == 'ref_min': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-min-combo data-combo-placeholder="Sélectionner" data-value="[[=_min.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_min.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in min_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ elif kind == 'ref_gc': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-gc-combo data-combo-placeholder="Sélectionner" data-value="[[=_gc.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_gc.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une autorité contractante"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in gc_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]" data-min="[[=o['min_id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ elif kind == 'ref_nature': ]]
+              <div><label class="lbl">[[=label]]</label>
+                <div class="relative" data-combo data-nature-combo data-combo-placeholder="Sélectionner" data-value="[[=_nat.get('label','')]]">
+                  <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                    <span data-combo-label class="truncate text-muted-2">[[=_nat.get('label','') or 'Sélectionner']]</span>
+                    <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="combo-panel" data-combo-panel role="listbox">
+                    <div class="combo-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une nature d'opération"></div>
+                    <div class="combo-list" data-combo-list>
+                      [[ for o in nature_options: ]]<button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>[[ pass ]]
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              [[ else: ]]
+              [[=XML(simple_field(name, label, kind, _v(name), data.get(name)))]]
+              [[ pass ]]
+
+              [[ pass ]]
+              [[ if len(_row) > 1: ]]</div>[[ pass ]]
+            [[ pass ]]
+          </div>
+        </section>
+
+        [[ if any(n == 'nature_operation' for n, _l, _k in fields): ]]
+        <!-- Opérations : nombre de lots + objet de chaque lot (placée sous « Nature de l'opération ») -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opérations</button>
+          <div class="acc-body">
+            <div><label class="lbl">Nombre de lots <span class="text-rose-500">*</span></label>
+              <div class="stepper" data-nombre-stepper>
+                <button type="button" data-nl-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+                <span data-nl-val>[[=lot_count]]</span>
+                <input type="hidden" name="nombre_lots" data-nombre-lots value="[[=lot_count]]">
+                <button type="button" data-nl-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+              </div>
+              <p id="nombre-lots-help" class="text-[12px] text-muted-2 mt-1">Au-delà d'un lot, saisissez l'objet de chaque lot ci-dessous (sinon l'objet de l'opération est repris).</p>
+            </div>
+            <div class="flex flex-col gap-4" data-lot-objets></div>
+            <template data-lot-objet-tpl>[[=XML(objet_lot_tpl)]]</template>
+          </div>
+        </section>
+        [[ pass ]]
+
+        [[ else: ]]
+        <!-- Section d'allotissement : N lots (« Lot 1..N ») générés selon « Nombre de lots » -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>[[=stitle]]</button>
+          <div class="acc-body">
+            <div class="flex flex-col gap-4" data-lot-rows></div>
+            <template data-lot-tpl>[[=XML(lot_tpl(fields))]]</template>
+          </div>
+        </section>
+        [[ pass ]]
+        [[ pass ]]
+        <div class="hidden" data-lot-markers></div>
+        <script>window.__ALLOT_STATE__ = [[=XML(allot_state_json)]];</script>
+
+      </div>
+    </main>
+
+<footer class="glass reveal [animation-delay:260ms] flex items-center justify-center gap-3 flex-wrap px-6 py-4">
+    <button type="submit" class="btn-accent btn-lg">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      [[="Mettre à jour l'opération" if is_edit else "Enregistrer l'opération"]]
+    </button>
+  </footer>
+</form>

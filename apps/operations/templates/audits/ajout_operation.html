@@ -1,0 +1,830 @@
+[[extend 'audits/layout.html']]
+
+[[block title]][[='Modification' if is_edit else "Ajout"]] d'une opération — AUDIT a posteriori[[end]]
+
+[[block main]]
+[[
+  # Raccourcis de rendu pilotés par le dict `data` (vide en création).
+  def _v(name):
+      return data.get(name, '')
+  def _chk(name):
+      return 'checked' if data.get(name) else ''
+  def _num(name):
+      return data.get(name, 0) or 0
+  def _date(name, label):
+      # Champ date : input texte (jj/mm/aaaa) + date-picker maison (cf. JS / .dp-*).
+      cal = ('<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] '
+             'text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" '
+             'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+             'stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14" rx="2"/>'
+             '<path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg>')
+      return ('<div><label class="lbl">' + label + '</label>'
+              '<div class="relative" data-datepicker>' + cal +
+              '<input type="text" name="' + name + '" class="field pl-10" '
+              'value="' + (_v(name) or '') + '" placeholder="jj/mm/aaaa" '
+              'autocomplete="off" readonly data-dp-input>'
+              '<div class="dp-panel" data-dp-panel style="display:none"></div>'
+              '</div></div>')
+  _min = data.get('ministere') or {}
+  _gc  = data.get('gestionnaire_credit') or {}
+]]
+<form method="post" action="[[=edit_url if is_edit else add_url]]" id="op-form">
+<input type="hidden" name="nature_operation" data-nature-hidden value="[[=_v('nature_operation')]]">
+<input type="hidden" name="ministere" data-min-hidden value="[[=_min.get('id','')]]">
+<input type="hidden" name="gestionnaire_credit" data-gc-hidden value="[[=_gc.get('id','')]]">
+<input type="hidden" name="save_again" data-save-again value="">
+
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <!-- En-tête du formulaire -->
+      <div class="flex items-center justify-between gap-4 flex-wrap pb-4 border-b border-black/[.07]">
+        <h1 class="font-heading font-bold text-2xl tracking-tight text-ink whitespace-nowrap">[[='Modification' if is_edit else "Ajout"]] d'une ligne auditée</h1>
+        <p class="text-sm font-semibold text-ink-2 text-center flex-1 min-w-[220px]">[[=_v('objet')]]</p>
+        <button type="button" class="btn-soft shrink-0" data-toggle-all aria-expanded="true">
+          <svg data-toggle-all-icon class="w-[18px] h-[18px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+          <span data-toggle-all-label>Tout replier</span>
+        </button>
+      </div>
+
+      <!-- ====== SECTIONS ====== -->
+      <div class="flex flex-col gap-3">
+
+        <!-- 1. Opérations -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opérations</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Auditeur</label><input type="text" name="auditeur" class="field" value="[[=_v('auditeur')]]" placeholder="Placeholder"></div>
+              <div><label class="lbl">Personne ressource</label><input type="text" name="personne_ressource" class="field" value="[[=_v('personne_ressource')]]" placeholder="Placeholder"></div>
+            </div>
+            <div><label class="lbl">Ministère</label>
+              <div class="relative" data-combo data-min-combo data-combo-placeholder="Sélectionner" data-value="[[=_min.get('label','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">[[=_min.get('label','') or 'Sélectionner']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    [[ for o in min_options: ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div><label class="lbl">Gestionnaire de crédit</label>
+              <div class="relative" data-combo data-gc-combo data-combo-placeholder="Sélectionner" data-value="[[=_gc.get('label','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">[[=_gc.get('label','') or 'Sélectionner']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un gestionnaire de crédit">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    [[ for o in gc_options: ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]" data-min="[[=o['min_id'] ]]">[[=o['label'] ]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Imputation</label><input type="text" name="imputation" class="field" value="[[=_v('imputation')]]" placeholder="Placeholder"></div>
+              <div><label class="lbl">Dotation</label><input type="text" name="dotation" class="field" value="[[=_v('dotation')]]" placeholder="Placeholder"></div>
+            </div>
+            <div><label class="lbl">Objet</label><textarea name="objet" class="field" rows="2" placeholder="Placeholder">[[=_v('objet')]]</textarea></div>
+            <div><label class="lbl">Nature de l'opération</label>
+              <div class="relative" data-combo data-nature-combo data-combo-placeholder="Sélectionner" data-value="[[=_v('nature_operation')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate text-muted-2">[[=_v('nature_operation') or 'Sélectionner']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une nature d'opération">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    [[ for o in nature_options: ]]
+                    <button type="button" class="combo-option" data-combo-option>[[=o]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div><label class="lbl">Observations pour mode nature de marché</label><textarea name="observations_mode_passation" class="field" rows="2" placeholder="Placeholder">[[=_v('observations_mode_passation')]]</textarea></div>
+            <div><label class="lbl">N° du DGMP</label><input type="text" name="num_dgmp" class="field" value="[[=_v('num_dgmp')]]" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 2. Préparation PPM / PPPM -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Préparation PPM / PPPM</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="toggle-row"><span>Existence du PPM</span><label class="switch"><input type="checkbox" name="existence_ppm" [[=_chk('existence_ppm')]]><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Respect du PPM</span><label class="switch"><input type="checkbox" name="respect_ppm" [[=_chk('respect_ppm')]]><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Observations</label><textarea name="ppm_obs" class="field" rows="2" placeholder="Valeur">[[=_v('ppm_obs')]]</textarea></div>
+              <div><label class="lbl">Observations</label><textarea name="pppm_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pppm_obs')]]</textarea></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Montant de l'estimation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant de l'estimation</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" name="montant_estimation" class="field" value="[[=_v('montant_estimation')]]" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 4. Opération réservée aux PME -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Opération réservée aux PME</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="pme_constat" [[=_chk('pme_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="pme_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pme_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 5. Examen et validation du DAO par la DGMP -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen et validation du DAO par la DGMP</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="dao_constat" [[=_chk('dao_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              [[=XML(_date('dao_date_reception', "Date de réception du DAO à la DGMP"))]]
+              [[=XML(_date('dao_date_validation', "Date de validation du DAO"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="dao_obs" class="field" rows="2" placeholder="Valeur">[[=_v('dao_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 6. Garantie de l'offre -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de l'offre comprise entre 1 et 1,5%</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Garantie minimale 1%</label><input type="text" name="garantie_min" class="field" value="[[=_v('garantie_min')]]" placeholder="Placeholder"></div>
+              <div><label class="lbl">Garantie maximale 1,5%</label><input type="text" name="garantie_max" class="field" value="[[=_v('garantie_max')]]" placeholder="Placeholder"></div>
+            </div>
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" name="garantie_conformite" [[=_chk('garantie_conformite')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="garantie_obs" class="field" rows="2" placeholder="Valeur">[[=_v('garantie_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 7. Publication de l'avis d'appel d'offres (AAO) -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication de l'avis d'appel d'offres (AAO)</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="aao_constat" [[=_chk('aao_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              [[=XML(_date('aao_date_reception', "Date de réception du DAO à la DGMP"))]]
+              <div><label class="lbl">Numéro de l'avis d'appel d'Offres</label><input type="text" name="aao_numero" class="field" value="[[=_v('aao_numero')]]" placeholder="Placeholder"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+              <div><label class="lbl">Durée de publication</label><input type="text" name="aao_duree_publication" class="field" value="[[=_v('aao_duree_publication')]]" placeholder="Placeholder"></div>
+              <div><label class="lbl">Nombre de reports</label><div class="stepper" data-stepper><button type="button" data-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button><span data-stepper-val>[[=_num('aao_nb_reports')]]</span><input type="hidden" name="aao_nb_reports" data-stepper-input value="[[=_num('aao_nb_reports')]]"><button type="button" data-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="aao_obs" class="field" rows="2" placeholder="Valeur">[[=_v('aao_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 8. Existence de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" name="cojo_conformite" [[=_chk('cojo_conformite')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="cojo_obs" class="field" rows="2" placeholder="Valeur">[[=_v('cojo_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 9. Existence des mandats des représentants des membres de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence des mandats des représentants des membres de la COJO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" name="cojo_mandats_conformite" [[=_chk('cojo_mandats_conformite')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="cojo_mandats_obs" class="field" rows="2" placeholder="Valeur">[[=_v('cojo_mandats_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 10. Existence du procès-verbal d'ouverture des plis -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal d'ouverture des plis</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence du PV</span><label class="switch"><input type="checkbox" name="pv_ouverture_existence" [[=_chk('pv_ouverture_existence')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="pv_ouverture_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pv_ouverture_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 11. Existence du rapport d'analyse des offres -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du rapport d'analyse des offres</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence de rapport</span><label class="switch"><input type="checkbox" name="rapport_analyse_existence" [[=_chk('rapport_analyse_existence')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="rapport_analyse_obs" class="field" rows="2" placeholder="Valeur">[[=_v('rapport_analyse_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 12. Existence de la COJO au jugement -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence de la COJO au jugement</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Conformité</span><label class="switch"><input type="checkbox" name="cojo_jugement_conformite" [[=_chk('cojo_jugement_conformite')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="cojo_jugement_obs" class="field" rows="2" placeholder="Valeur">[[=_v('cojo_jugement_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 13. Existence du procès-verbal de jugement des offres -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence du procès-verbal de jugement des offres</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Existence du PV</span><label class="switch"><input type="checkbox" name="pv_jugement_existence" [[=_chk('pv_jugement_existence')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="pv_jugement_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pv_jugement_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 14. Délai imparti à la COJO pour ses travaux -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Délai imparti à la COJO pour ses travaux</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              [[=XML(_date('delai_date_ouverture', "Date d'ouverture"))]]
+              [[=XML(_date('delai_date_jugement', "Date de jugement"))]]
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+              [[=XML(_date('delai_date_dernier_jugement', "Date de dernier jugement en cas de recours"))]]
+              <div><label class="lbl">Nombre de reports</label><div class="stepper" data-stepper><button type="button" data-dec aria-label="Diminuer"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button><span data-stepper-val>[[=_num('delai_nb_reports')]]</span><input type="hidden" name="delai_nb_reports" data-stepper-input value="[[=_num('delai_nb_reports')]]"><button type="button" data-inc aria-label="Augmenter"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+            </div>
+            <div class="toggle-row"><span>Respect du délai</span><label class="switch"><input type="checkbox" name="delai_respect" [[=_chk('delai_respect')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="delai_obs" class="field" rows="2" placeholder="Valeur">[[=_v('delai_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 15. Attributaire(s) -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Attributaire(s)</button>
+          <div class="acc-body">
+            <div class="hidden sm:flex items-center gap-3">
+              <div class="grid grid-cols-5 gap-3 flex-1">
+                <span class="lbl mb-0">Raison sociale</span>
+                <span class="lbl mb-0">NCC attributaire</span>
+                <span class="lbl mb-0">Lot</span>
+                <span class="lbl mb-0">Montant</span>
+                <span class="lbl mb-0">Observations</span>
+              </div>
+              <span class="w-9 shrink-0" aria-hidden="true"></span>
+            </div>
+
+            <div class="flex flex-col gap-3" data-attr-list>
+              [[ _rows = attributaires if attributaires else [dict()] ]]
+              [[ for a in _rows: ]]
+              <div class="flex items-center gap-3" data-attr-row>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 flex-1">
+                  <input type="text" name="attr_raison_sociale" class="field col-span-2 sm:col-span-1" value="[[=a.get('raison_sociale','')]]" placeholder="Raison sociale">
+                  <input type="text" name="attr_ncc" class="field" value="[[=a.get('ncc','')]]" placeholder="NCC attributaire">
+                  <input type="text" name="attr_lot" class="field" value="[[=a.get('lot','')]]" placeholder="Lot">
+                  <input type="text" name="attr_montant" class="field" value="[[=a.get('montant','')]]" placeholder="Montant">
+                  <input type="text" name="attr_observations" class="field col-span-2 sm:col-span-1" value="[[=a.get('observations','')]]" placeholder="Observations">
+                </div>
+                <button type="button" class="act-btn act-del shrink-0" data-attr-del aria-label="Supprimer l'attributaire"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg></button>
+              </div>
+              [[ pass ]]
+            </div>
+
+            <button type="button" class="icon-box" data-attr-add aria-label="Ajouter un attributaire"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+        </section>
+
+        <!-- 16. Affichage des résultats des travaux de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Affichage des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+            <div class="flex items-center gap-8 flex-wrap">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="affichage_constat" [[=_chk('affichage_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Respect du délai d'affichage</span><label class="switch"><input type="checkbox" name="affichage_respect_delai" [[=_chk('affichage_respect_delai')]]><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="affichage_obs" class="field" rows="2" placeholder="Valeur">[[=_v('affichage_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 17. Publication des résultats des travaux de la COJO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Publication des résultats des travaux de la COJO</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><label class="lbl">Support de publication</label><input type="text" name="pub_resultats_support" class="field" value="[[=_v('pub_resultats_support')]]" placeholder="Placeholder"></div>
+              [[=XML(_date('pub_resultats_date', "Date de publication"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="pub_resultats_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pub_resultats_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 18. Notification des résultats aux attributaires -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification des résultats aux attributaires</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="notif_resultats_constat" [[=_chk('notif_resultats_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('notif_resultats_date', "Date de réception du DAO à la DGMP"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="notif_resultats_obs" class="field" rows="2" placeholder="Valeur">[[=_v('notif_resultats_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 19. Information des soumissionnaires non retenus -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Information des soumissionnaires non retenus</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="info_non_retenus_constat" [[=_chk('info_non_retenus_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="info_non_retenus_obs" class="field" rows="2" placeholder="Valeur">[[=_v('info_non_retenus_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 20. Respect du délai de recours éventuels -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Respect du délai de recours éventuels</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="recours_constat" [[=_chk('recours_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="recours_obs" class="field" rows="2" placeholder="Valeur">[[=_v('recours_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 21. Existence d'un marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence d'un marché</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="marche_constat" [[=_chk('marche_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="marche_obs" class="field" rows="2" placeholder="Valeur">[[=_v('marche_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 22. Production des pièces fiscales et sociales par l'attributaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Production des pièces fiscales et sociales par l'attributaire</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="pieces_constat" [[=_chk('pieces_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="pieces_obs" class="field" rows="2" placeholder="Valeur">[[=_v('pieces_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 23. Exigence du quitus de non redevance dans le DAO -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Exigence du quitus de non redevance dans le DAO</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="quitus_constat" [[=_chk('quitus_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="quitus_obs" class="field" rows="2" placeholder="Valeur">[[=_v('quitus_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 24. Conformité du contenu du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Conformité du contenu du marché</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="contenu_constat" [[=_chk('contenu_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="contenu_obs" class="field" rows="2" placeholder="Valeur">[[=_v('contenu_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 25. Signature du marché par l'attributaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l'attributaire</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="sign_attr_constat" [[=_chk('sign_attr_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('sign_attr_date', "Date de signature"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="sign_attr_obs" class="field" rows="2" placeholder="Valeur">[[=_v('sign_attr_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 26. Signature du marché par l'Autorité Contractante -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature du marché par l'Autorité Contractante</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="sign_ac_constat" [[=_chk('sign_ac_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('sign_ac_date', "Date de signature"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="sign_ac_obs" class="field" rows="2" placeholder="Valeur">[[=_v('sign_ac_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 27. Signature par l'autorité compétente -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Signature par l'autorité compétente</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="sign_autorite_constat" [[=_chk('sign_autorite_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="sign_autorite_obs" class="field" rows="2" placeholder="Valeur">[[=_v('sign_autorite_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 28. Numérotation du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Numérotation du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="num_marche_constat" [[=_chk('num_marche_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              <div><label class="lbl">Numéro marché</label><input type="text" name="num_marche_numero" class="field" value="[[=_v('num_marche_numero')]]" placeholder="2026-03-03/01-234"></div>
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="num_marche_obs" class="field" rows="2" placeholder="Valeur">[[=_v('num_marche_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 29. Montant du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Montant du marché</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" name="montant_marche" class="field" value="[[=_v('montant_marche')]]" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 30. Écart entre montant estimatif et montant attribué -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Écart entre montant estimatif et montant attribué</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant</label><input type="text" name="ecart_montant" class="field" value="[[=_v('ecart_montant')]]" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 31. Situation d'exécution de la ligne budgétaire après passation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Situation d'exécution de la ligne budgétaire après passation</button>
+          <div class="acc-body">
+            <div><label class="lbl">Montant disponible</label><input type="text" name="situation_montant_disponible" class="field" value="[[=_v('situation_montant_disponible')]]" placeholder="Placeholder"></div>
+          </div>
+        </section>
+
+        <!-- 32. Examen préalable à l'approbation -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Examen préalable à l'approbation</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              [[=XML(_date('examen_date_soumission', "Date de soumission du projet de marché à la DGMP"))]]
+              [[=XML(_date('examen_date_validation', "Date de validation du projet de marché par la DGMP"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="examen_obs" class="field" rows="2" placeholder="Valeur">[[=_v('examen_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 33. Approbation du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Approbation du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="approbation_constat" [[=_chk('approbation_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('approbation_date', "Date de signature"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="approbation_obs" class="field" rows="2" placeholder="Valeur">[[=_v('approbation_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 34. Autorité approbatrice ou organe approbateur compétent -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Autorité approbatrice ou organe approbateur compétent</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="autorite_approb_constat" [[=_chk('autorite_approb_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="autorite_approb_obs" class="field" rows="2" placeholder="Valeur">[[=_v('autorite_approb_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 35. Notification de l'approbation du marché au titulaire -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l'approbation du marché au titulaire</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="notif_approb_constat" [[=_chk('notif_approb_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('notif_approb_date', "Date de réception par le titulaire"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="notif_approb_obs" class="field" rows="2" placeholder="Valeur">[[=_v('notif_approb_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 36. Garantie de bonne exécution -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Garantie de bonne exécution</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="garantie_execution_constat" [[=_chk('garantie_execution_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="garantie_execution_obs" class="field" rows="2" placeholder="Valeur">[[=_v('garantie_execution_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 37. Enregistrement du marché -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Enregistrement du marché</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="enreg_constat" [[=_chk('enreg_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('enreg_date', "Date d'enregistrement"))]]
+            </div>
+            <div><label class="lbl">Observations</label><textarea name="enreg_obs" class="field" rows="2" placeholder="Valeur">[[=_v('enreg_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 38. Transmission de 02 exemplaires du contrat à la DGMP -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Transmission de 02 exemplaires du contrat à la DGMP</button>
+          <div class="acc-body">
+            <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="transmission_constat" [[=_chk('transmission_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+            <div><label class="lbl">Observations</label><textarea name="transmission_obs" class="field" rows="2" placeholder="Valeur">[[=_v('transmission_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 39. Notification de l'ordre de service de démarrage -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Notification de l'ordre de service de démarrage</button>
+          <div class="acc-body">
+            <div class="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] gap-4 items-center">
+              <div class="toggle-row"><span>Constat</span><label class="switch"><input type="checkbox" name="ordre_service_constat" [[=_chk('ordre_service_constat')]]><span class="track"></span><span class="thumb"></span></label></div>
+              [[=XML(_date('ordre_service_date', "Date de réception du DAO à la DGMP"))]]
+              <div class="toggle-row"><span>Conforme</span><label class="switch"><input type="checkbox" name="ordre_service_conforme" [[=_chk('ordre_service_conforme')]]><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observation</label><textarea name="ordre_service_obs" class="field" rows="2" placeholder="Valeur">[[=_v('ordre_service_obs')]]</textarea></div>
+          </div>
+        </section>
+
+        <!-- 40. Existence et exhaustivité de l'archivage des documents -->
+        <section class="acc open">
+          <button type="button" class="acc-head" data-acc-toggle><svg class="acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>Existence et exhaustivité de l'archivage des documents</button>
+          <div class="acc-body">
+            <div class="flex items-center gap-8 flex-wrap">
+              <div class="toggle-row"><span>Existence</span><label class="switch"><input type="checkbox" name="archivage_existence" [[=_chk('archivage_existence')]]><span class="track"></span><span class="thumb"></span></label></div>
+              <div class="toggle-row"><span>Exhaustivité</span><label class="switch"><input type="checkbox" name="archivage_exhaustivite" [[=_chk('archivage_exhaustivite')]]><span class="track"></span><span class="thumb"></span></label></div>
+            </div>
+            <div><label class="lbl">Observation</label><textarea name="archivage_obs" class="field" rows="2" placeholder="Valeur">[[=_v('archivage_obs')]]</textarea></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+<footer class="glass reveal [animation-delay:260ms] mt-5 flex items-center justify-between gap-3 flex-wrap px-6 py-4">
+    <a class="btn-soft" href="[[=URL('collecte')]]">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Fermer
+    </a>
+    <div class="flex items-center gap-3 flex-wrap">
+      [[ if not is_edit: ]]
+      <button type="submit" class="btn-secondary" data-save-again-btn>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Enregistrer et ajouter une nouvelle opération
+      </button>
+      [[ pass ]]
+      <button type="submit" class="btn-primary">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Enregistrer
+      </button>
+    </div>
+  </footer>
+</form>
+[[end]]
+
+[[block js]]
+<script>
+/* ---- Accordéon des sections + « Tout replier / déplier » ---- */
+  var accSections = document.querySelectorAll('.acc');
+  var toggleAllBtn = document.querySelector('[data-toggle-all]');
+  var toggleAllLabel = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-label]') : null;
+  var toggleAllIcon = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-icon]') : null;
+
+  function anyAccOpen(){
+    return Array.prototype.some.call(accSections, function(a){ return a.classList.contains('open'); });
+  }
+  function syncToggleAll(){
+    if (!toggleAllBtn) return;
+    var open = anyAccOpen();
+    if (toggleAllLabel) toggleAllLabel.textContent = open ? 'Tout replier' : 'Tout déplier';
+    if (toggleAllIcon) toggleAllIcon.classList.toggle('rotate-180', !open);
+    toggleAllBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  document.querySelectorAll('[data-acc-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.closest('.acc').classList.toggle('open');
+      syncToggleAll();
+    });
+  });
+
+  if (toggleAllBtn){
+    toggleAllBtn.addEventListener('click', function(){
+      var collapse = anyAccOpen();          // au moins un ouvert -> tout replier
+      accSections.forEach(function(a){ a.classList.toggle('open', !collapse); });
+      syncToggleAll();
+    });
+    syncToggleAll();
+  }
+
+  /* ---- Compteurs (stepper) : synchronisent un input caché ---- */
+  document.querySelectorAll('[data-stepper]').forEach(function(st){
+    var val = st.querySelector('[data-stepper-val]');
+    var input = st.querySelector('[data-stepper-input]');
+    function set(n){ n = Math.max(0, n); val.textContent = n; if (input) input.value = n; }
+    st.querySelector('[data-dec]').addEventListener('click', function(){ set((parseInt(val.textContent,10)||0) - 1); });
+    st.querySelector('[data-inc]').addEventListener('click', function(){ set((parseInt(val.textContent,10)||0) + 1); });
+  });
+
+  /* ---- Attributaires : ajout / suppression de lignes ---- */
+  var attrList = document.querySelector('[data-attr-list]');
+  var attrAdd  = document.querySelector('[data-attr-add]');
+  var ATTR_TRASH = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>';
+  function attrRowHtml(){
+    return '<div class="flex items-center gap-3" data-attr-row>'+
+      '<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 flex-1">'+
+        '<input type="text" name="attr_raison_sociale" class="field col-span-2 sm:col-span-1" placeholder="Raison sociale">'+
+        '<input type="text" name="attr_ncc" class="field" placeholder="NCC attributaire">'+
+        '<input type="text" name="attr_lot" class="field" placeholder="Lot">'+
+        '<input type="text" name="attr_montant" class="field" placeholder="Montant">'+
+        '<input type="text" name="attr_observations" class="field col-span-2 sm:col-span-1" placeholder="Observations">'+
+      '</div>'+
+      '<button type="button" class="act-btn act-del shrink-0" data-attr-del aria-label="Supprimer l\'attributaire">'+ATTR_TRASH+'</button>'+
+    '</div>';
+  }
+  function wireAttrDel(row){
+    var del = row.querySelector('[data-attr-del]');
+    if (del) del.addEventListener('click', function(){ row.remove(); });
+  }
+  if (attrList) attrList.querySelectorAll('[data-attr-row]').forEach(wireAttrDel);
+  if (attrAdd && attrList){
+    attrAdd.addEventListener('click', function(){
+      var tmp = document.createElement('div');
+      tmp.innerHTML = attrRowHtml();
+      var row = tmp.firstElementChild;
+      attrList.appendChild(row);
+      wireAttrDel(row);
+      var firstInput = row.querySelector('input');
+      if (firstInput) firstInput.focus();
+    });
+  }
+
+  /* ---- Combos liés à des inputs cachés (ministère, gestionnaire, mode, type) ---- */
+  var form = document.getElementById('op-form');
+  var minCombo  = document.querySelector('[data-min-combo]');
+  var gcCombo   = document.querySelector('[data-gc-combo]');
+  var natureCombo = document.querySelector('[data-nature-combo]');
+  var minHidden  = document.querySelector('[data-min-hidden]');
+  var gcHidden   = document.querySelector('[data-gc-hidden]');
+  var natureHidden = document.querySelector('[data-nature-hidden]');
+
+  function selectedOption(combo){
+    if (!combo) return null;
+    var label = (window.getComboValue ? window.getComboValue(combo) : '') || '';
+    var found = null;
+    combo.querySelectorAll('[data-combo-option]').forEach(function(o){
+      if (o.textContent.trim() === label) found = o;
+    });
+    return found;
+  }
+
+  /* Filtre les gestionnaires selon le ministère choisi. Si aucun ministère n'est
+     choisi, ou si le ministère choisi n'a AUCUN gestionnaire rattaché, on affiche
+     tous les gestionnaires (le select ne doit jamais paraître vide à tort). */
+  function filterGc(minId){
+    if (!gcCombo) return;
+    var opts = gcCombo.querySelectorAll('[data-combo-option]');
+    var matches = 0;
+    if (minId) opts.forEach(function(o){ if ((o.getAttribute('data-min') || '') === String(minId)) matches++; });
+    opts.forEach(function(o){
+      var m = o.getAttribute('data-min') || '';
+      var show = (!minId || matches === 0) ? true : (m === String(minId));
+      o.style.display = show ? '' : 'none';
+    });
+  }
+  function syncHidden(){
+    var mo = selectedOption(minCombo);
+    if (minHidden) minHidden.value = mo ? (mo.getAttribute('data-id') || '') : '';
+    var go = selectedOption(gcCombo);
+    if (gcHidden) gcHidden.value = go ? (go.getAttribute('data-id') || '') : '';
+    if (natureHidden && window.getComboValue) natureHidden.value = window.getComboValue(natureCombo) || '';
+  }
+
+  /* Re-filtrer le gestionnaire quand on choisit un ministère. */
+  if (minCombo){
+    minCombo.querySelectorAll('[data-combo-option]').forEach(function(o){
+      o.addEventListener('click', function(){
+        var id = o.getAttribute('data-id') || '';
+        if (minHidden) minHidden.value = id;
+        filterGc(id);
+        // Si le gestionnaire courant n'appartient pas au ministère, on le vide.
+        var go = selectedOption(gcCombo);
+        if (go && (go.getAttribute('data-min') || '') !== String(id)){
+          if (window.setComboValue) window.setComboValue(gcCombo, '');
+          if (gcHidden) gcHidden.value = '';
+        }
+      });
+    });
+    // Filtrage initial (édition).
+    if (minHidden && minHidden.value) filterGc(minHidden.value);
+  }
+
+  if (form){
+    form.addEventListener('submit', function(){ syncHidden(); });
+  }
+
+  /* « Enregistrer et ajouter une nouvelle » : marque le drapeau avant envoi. */
+  var againBtn = document.querySelector('[data-save-again-btn]');
+  var againField = document.querySelector('[data-save-again]');
+  if (againBtn && againField){
+    againBtn.addEventListener('click', function(){ againField.value = '1'; });
+  }
+
+  /* ================================================================
+     Date-picker maison (calendrier brand) — un par champ [data-datepicker].
+     Valeur affichée/soumise au format jj/mm/aaaa (parsé côté serveur).
+     ================================================================ */
+  (function(){
+    var MOIS = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août',
+                'Septembre','Octobre','Novembre','Décembre'];
+    var JOURS = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    function fmt(d){ return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+    function parse(s){
+      var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((s || '').trim());
+      if (!m) return null;
+      var d = new Date(+m[3], +m[2] - 1, +m[1]);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function sameDay(a, b){
+      return a && b && a.getFullYear() === b.getFullYear()
+          && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    var openPanel = null;
+    /* display inline pour primer sur .dp-panel (règle non-layered = display:flex). */
+    function hide(p){ p.style.display = 'none'; }
+    function show(p){ p.style.display = 'flex'; }
+    function isHidden(p){ return p.style.display === 'none'; }
+    function closeOpen(){ if (openPanel){ hide(openPanel); openPanel = null; } }
+    document.addEventListener('click', closeOpen);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeOpen(); });
+
+    document.querySelectorAll('[data-datepicker]').forEach(function(root){
+      var input = root.querySelector('[data-dp-input]');
+      var panel = root.querySelector('[data-dp-panel]');
+      if (!input || !panel) return;
+
+      var today = new Date();
+      var selected = parse(input.value);
+      var view = selected ? new Date(selected.getTime()) : new Date(today.getTime());
+      view.setDate(1);
+
+      function render(){
+        var y = view.getFullYear(), mo = view.getMonth();
+        var startIdx = (new Date(y, mo, 1).getDay() + 6) % 7;   /* Lundi = 0 */
+        var nbJours = new Date(y, mo + 1, 0).getDate();
+        var h = '';
+        h += '<div class="dp-head">';
+        h += '<button type="button" class="dp-nav" data-dp-prev aria-label="Mois précédent"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>';
+        h += '<div class="dp-title">' + MOIS[mo] + ' ' + y + '</div>';
+        h += '<button type="button" class="dp-nav" data-dp-next aria-label="Mois suivant"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>';
+        h += '</div>';
+        h += '<div class="dp-grid">';
+        JOURS.forEach(function(j){ h += '<span class="dp-wd">' + j + '</span>'; });
+        h += '</div>';
+        h += '<div class="dp-grid">';
+        for (var i = 0; i < startIdx; i++) h += '<span class="dp-day empty"></span>';
+        for (var d = 1; d <= nbJours; d++){
+          var cur = new Date(y, mo, d);
+          var cls = 'dp-day';
+          if (sameDay(cur, selected)) cls += ' selected';
+          else if (sameDay(cur, today)) cls += ' today';
+          h += '<button type="button" class="' + cls + '" data-dp-day="' + d + '">' + d + '</button>';
+        }
+        h += '</div>';
+        panel.innerHTML = h;
+      }
+
+      function open(){
+        if (openPanel && openPanel !== panel){ hide(openPanel); }
+        render();
+        show(panel);
+        openPanel = panel;
+      }
+
+      input.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (isHidden(panel)) open(); else { hide(panel); openPanel = null; }
+      });
+
+      panel.addEventListener('click', function(e){
+        e.stopPropagation();
+        var btn = e.target.closest('button');
+        if (!btn) return;
+        if (btn.hasAttribute('data-dp-prev')){ view.setMonth(view.getMonth() - 1); render(); return; }
+        if (btn.hasAttribute('data-dp-next')){ view.setMonth(view.getMonth() + 1); render(); return; }
+        if (btn.hasAttribute('data-dp-day')){
+          selected = new Date(view.getFullYear(), view.getMonth(), +btn.getAttribute('data-dp-day'));
+          input.value = fmt(selected);
+          hide(panel); openPanel = null;
+        }
+      });
+    });
+  })();
+</script>
+[[end]]

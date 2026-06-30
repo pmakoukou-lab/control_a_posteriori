@@ -1,0 +1,78 @@
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-5">
+
+      <!-- Barre de contexte sticky (.ctxbar) — cf. maquette services/details.html -->
+      <div class="ctxbar sticky top-0 z-30 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-lg overflow-hidden" style="border-bottom:1px solid var(--border-weak)">
+        <!-- Ligne 1 : (gauche) titre · N° opération   ·   (droite) Modifier · plier · séparateur · fermer -->
+        <div class="flex items-center justify-between gap-4 flex-wrap px-6 sm:px-8 pt-3 sm:pt-4 pb-2.5">
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <h1 class="font-heading font-bold text-base sm:text-lg tracking-tight text-ink whitespace-nowrap">Détails de l'opération</h1>
+            <span class="hdr-static">N° <b>[[=globals().get('op_number','')]]</b></span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="[[=URL(globals().get('mode','AOO').lower(), 'operation', globals().get('op_id',0), 'edit')]]" class="btn-accent" title="Modifier l'opération">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              Modifier
+            </a>
+            <button type="button" class="ctx-icon" data-toggle-all aria-expanded="true" title="Tout replier" aria-label="Tout replier">
+              <svg data-toggle-all-icon class="w-[18px] h-[18px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+            </button>
+            <span class="w-px h-6 bg-[var(--border-strong)] mx-1 shrink-0" aria-hidden="true"></span>
+            <a class="ctx-close" href="[[=URL('collecte')]]" title="Retour à la collecte" aria-label="Retour à la collecte">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
+            </a>
+          </div>
+        </div>
+        <!-- Ligne 2 : rappel (lecture seule) objet · mode · n° BOMP -->
+        <div class="flex items-center gap-2 flex-wrap px-6 sm:px-8 py-2 text-[13px]" style="background:var(--color-n25)">
+          <span class="text-muted truncate max-w-[480px]">[[=globals().get('op_objet','') or '—']]</span>
+          <span class="text-muted-2">·</span>
+          <span class="mode-badge">[[=globals().get('op_mode','AOO')]]</span>
+          <span class="text-muted-2">·</span>
+          <span class="text-muted tabular-nums">N°BOMP [[=globals().get('op_bomp','') or '—']]</span>
+        </div>
+      </div>
+
+      <!-- ====== SECTIONS (lecture seule) — même disposition que l'ajout ====== -->
+      <div class="flex flex-col gap-2.5">
+
+        [[ for b in globals().get('blocks', []): ]]
+        <section class="det open">
+          <button type="button" class="det-head" data-acc-toggle><svg class="det-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>[[=b['title'] ]]</button>
+          <div class="det-body">
+
+            [[ if b['type'] == 'op': ]]
+            [[ for r in b['rows']: ]]
+            <div class="det-row"><span class="det-lbl">[[=r['label'] ]] :</span>[[ if r['value'] == 'Oui': ]] <span class="dbadge dbadge-yes">Oui</span>[[ elif r['value'] == 'Non': ]] <span class="dbadge dbadge-no">Non</span>[[ else: ]]<span class="dval[[=' dval-empty' if r['value'] == '—' else '']]">[[=r['value'] ]]</span>[[ pass ]]</div>
+            [[ pass ]]
+
+            [[ else: ]]
+            [[ if not b['lots']: ]]
+            <div class="det-row"><span class="dval dval-empty">Aucun lot renseigné.</span></div>
+            [[ pass ]]
+            [[ for lot in b['lots']: ]]
+            <div class="rounded-xl border border-black/[.08] bg-black/[.02] p-3 mb-2">
+              <p class="font-heading font-semibold text-ink mb-2 pb-1.5 border-b border-black/[.06]">Lot [[=lot['numero'] ]][[ if lot['objet']: ]] : <span class="font-normal text-ink-2">[[=lot['objet'] ]]</span>[[ pass ]]</p>
+              [[ for r in lot['rows']: ]]
+              <div class="det-row"><span class="det-lbl">[[=r['label'] ]] :</span>[[ if r['value'] == 'Oui': ]] <span class="dbadge dbadge-yes">Oui</span>[[ elif r['value'] == 'Non': ]] <span class="dbadge dbadge-no">Non</span>[[ else: ]]<span class="dval[[=' dval-empty' if r['value'] == '—' else '']]">[[=r['value'] ]]</span>[[ pass ]]</div>
+              [[ pass ]]
+            </div>
+            [[ pass ]]
+            [[ pass ]]
+
+          </div>
+        </section>
+        [[ pass ]]
+
+      </div>
+    </main>
+
+<footer class="glass reveal [animation-delay:260ms] min-[860px]:col-start-2 sticky bottom-4 z-40 flex items-center justify-between gap-3 flex-wrap px-6 py-4">
+    <a class="btn-soft" href="[[=URL('collecte')]]">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Fermer
+    </a>
+    <a class="btn-primary" href="[[=URL(globals().get('mode','AOO').lower(), 'operation', globals().get('op_id',0), 'edit')]]">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg>
+      Modifier
+    </a>
+  </footer>

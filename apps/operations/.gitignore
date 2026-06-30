@@ -1,0 +1,2 @@
+# Sauvegardes de la base (créées avant purge/migration)
+databases/*.db.bak

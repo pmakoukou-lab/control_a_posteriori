@@ -1,0 +1,34 @@
+<script>
+/* ---- Sections repliables + « Tout replier / déplier » ---- */
+  var detSections = document.querySelectorAll('.det');
+  var toggleAllBtn = document.querySelector('[data-toggle-all]');
+  var toggleAllLabel = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-label]') : null;
+  var toggleAllIcon = toggleAllBtn ? toggleAllBtn.querySelector('[data-toggle-all-icon]') : null;
+
+  function anyDetOpen(){
+    return Array.prototype.some.call(detSections, function(d){ return d.classList.contains('open'); });
+  }
+  function syncToggleAll(){
+    if (!toggleAllBtn) return;
+    var open = anyDetOpen();
+    if (toggleAllLabel) toggleAllLabel.textContent = open ? 'Tout replier' : 'Tout déplier';
+    if (toggleAllIcon) toggleAllIcon.classList.toggle('rotate-180', !open);
+    toggleAllBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  document.querySelectorAll('[data-acc-toggle]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.closest('.det').classList.toggle('open');
+      syncToggleAll();
+    });
+  });
+
+  if (toggleAllBtn){
+    toggleAllBtn.addEventListener('click', function(){
+      var collapse = anyDetOpen();          // au moins un ouvert -> tout replier
+      detSections.forEach(function(d){ d.classList.toggle('open', !collapse); });
+      syncToggleAll();
+    });
+    syncToggleAll();
+  }
+</script>

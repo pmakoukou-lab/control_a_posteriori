@@ -1,0 +1,515 @@
+[[extend 'audits/layout.html']]
+
+[[block title]]Liste des comptes utilisateurs — AUDIT a posteriori[[end]]
+
+[[block main]]
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6">
+
+      <!-- Onglets -->
+      <div class="flex items-center gap-1 border-b border-black/[.08]" role="tablist" aria-label="Vues">
+        <button class="tab active" data-tab="users" role="tab" aria-selected="true" aria-controls="panel-users">Utilisateurs</button>
+        <button class="tab" data-tab="roles" role="tab" aria-selected="false" aria-controls="panel-roles">Role</button>
+      </div>
+
+      <!-- ============ PANNEAU : UTILISATEURS ============ -->
+      <div id="panel-users" data-panel="users" role="tabpanel" class="flex flex-col gap-6">
+
+        <!-- Titre + action -->
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+        <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des comptes utilisateurs</h1>
+        <button class="btn-primary" data-add-user>
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+          Ajouter un utilisateur
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+        <table class="utbl">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Role</th>
+              <th>Statut</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-users>
+            <tr>
+              <td>
+                <div class="font-bold text-ink">KONAN Laurent</div>
+                <div class="text-muted text-[13px]">klaurent@gmail.com</div>
+              </td>
+              <td><span class="pill-role">Auditeur</span></td>
+              <td><span class="status status-actif" data-status>Actif</span></td>
+              <td>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver le compte"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="font-bold text-ink">KLIZI Isidore</div>
+                <div class="text-muted text-[13px]">kisidore@gmail.com</div>
+              </td>
+              <td><span class="pill-role">Administrateur</span></td>
+              <td><span class="status status-actif" data-status>Actif</span></td>
+              <td>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle" data-toggle aria-label="Désactiver le compte"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="font-bold text-ink">Kplé Leki</div>
+                <div class="text-muted text-[13px]">kleki@gmail.com</div>
+              </td>
+              <td><span class="pill-role">Auditeur</span></td>
+              <td><span class="status status-off" data-status>Desactivé</span></td>
+              <td>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle is-on" data-toggle aria-label="Activer le compte"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+        <button class="page-link" disabled>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Previous
+        </button>
+        <button class="page-num active" aria-current="page">1</button>
+        <button class="page-num">2</button>
+        <button class="page-num">3</button>
+        <span class="px-1.5 text-muted-2 select-none">…</span>
+        <button class="page-num">67</button>
+        <button class="page-num">68</button>
+        <button class="page-link">
+          Next
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </nav>
+      </div><!-- /panneau utilisateurs -->
+
+      <!-- ============ PANNEAU : ROLE ============ -->
+      <div id="panel-roles" data-panel="roles" role="tabpanel" hidden class="flex flex-col gap-6">
+
+        <!-- Titre + action -->
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des rôles</h1>
+          <button class="btn-primary" data-add-role>
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un rôle
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="rounded-2xl border border-black/[.07] overflow-hidden overflow-x-auto">
+          <table class="utbl">
+            <thead>
+              <tr>
+                <th>Rôles</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody data-roles-list>
+              <tr data-desc="Réalise la saisie et la consultation des opérations auditées.">
+                <td><span class="font-bold text-ink">Auditeur</span></td>
+                <td>
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                    <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-desc="Gère les objets manipulés par l'application.">
+                <td><span class="font-bold text-ink">Administrateur</span></td>
+                <td>
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                    <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+<!-- ============ MODALES ============ -->
+<div class="modal-root" data-modal-root>
+  <div class="modal-back" data-modal-close></div>
+
+  <!-- Formulaire : ajout / modification -->
+  <div class="umodal umodal-lg" data-modal="form" hidden role="dialog" aria-modal="true" aria-labelledby="form-title">
+    <h2 id="form-title" data-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un utilisateur</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label class="lbl" for="f-nom">Nom</label><input id="f-nom" data-f-nom class="field" type="text" placeholder="Ex. KOUASSI"></div>
+      <div><label class="lbl" for="f-prenom">Prénoms</label><input id="f-prenom" data-f-prenom class="field" type="text" placeholder="Ex. Kouadio"></div>
+      <div><label class="lbl" for="f-email">Email</label><input id="f-email" data-f-email class="field" type="email" placeholder="exemple@mail.com"></div>
+      <div><label class="lbl" for="f-tel">N° Téléphone</label><input id="f-tel" data-f-tel class="field" type="tel" placeholder="+225 07 00 00 00 00"></div>
+    </div>
+    <div class="mt-4">
+      <label class="lbl">Rôle</label>
+      <div class="flex flex-wrap gap-2" data-roles>
+        <button type="button" class="role-pill" data-role>Auditeur</button>
+        <button type="button" class="role-pill" data-role>Administrateur</button>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-primary" data-confirm="form">
+        <span data-form-icon class="inline-grid place-items-center">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        </span>
+        <span data-form-btn>Ajouter l'utilisateur</span>
+      </button>
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+    </div>
+  </div>
+
+  <!-- Suppression -->
+  <div class="umodal umodal-sm" data-modal="delete" hidden role="dialog" aria-modal="true" aria-labelledby="del-title">
+    <h2 id="del-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer cet utilisateur ?</h2>
+    <p class="text-sm text-muted mt-3 leading-relaxed">Vous n'aurez plus l'accès à cet utilisateur et les informations le concernant.</p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-confirm="delete">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Activation -->
+  <div class="umodal umodal-sm" data-modal="activate" hidden role="dialog" aria-modal="true" aria-labelledby="act-title">
+    <h2 id="act-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous activer cet utilisateur ?</h2>
+    <p class="text-sm mt-3"><span data-activate-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-primary" data-confirm="activate">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg>
+        Activer
+      </button>
+    </div>
+  </div>
+
+  <!-- Désactivation -->
+  <div class="umodal umodal-sm" data-modal="deactivate" hidden role="dialog" aria-modal="true" aria-labelledby="deact-title">
+    <h2 id="deact-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous desactiver cet utilisateur ?</h2>
+    <p class="text-sm text-muted mt-3 leading-relaxed">L'utilisateur n'aura plus d'accès à l'application.</p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-warning" data-confirm="deactivate">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg>
+        Desactiver
+      </button>
+    </div>
+  </div>
+
+  <!-- Rôle : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="role-form" hidden role="dialog" aria-modal="true" aria-labelledby="role-form-title">
+    <h2 id="role-form-title" data-role-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un rôle</h2>
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="r-nom">Nom</label><input id="r-nom" data-r-nom class="field" type="text" placeholder="Ex. coordinateur"></div>
+      <div><label class="lbl" for="r-desc">Description</label><textarea id="r-desc" data-r-desc class="field resize-y min-h-[96px]" rows="3" placeholder="Ex. Assure la coordination des activités d'audit"></textarea></div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-primary" data-confirm="role-form">
+        <span data-role-form-icon class="inline-grid place-items-center">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        </span>
+        <span data-role-form-btn>Ajouter le rôle</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Rôle : suppression -->
+  <div class="umodal umodal-sm" data-modal="role-delete" hidden role="dialog" aria-modal="true" aria-labelledby="role-del-title">
+    <h2 id="role-del-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer ce rôle ?</h2>
+    <p class="text-sm mt-3"><span data-role-del-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-confirm="role-delete">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+[[end]]
+
+[[block js]]
+<script>
+/* ---- Onglets (Utilisateurs / Role) ---- */
+  document.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function(t){
+        var on = (t === tab);
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-panel]').forEach(function(p){
+        p.hidden = (p.getAttribute('data-panel') !== name);
+      });
+    });
+  });
+
+/* ===== Modales : utilisateurs ===== */
+  var modalRoot = document.querySelector('[data-modal-root]');
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+  var currentRow = null, currentToggleBtn = null, formMode = 'add';
+
+  var ICON_ADD  = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
+  var ICON_UPD  = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 4v5h-5"/></svg>';
+  var ZAP_OFF = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/>';
+  var ZAP_ON  = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>';
+
+  function openModal(name){
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = (k !== name); });
+    modalRoot.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    modalRoot.classList.remove('open');
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = true; });
+    document.body.style.overflow = '';
+    currentRow = null; currentToggleBtn = null;
+  }
+  modalRoot.querySelectorAll('[data-modal-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  /* Rôle : sélection unique */
+  modalRoot.querySelectorAll('[data-roles]').forEach(function(group){
+    group.querySelectorAll('[data-role]').forEach(function(p){
+      p.addEventListener('click', function(){
+        group.querySelectorAll('[data-role]').forEach(function(o){ o.classList.remove('selected'); });
+        p.classList.add('selected');
+      });
+    });
+  });
+
+  /* Références du formulaire */
+  var formTitle = modalRoot.querySelector('[data-form-title]');
+  var formBtn   = modalRoot.querySelector('[data-form-btn]');
+  var formIcon  = modalRoot.querySelector('[data-form-icon]');
+  var fNom = modalRoot.querySelector('[data-f-nom]'), fPrenom = modalRoot.querySelector('[data-f-prenom]');
+  var fEmail = modalRoot.querySelector('[data-f-email]'), fTel = modalRoot.querySelector('[data-f-tel]');
+
+  function clearForm(){
+    fNom.value=''; fPrenom.value=''; fEmail.value=''; fTel.value='';
+    modalRoot.querySelectorAll('[data-role]').forEach(function(p){ p.classList.remove('selected'); });
+  }
+  function setRole(roleText){
+    modalRoot.querySelectorAll('[data-role]').forEach(function(p){ p.classList.toggle('selected', p.textContent.trim() === roleText); });
+  }
+  function openAdd(){
+    formMode='add'; currentRow=null;
+    formTitle.textContent = "Ajouter un utilisateur";
+    formBtn.textContent = "Ajouter l'utilisateur";
+    formIcon.innerHTML = ICON_ADD;
+    clearForm(); openModal('form');
+    setTimeout(function(){ fNom.focus(); }, 60);
+  }
+  function openEdit(row){
+    formMode='edit'; currentRow=row;
+    formTitle.textContent = "Modifier l'utilisateur";
+    formBtn.textContent = "Mettre à jour";
+    formIcon.innerHTML = ICON_UPD;
+    clearForm();
+    var nameEl = row.querySelector('td .font-bold');
+    var emailEl = row.querySelector('td .text-muted');
+    var roleEl = row.querySelector('.pill-role');
+    var name = nameEl ? nameEl.textContent.trim() : '';
+    var parts = name.split(' ');
+    fNom.value = parts.shift() || '';
+    fPrenom.value = parts.join(' ');
+    fEmail.value = emailEl ? emailEl.textContent.trim() : '';
+    if (roleEl) setRole(roleEl.textContent.trim());
+    openModal('form');
+  }
+
+  document.querySelector('[data-add-user]').addEventListener('click', openAdd);
+
+  /* Bascule de statut */
+  function setStatus(row, btn, actif){
+    var pill = row.querySelector('[data-status]');
+    var svg = btn ? btn.querySelector('svg') : null;
+    if (actif){
+      pill.classList.remove('status-off'); pill.classList.add('status-actif'); pill.textContent='Actif';
+      if (btn){ btn.classList.remove('is-on'); btn.setAttribute('aria-label','Désactiver le compte'); if(svg) svg.innerHTML=ZAP_OFF; }
+    } else {
+      pill.classList.remove('status-actif'); pill.classList.add('status-off'); pill.textContent='Desactivé';
+      if (btn){ btn.classList.add('is-on'); btn.setAttribute('aria-label','Activer le compte'); if(svg) svg.innerHTML=ZAP_ON; }
+    }
+  }
+
+  /* Câblage d'une ligne */
+  function wireRow(row){
+    var edit = row.querySelector('.act-edit');
+    var del = row.querySelector('.act-del');
+    var toggle = row.querySelector('[data-toggle]');
+    if (edit) edit.addEventListener('click', function(){ openEdit(row); });
+    if (del) del.addEventListener('click', function(){ currentRow = row; openModal('delete'); });
+    if (toggle) toggle.addEventListener('click', function(){
+      currentRow = row; currentToggleBtn = toggle;
+      var pill = row.querySelector('[data-status]');
+      if (pill.classList.contains('status-actif')){
+        openModal('deactivate');
+      } else {
+        var nameEl = row.querySelector('td .font-bold');
+        modalRoot.querySelector('[data-activate-name]').textContent = nameEl ? nameEl.textContent.trim() : '';
+        openModal('activate');
+      }
+    });
+  }
+  document.querySelectorAll('[data-users] tr').forEach(wireRow);
+
+  /* Ajout d'une ligne (démo) */
+  function addUserRow(){
+    var tbody = document.querySelector('[data-users]');
+    var fullName = (fNom.value.trim() + ' ' + fPrenom.value.trim()).trim() || 'Nouvel utilisateur';
+    var email = fEmail.value.trim() || '—';
+    var sel = modalRoot.querySelector('[data-role].selected');
+    var role = sel ? sel.textContent.trim() : 'Auditeur';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+      '<td><span class="pill-role"></span></td>'+
+      '<td><span class="status status-actif" data-status>Actif</span></td>'+
+      '<td><div class="flex items-center justify-center gap-1.5">'+
+        '<button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'+
+        '<button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>'+
+        '<button class="act-btn act-toggle" data-toggle aria-label="Désactiver le compte"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+ZAP_OFF+'</svg></button>'+
+      '</div></td>';
+    tr.querySelector('td .font-bold').textContent = fullName;
+    tr.querySelector('td .text-muted').textContent = email;
+    tr.querySelector('.pill-role').textContent = role;
+    tbody.appendChild(tr);
+    wireRow(tr);
+  }
+
+  /* ===== Modales : rôles ===== */
+  var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var XBOX   = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>';
+  var currentRoleRow = null, roleFormMode = 'add';
+  var roleFormTitle = modalRoot.querySelector('[data-role-form-title]');
+  var roleFormBtn   = modalRoot.querySelector('[data-role-form-btn]');
+  var rNom = modalRoot.querySelector('[data-r-nom]'), rDesc = modalRoot.querySelector('[data-r-desc]');
+
+  function openRoleAdd(){
+    roleFormMode='add'; currentRoleRow=null;
+    roleFormTitle.textContent = "Ajouter un rôle";
+    roleFormBtn.textContent = "Ajouter le rôle";
+    rNom.value=''; rDesc.value='';
+    openModal('role-form');
+    setTimeout(function(){ rNom.focus(); }, 60);
+  }
+  function openRoleEdit(row){
+    roleFormMode='edit'; currentRoleRow=row;
+    roleFormTitle.textContent = "Mettre à jour un rôle";
+    roleFormBtn.textContent = "Mettre à jour le rôle";
+    var nameEl = row.querySelector('td .font-bold');
+    rNom.value = nameEl ? nameEl.textContent.trim() : '';
+    rDesc.value = row.getAttribute('data-desc') || '';
+    openModal('role-form');
+  }
+  function wireRoleRow(row){
+    var edit = row.querySelector('.act-edit');
+    var del = row.querySelector('.act-del');
+    if (edit) edit.addEventListener('click', function(){ openRoleEdit(row); });
+    if (del) del.addEventListener('click', function(){
+      currentRoleRow = row;
+      var nameEl = row.querySelector('td .font-bold');
+      modalRoot.querySelector('[data-role-del-name]').textContent = nameEl ? nameEl.textContent.trim() : '';
+      openModal('role-delete');
+    });
+  }
+  document.querySelectorAll('[data-roles-list] tr').forEach(wireRoleRow);
+  document.querySelector('[data-add-role]').addEventListener('click', openRoleAdd);
+
+  function addRoleRow(){
+    var tbody = document.querySelector('[data-roles-list]');
+    var name = rNom.value.trim() || 'Nouveau rôle';
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-desc', rDesc.value.trim());
+    tr.innerHTML =
+      '<td><span class="font-bold text-ink"></span></td>'+
+      '<td><div class="flex items-center justify-end gap-1.5">'+
+        '<button class="act-btn act-edit" aria-label="Modifier">'+PENCIL+'</button>'+
+        '<button class="act-btn act-del" aria-label="Supprimer">'+XBOX+'</button>'+
+      '</div></td>';
+    tr.querySelector('.font-bold').textContent = name;
+    tbody.appendChild(tr);
+    wireRoleRow(tr);
+  }
+
+  /* Confirmations */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type === 'delete' && currentRow){ currentRow.remove(); }
+      else if (type === 'deactivate' && currentRow){ setStatus(currentRow, currentToggleBtn, false); }
+      else if (type === 'activate' && currentRow){ setStatus(currentRow, currentToggleBtn, true); }
+      else if (type === 'form'){
+        if (formMode === 'edit' && currentRow){
+          var fullName = (fNom.value.trim() + ' ' + fPrenom.value.trim()).trim();
+          var nameEl = currentRow.querySelector('td .font-bold');
+          var emailEl = currentRow.querySelector('td .text-muted');
+          var roleEl = currentRow.querySelector('.pill-role');
+          var sel = modalRoot.querySelector('[data-role].selected');
+          if (nameEl && fullName) nameEl.textContent = fullName;
+          if (emailEl && fEmail.value.trim()) emailEl.textContent = fEmail.value.trim();
+          if (roleEl && sel) roleEl.textContent = sel.textContent.trim();
+        } else if (formMode === 'add'){
+          addUserRow();
+        }
+      }
+      else if (type === 'role-delete' && currentRoleRow){ currentRoleRow.remove(); }
+      else if (type === 'role-form'){
+        if (roleFormMode === 'edit' && currentRoleRow){
+          var rNameEl = currentRoleRow.querySelector('td .font-bold');
+          if (rNameEl && rNom.value.trim()) rNameEl.textContent = rNom.value.trim();
+          currentRoleRow.setAttribute('data-desc', rDesc.value.trim());
+        } else if (roleFormMode === 'add'){
+          addRoleRow();
+        }
+      }
+      closeModal();
+    });
+  });
+</script>
+[[end]]

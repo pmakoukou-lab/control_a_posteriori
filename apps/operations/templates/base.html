@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" /> -->
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+        ></script>
+        <title>Document</title>
+        <style type="text/tailwindcss">
+            @theme {
+            /* ─────────────── Brand ─────────────── */
+            --color-brand:           #1A6B3C;
+            --color-brand-hover:     #155730;
+            --color-brand-muted:     #A8D9B8;
+            --color-brand-tint:      #E6F5EC;
+
+            /* ─────────────── Success (statut positif) ─────────────── */
+            --color-success:         #4CAF50;
+            --color-success-dark:    #1A6B3C;
+            --color-success-tint:    #E6F5EC;
+            --color-success-border:  #A8D9B8;
+
+            /* ─────────────── Info (notification, en cours) ─────────────── */
+            --color-info:            #2B84CC;
+            --color-info-dark:       #1B5E9B;
+            --color-info-tint:       #E8F2FC;
+            --color-info-border:     #9CC6ED;
+
+            /* ─────────────── Warning (alerte modérée) ─────────────── */
+            --color-warning:         #D97706;
+            --color-warning-dark:    #B45309;
+            --color-warning-tint:    #FEF5E7;
+            --color-warning-border:  #F9C96A;
+
+            /* ─────────────── Danger (erreur, critique) ─────────────── */
+            --color-danger:          #EF4444;
+            --color-danger-dark:     #B91C1C;
+            --color-danger-tint:     #FEF0F0;
+            --color-danger-border:   #FCA5A5;
+
+            /* ─────────────── Purple (admin, premium) ─────────────── */
+            --color-purple:          #8B5CF6;
+            --color-purple-dark:     #6D28D9;
+            --color-purple-tint:     #F0EDFB;
+            --color-purple-border:   #C4B5FD;
+
+            /* ─────────────── Teal (permissions, système) ─────────────── */
+            --color-teal:            #0EA5C9;
+            --color-teal-dark:       #0E7490;
+            --color-teal-tint:       #E0F6FA;
+            --color-teal-border:     #7ECFE0;
+
+            /* ─────────────── Surfaces ─────────────── */
+            --color-bg-page:         #F2F2F2;
+            --color-bg-card:         #FFFFFF;
+            --color-bg-input:        #FFFFFF;
+
+            /* ─────────────── Bordures ─────────────── */
+            --color-border-base:     #EBEBEB;
+            --color-border-focus:    #1A6B3C;
+
+            /* ─────────────── Texte ─────────────── */
+            --color-text-primary:    #1A1A1A;
+            --color-text-secondary:  #6B7280;
+            --color-text-muted:      #AAAAAA;
+            --color-text-inverse:    #FFFFFF;
+
+            /* ─────────────── Overlays ─────────────── */
+            --color-overlay:         rgba(0, 0, 0, 0.45);
+            }
+            @layer base {
+                * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+                body { @apply bg-bg-page text-text-primary; }
+            }
+            @layer base {
+            :root {
+                /* Brand */
+                --color-brand:          #1A6B3C;
+                --color-brand-hover:    #155730;
+                --color-brand-muted:    #A8D9B8;
+                --color-brand-tint:     #E6F5EC;
+
+                /* Success (statut positif) */
+                --color-success:        #4CAF50;
+                --color-success-dark:   #1A6B3C;
+                --color-success-tint:   #E6F5EC;
+                --color-success-border: #A8D9B8;
+
+                /* Info (notification, en cours, lien) */
+                --color-info:           #2B84CC;
+                --color-info-dark:      #1B5E9B;
+                --color-info-tint:      #E8F2FC;
+                --color-info-border:    #9CC6ED;
+
+                /* Warning (alerte modérée, expiration) */
+                --color-warning:        #D97706;
+                --color-warning-dark:   #B45309;
+                --color-warning-tint:   #FEF5E7;
+                --color-warning-border: #F9C96A;
+
+                /* Danger (erreur, suppression, critique) */
+                --color-danger:         #EF4444;
+                --color-danger-dark:    #B91C1C;
+                --color-danger-tint:    #FEF0F0;
+                --color-danger-border:  #FCA5A5;
+
+                /* Purple (admin, premium, rôles spéciaux) */
+                --color-purple:         #8B5CF6;
+                --color-purple-dark:    #6D28D9;
+                --color-purple-tint:    #F0EDFB;
+                --color-purple-border:  #C4B5FD;
+
+                /* Teal (permissions, tags système, secondaire) */
+                --color-teal:           #0EA5C9;
+                --color-teal-dark:      #0E7490;
+                --color-teal-tint:      #E0F6FA;
+                --color-teal-border:    #7ECFE0;
+
+                /* Surfaces */
+                --color-bg-page:        #F2F2F2;
+                --color-bg-card:        #FFFFFF;
+                --color-bg-input:       #FFFFFF;
+
+                /* Bordures */
+                --color-border-secondary:#e6e8f0;
+                --color-border-focus:   #1A6B3C;
+                --color-border:         #8c92ae;
+
+                /* Texte */
+                --color-text-primary:   #1A1A1A;
+                --color-text-secondary: #6B7280;
+                --color-text-muted:     #AAAAAA;
+                --color-text-inverse:   #FFFFFF;
+
+                /* Overlays */
+                --color-overlay:        rgba(0, 0, 0, 0.45);
+            }
+            }
+            
+        </style>
+    </head>
+    <body>
+        [[block content]] [[end]]
+    </body>
+</html>

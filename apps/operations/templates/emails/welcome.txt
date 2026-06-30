@@ -1,0 +1,17 @@
+Bonjour {first_name} {last_name},
+
+Bienvenue sur MonApplication ! 🎉
+
+Votre compte a été activé avec succès.
+Vous pouvez dès maintenant vous connecter et profiter de nos services.
+
+Votre compte :
+  - Email    : {email}
+  - Nom      : {first_name} {last_name}
+
+Pour vous connecter :
+{login_url}
+
+À très bientôt,
+L'équipe MonApplication
+Abidjan, Côte d'Ivoire

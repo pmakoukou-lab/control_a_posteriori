@@ -1,0 +1,1282 @@
+[[extend 'audits/layout.html']]
+
+[[block title]]Administration — AUDIT a posteriori[[end]]
+
+[[block main]]
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6">
+      [[ flash_text = globals().get('msg_text', '') ]]
+      [[ flash_level = globals().get('msg_level', '') ]]
+      [[ include 'audits/_flash.html' ]]
+
+      <div class="tabbar" role="tablist" aria-label="Vues">
+        <button class="tab active" data-tab="exo" role="tab" aria-selected="true" aria-controls="panel-exo">Exercice budgétaire</button>
+        <button class="tab" data-tab="min" role="tab" aria-selected="false" aria-controls="panel-min">Ministère</button>
+        <button class="tab" data-tab="gc" role="tab" aria-selected="false" aria-controls="panel-gc">Gestionnaire de crédit</button>
+        <button class="tab" data-tab="users" role="tab" aria-selected="false" aria-controls="panel-users">Utilisateurs</button>
+        <button class="tab" data-tab="roles" role="tab" aria-selected="false" aria-controls="panel-roles">Rôle</button>
+      </div>
+
+<div id="admin-gestion" style="display:contents">
+<div id="panel-min" data-panel="min" role="tabpanel" hidden class="flex flex-col gap-6">
+        <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des ministères</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('ministeres', []))]]</b> ministère(s)</p></div>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un ministère" data-search="min" aria-label="Rechercher un ministère">
+          </div>
+          <button class="btn-accent" data-add="min">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un ministère
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="utbl utbl-fit">
+            <thead><tr><th>Ministères</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="min">
+              [[ ministeres = globals().get('ministeres', []) ]]
+              [[ for m in ministeres: ]]
+              [[ actif = bool(m.is_active) ]]
+              <tr data-id="[[=m.id]]" data-name="[[=m.name]]" data-abbr="[[=m.abbr or '']]"
+                  data-edit-url="[[=URL('gestion/ministeres', m.id, 'edit')]]"
+                  data-del-url="[[=URL('gestion/ministeres', m.id, 'delete')]]"
+                  data-activate-url="[[=URL('gestion/ministeres', m.id, 'activate')]]"
+                  data-deactivate-url="[[=URL('gestion/ministeres', m.id, 'deactivate')]]">
+                <td><div class="font-semibold text-ink">[[=m.name]] <span class="text-brand-600 font-bold tabular-nums">([[=globals().get('ac_counts', {}).get(m.id, 0)]])</span></div></td>
+                <td><span class="badge-verdict [[='is-success' if actif else 'is-neutral']]" data-status>[[='Actif' if actif else 'Desactivé']]</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle [[='' if actif else 'is-on']]" data-toggle aria-label="[[='Désactiver' if actif else 'Activer']]"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>[[ if actif: ]]<path d="m4 4 16 16"/>[[ pass ]]</svg></button>
+                </div></td>
+              </tr>
+              [[ pass ]]
+              [[ if not ministeres: ]]
+              <tr><td colspan="3" class="text-center text-muted py-8">Aucun ministère pour le moment.</td></tr>
+              [[ pass ]]
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+<div id="panel-gc" data-panel="gc" role="tabpanel" hidden class="flex flex-col gap-6" hidden>
+        <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des gestionnaires de crédits</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('gestionnaires', []))]]</b> gestionnaire(s)</p></div>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un gestionnaire" data-search="gc" aria-label="Rechercher un gestionnaire de crédit">
+          </div>
+          <button class="btn-accent" data-add="gc">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un gestionnaire de credit
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="utbl">
+            <thead><tr><th>Gestionnaires de crédits</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
+            <tbody data-list="gc">
+              [[ gestionnaires = globals().get('gestionnaires', []) ]]
+              [[ for g in gestionnaires: ]]
+              [[ actif = g['active'] ]]
+              <tr data-id="[[=g['id'] ]]" data-name="[[=g['name'] ]]" data-abbr="[[=g['abbr'] ]]"
+                  data-min="[[=g['ministere_label'] ]]" data-min-id="[[=g['ministere_id'] ]]"
+                  data-edit-url="[[=URL('gestion/gestionnaires', g['id'], 'edit')]]"
+                  data-del-url="[[=URL('gestion/gestionnaires', g['id'], 'delete')]]"
+                  data-activate-url="[[=URL('gestion/gestionnaires', g['id'], 'activate')]]"
+                  data-deactivate-url="[[=URL('gestion/gestionnaires', g['id'], 'deactivate')]]">
+                <td><div class="font-semibold text-ink">[[=g['name'] ]][[=(' - ' + g['abbr']) if g['abbr'] else '']]</div><div class="text-muted text-[12.5px]">[[=g['ministere_name'] ]]</div></td>
+                <td><span class="badge-verdict [[='is-success' if actif else 'is-neutral']]" data-status>[[='Actif' if actif else 'Desactivé']]</span></td>
+                <td><div class="flex items-center justify-end gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle [[='' if actif else 'is-on']]" data-toggle aria-label="[[='Désactiver' if actif else 'Activer']]"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>[[ if actif: ]]<path d="m4 4 16 16"/>[[ pass ]]</svg></button>
+                </div></td>
+              </tr>
+              [[ pass ]]
+              [[ if not gestionnaires: ]]
+              <tr><td colspan="3" class="text-center text-muted py-8">Aucun gestionnaire pour le moment.</td></tr>
+              [[ pass ]]
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+<div id="panel-exo" data-panel="exo" role="tabpanel" class="flex flex-col gap-6">
+        <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des exercices budgétaires</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('exercices', []))]]</b> exercice(s)</p></div>
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher un exercice" data-exo-search aria-label="Rechercher un exercice budgétaire">
+          </div>
+          <button class="btn-accent" data-add-exo>
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un exercice
+          </button>
+        </div>
+
+      <!-- Liste accordéon -->
+      <div class="rounded-2xl border border-black/[.07] overflow-hidden">
+        <div class="list-head">
+          <span>Exercices budgétaires</span>
+          <span>Actions</span>
+        </div>
+
+        <div data-exo-list>
+          [[ exercices = globals().get('exercices', []) ]]
+          [[ for idx, e in enumerate(exercices): ]]
+          <div class="exo[[=' open' if idx==0 else '']]" data-exo data-id="[[=e['id'] ]]" data-year="[[=e['annee'] ]]"
+               data-add-session-url="[[=URL('gestion/exercices', e['id'], 'sessions', 'add')]]">
+            <div class="exo-head" data-exo-toggle>
+              <div class="flex items-center gap-3 min-w-0">
+                <svg class="exo-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+                <span class="exo-title">Exercice budgétaire [[=e['annee'] ]]</span>
+                <span class="exo-count text-brand-600" data-count>( [[=len(e['sessions']) ]] )</span>
+              </div>
+              <button class="btn-soft" data-add-session><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>Ajouter une session</button>
+            </div>
+            <div class="exo-body" data-exo-body>
+              [[ for i, s in enumerate(e['sessions']): ]]
+              <div class="sess-item" data-session data-id="[[=s['id'] ]]"
+                   data-range="[[=s['range'] ]]" data-debut="[[=s['debut'] ]]" data-fin="[[=s['fin'] ]]"
+                   data-objet="[[=s['objet'] ]]" data-objectif="[[=s['objectif'] ]]"
+                   data-edit-url="[[=URL('gestion/sessions', s['id'], 'edit')]]"
+                   data-del-url="[[=URL('gestion/sessions', s['id'], 'delete')]]">
+                <span class="sess-txt">Session [[=i+1]] : [[=s['range'] ]]</span>
+                <div class="flex items-center gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                </div>
+              </div>
+              [[ pass ]]
+            </div>
+          </div>
+          [[ pass ]]
+          [[ if not exercices: ]]
+          <div class="text-center text-muted py-10" data-exo-empty>Aucun exercice budgétaire pour le moment.</div>
+          [[ pass ]]
+        </div>
+      </div>
+</div>
+
+
+<!-- Formulaire caché : porte les actions POST (suppression / (dés)activation). -->
+<form id="action-form-g" method="post" action="" class="hidden"></form>
+
+<!-- ============ MODALES ============ -->
+<div class="modal-root" data-modal-root id="modal-root-gestion">
+  <div class="modal-back" data-modal-close></div>
+
+<!-- Ministère : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="min-form" hidden role="dialog" aria-modal="true" aria-labelledby="min-form-title">
+    <h2 id="min-form-title" data-min-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un ministère</h2>
+    <form id="min-form" method="post" action="[[=URL('gestion/ministeres/add')]]">
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="m-nom">Nom</label><textarea id="m-nom" name="nom" data-m-nom class="field resize-y min-h-[80px]" rows="2" required placeholder="Ex. Garde des Sceaux, Ministre de la justice et des droits de l'Homme"></textarea></div>
+      <div><label class="lbl" for="m-abbr">Abrégé</label><input id="m-abbr" name="abbr" data-m-abbr class="field" type="text" placeholder="Ex. MJDH"></div>
+      <div class="flex items-center gap-3" data-m-activer-row>
+        <label class="switch"><input type="checkbox" name="actif" data-m-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button type="button" class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button type="button" class="btn-accent" data-confirm="min-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-min-form-btn>Ajouter le ministère</span></button>
+    </div>
+    </form>
+  </div>
+
+  <!-- Gestionnaire : ajout / mise à jour -->
+  <div class="umodal umodal-lg overflow-y-visible max-h-none" data-modal="gc-form" hidden role="dialog" aria-modal="true" aria-labelledby="gc-form-title">
+    <h2 id="gc-form-title" data-gc-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un gestionnaire de crédit</h2>
+    <form id="gc-form" method="post" action="[[=URL('gestion/gestionnaires/add')]]">
+    <input type="hidden" name="ministere_id" data-g-min-id value="">
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="g-nom">Nom</label><textarea id="g-nom" name="nom" data-g-nom class="field resize-y min-h-[80px]" rows="2" required placeholder="Ex. Direction de la lutte contre le tabac"></textarea></div>
+      <div><label class="lbl" for="g-abbr">Abrégé</label><input id="g-abbr" name="abbr" data-g-abbr class="field" type="text" placeholder="Ex. DLT"></div>
+      <div><label class="lbl">Ministère</label>
+        <div class="relative" data-g-min data-combo data-combo-placeholder="Choisir ministère">
+          <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+            <span data-combo-label class="truncate text-muted-2">Choisir ministère</span>
+            <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="combo-panel" data-combo-panel role="listbox">
+            <div class="combo-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère">
+            </div>
+            <div class="combo-list" data-combo-list>
+              [[ for o in globals().get('min_options', []): ]]
+              <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>
+              [[ pass ]]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3" data-g-activer-row>
+        <label class="switch"><input type="checkbox" name="actif" data-g-activer checked aria-label="Activer"><span class="track"></span><span class="thumb"></span></label>
+        <span class="font-heading font-semibold text-sm text-ink-2">Activer</span>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button type="button" class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button type="button" class="btn-accent" data-confirm="gc-form"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg><span data-gc-form-btn>Ajouter le gestionnaire</span></button>
+    </div>
+    </form>
+  </div>
+
+  <!-- Confirmation : suppression -->
+  <div class="umodal umodal-sm" data-modal="confirm-delete" hidden role="dialog" aria-modal="true" aria-labelledby="cdel-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="cdel-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer ?</h2></div>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-danger" data-confirm="delete"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>Supprimer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : activation -->
+  <div class="umodal umodal-sm" data-modal="confirm-activate" hidden role="dialog" aria-modal="true" aria-labelledby="cact-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v8"/><path d="M7.6 7.6a6 6 0 1 0 8.8 0"/></svg></span><h2 id="cact-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous activer ?</h2></div>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-success" data-confirm="activate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg>Activer</button>
+    </div>
+  </div>
+
+  <!-- Confirmation : désactivation -->
+  <div class="umodal umodal-sm" data-modal="confirm-deactivate" hidden role="dialog" aria-modal="true" aria-labelledby="cdea-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></span><h2 id="cdea-title" data-confirm-title class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous desactiver ?</h2></div>
+    <p class="text-sm mt-3"><span data-confirm-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>Fermer</button>
+      <button class="btn-warning" data-confirm="deactivate"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg>Desactiver</button>
+    </div>
+  </div>
+
+<!-- Exercice : ajout / mise à jour -->
+  <div class="umodal umodal-lg overflow-y-visible max-h-none" data-modal="exo-form" hidden role="dialog" aria-modal="true" aria-labelledby="exo-form-title">
+    <h2 id="exo-form-title" data-exo-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un exercice</h2>
+    [[ year_options = globals().get('year_options', []) ]]
+    [[ default_year = year_options[1] if len(year_options) > 1 else (year_options[0] if year_options else '') ]]
+    <form id="exo-form" method="post" action="[[=URL('gestion/exercices/add')]]">
+    <input type="hidden" name="year" data-exo-year-input value="[[=default_year]]">
+    <div class="flex items-center justify-between gap-3 mb-5" data-exo-year-row>
+      <label class="lbl mb-0">Exercice budgétaire</label>
+      <div class="relative w-[150px]" data-exo-year data-combo data-value="[[=default_year]]">
+        <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer font-bold" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+          <span data-combo-label class="truncate">[[=default_year]]</span>
+          <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="combo-panel" data-combo-panel role="listbox">
+          <div class="combo-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une année">
+          </div>
+          <div class="combo-list" data-combo-list>
+            [[ for y in year_options: ]]
+            <button type="button" class="combo-option" data-combo-option>[[=y]]</button>
+            [[ pass ]]
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-black/[.07]">
+      <span class="font-heading font-semibold text-sm text-muted">Ajouter des sessions</span>
+      <button type="button" class="icon-box" data-add-session-block aria-label="Ajouter une session">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-3" data-session-blocks></div>
+
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button type="button" class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button type="button" class="btn-accent" data-confirm="exo-form">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        <span data-exo-btn>Ajouter l'exercice</span>
+      </button>
+    </div>
+    </form>
+  </div>
+
+  <!-- Suppression de session -->
+  <div class="umodal umodal-sm" data-modal="session-delete" hidden role="dialog" aria-modal="true" aria-labelledby="sdel-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="sdel-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer cette session ?</h2></div>
+    <p class="text-sm text-muted mt-3 leading-relaxed">Vous n'aurez plus l'accès à cette session et les informations qui la concerne.</p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-confirm="session-delete">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="admin-comptes" style="display:contents">
+      <!-- Onglets -->
+      
+
+      <!-- ============ PANNEAU : UTILISATEURS ============ -->
+      <div id="panel-users" data-panel="users" role="tabpanel" hidden class="flex flex-col gap-6">
+
+        <!-- Titre -->
+        <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des comptes utilisateurs</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('users', []))]]</b> utilisateur(s)</p></div>
+
+        <!-- Recherche (nom, prénom, e-mail) + action, sur la même ligne -->
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div class="search w-full max-w-[360px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Rechercher (nom, prénom, e-mail)" data-user-search aria-label="Rechercher un utilisateur">
+          </div>
+          <button class="btn-accent" data-add-user>
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un utilisateur
+          </button>
+        </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="utbl utbl-fit">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Role</th>
+              <th>Statut</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody data-users>
+            [[ users = globals().get('users', []) ]]
+            [[ for u in users: ]]
+            [[ actif = u['active'] ]]
+            <tr data-id="[[=u['id'] ]]"
+                data-name="[[=u['name'] ]]"
+                data-first="[[=u['first'] ]]"
+                data-last="[[=u['last'] ]]"
+                data-phone="[[=u['phone'] ]]"
+                data-email="[[=u['email'] ]]"
+                data-roles-current="[[=u['role'] ]]"
+                data-edit-url="[[=URL('comptes/users', u['id'], 'edit')]]"
+                data-del-url="[[=URL('comptes/users', u['id'], 'delete')]]"
+                data-activate-url="[[=URL('comptes/users', u['id'], 'activate')]]"
+                data-deactivate-url="[[=URL('comptes/users', u['id'], 'deactivate')]]">
+              <td>
+                <div class="font-bold text-ink">[[=u['name'] ]]</div>
+                <div class="text-muted text-[13px]">[[=u['email'] ]]</div>
+              </td>
+              <td><span class="pill-role">[[=u['role'] ]]</span></td>
+              <td><span class="badge-verdict [[='is-success' if actif else 'is-neutral']]" data-status>[[='Actif' if actif else 'Desactivé']]</span></td>
+              <td>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                  <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  <button class="act-btn act-toggle [[='' if actif else 'is-on']]" data-toggle aria-label="[[='Désactiver le compte' if actif else 'Activer le compte']]"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>[[ if actif: ]]<path d="m4 4 16 16"/>[[ pass ]]</svg></button>
+                </div>
+              </td>
+            </tr>
+            [[ pass ]]
+            [[ if not users: ]]
+            <tr><td colspan="4" class="text-center text-muted py-8">Aucun utilisateur pour le moment.</td></tr>
+            [[ pass ]]
+          </tbody>
+        </table>
+      </div>
+
+      </div><!-- /panneau utilisateurs -->
+
+      <!-- ============ PANNEAU : ROLE ============ -->
+      <div id="panel-roles" data-panel="roles" role="tabpanel" hidden class="flex flex-col gap-6">
+
+        <!-- Titre + action -->
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des rôles</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('roles', []))]]</b> rôle(s)</p></div>
+          <button class="btn-accent" data-add-role>
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+            Ajouter un rôle
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="utbl utbl-fit">
+            <thead>
+              <tr>
+                <th>Rôles</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody data-roles-list>
+              [[ roles = globals().get('roles', []) ]]
+              [[ for r in roles: ]]
+              <tr data-role-row data-id="[[=r.id]]" data-name="[[=r.name]]" data-del-url="[[=URL('comptes/roles', r.id, 'delete')]]">
+                <td>
+                  <span class="font-bold text-ink" data-role-name>[[=r.name]]</span>
+                  [[ if r.description: ]]<div class="text-muted text-[13px]" data-role-desc>[[=r.description]]</div>[[ pass ]]
+                  <form data-role-form method="post" action="[[=URL('comptes/roles', r.id, 'edit')]]" hidden class="flex flex-col gap-2 max-w-md">
+                    <input class="field" type="text" name="nom" value="[[=r.name]]" data-role-name-input required placeholder="Nom du rôle">
+                    <textarea class="field resize-y min-h-[56px]" name="desc" data-role-desc-input rows="2" placeholder="Description">[[=r.description or '']]</textarea>
+                  </form>
+                </td>
+                <td>
+                  <div class="flex items-center justify-end gap-1.5" data-role-actions>
+                    <button type="button" class="act-btn act-edit" data-role-edit aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+                    <button type="button" class="act-btn act-del" data-role-del aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
+                  </div>
+                  <div class="flex items-center justify-end gap-1.5" data-role-save-actions hidden>
+                    <button type="button" class="act-btn act-edit" data-role-save aria-label="Enregistrer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></button>
+                    <button type="button" class="act-btn act-del" data-role-cancel aria-label="Annuler"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              [[ pass ]]
+              [[ if not roles: ]]
+              <tr><td colspan="2" class="text-center text-muted py-8">Aucun rôle pour le moment.</td></tr>
+              [[ pass ]]
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+<!-- Formulaire caché : porte les actions POST (suppression / (dés)activation). -->
+<form id="action-form-c" method="post" action="" class="hidden"></form>
+
+<!-- ============ MODALES ============ -->
+<div class="modal-root" data-modal-root>
+  <div class="modal-back" data-modal-close></div>
+
+  <!-- Formulaire : ajout / modification -->
+  <div class="umodal umodal-lg" data-modal="form" hidden role="dialog" aria-modal="true" aria-labelledby="form-title">
+    <h2 id="form-title" data-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un utilisateur</h2>
+    <form id="user-form" method="post" action="[[=URL('comptes/users/add')]]">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><label class="lbl" for="f-nom">Nom</label><input id="f-nom" name="nom" data-f-nom class="field" type="text" required placeholder="Ex. KOUASSI"></div>
+      <div><label class="lbl" for="f-prenom">Prénoms</label><input id="f-prenom" name="prenom" data-f-prenom class="field" type="text" required placeholder="Ex. Kouadio"></div>
+      <div><label class="lbl" for="f-email">Email</label><input id="f-email" name="email" data-f-email class="field" type="email" required placeholder="exemple@mail.com"></div>
+      <div><label class="lbl" for="f-tel">N° Téléphone</label><input id="f-tel" name="tel" data-f-tel class="field" type="tel" required placeholder="+225 07 00 00 00 00"></div>
+      <div><label class="lbl" for="f-pwd">Mot de passe</label><input id="f-pwd" name="pwd" data-f-pwd class="field" type="password" placeholder="••••••••" autocomplete="new-password"></div>
+      <div><label class="lbl" for="f-pwd2">Confirmer le mot de passe</label><input id="f-pwd2" name="pwd2" data-f-pwd2 class="field" type="password" placeholder="••••••••" autocomplete="new-password"></div>
+    </div>
+    <div class="mt-4">
+      <label class="lbl">Rôles <span class="text-muted-2 font-normal">(plusieurs possibles)</span></label>
+      <div class="flex flex-wrap gap-2" data-roles>
+        [[ for r in globals().get('roles', []): ]]
+        <label class="role-pill" data-role>
+          <input type="checkbox" name="role" value="[[=r.name]]" class="sr-only" data-role-cb>
+          [[=r.name]]
+        </label>
+        [[ pass ]]
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button type="button" class="btn-accent" data-confirm="form">
+        <span data-form-icon class="inline-grid place-items-center">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        </span>
+        <span data-form-btn>Ajouter l'utilisateur</span>
+      </button>
+      <button type="button" class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+    </div>
+    </form>
+  </div>
+
+  <!-- Suppression -->
+  <div class="umodal umodal-sm" data-modal="delete" hidden role="dialog" aria-modal="true" aria-labelledby="del-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="del-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer cet utilisateur ?</h2></div>
+    <p class="text-sm text-muted mt-3 leading-relaxed">Vous n'aurez plus l'accès à cet utilisateur et les informations le concernant.</p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-confirm="delete">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Activation -->
+  <div class="umodal umodal-sm" data-modal="activate" hidden role="dialog" aria-modal="true" aria-labelledby="act-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v8"/><path d="M7.6 7.6a6 6 0 1 0 8.8 0"/></svg></span><h2 id="act-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous activer cet utilisateur ?</h2></div>
+    <p class="text-sm mt-3"><span data-activate-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-success" data-confirm="activate">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/></svg>
+        Activer
+      </button>
+    </div>
+  </div>
+
+  <!-- Désactivation -->
+  <div class="umodal umodal-sm" data-modal="deactivate" hidden role="dialog" aria-modal="true" aria-labelledby="deact-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></span><h2 id="deact-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous desactiver cet utilisateur ?</h2></div>
+    <p class="text-sm text-muted mt-3 leading-relaxed">L'utilisateur n'aura plus d'accès à l'application.</p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-warning" data-confirm="deactivate">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/></svg>
+        Desactiver
+      </button>
+    </div>
+  </div>
+
+  <!-- Rôle : ajout / mise à jour -->
+  <div class="umodal umodal-lg" data-modal="role-form" hidden role="dialog" aria-modal="true" aria-labelledby="role-form-title">
+    <h2 id="role-form-title" data-role-form-title class="font-heading font-bold text-xl text-ink mb-5">Ajouter un rôle</h2>
+    <form id="role-form-el" method="post" action="[[=URL('comptes/roles/add')]]">
+    <div class="flex flex-col gap-4">
+      <div><label class="lbl" for="r-nom">Nom</label><input id="r-nom" name="nom" data-r-nom class="field" type="text" required placeholder="Ex. coordinateur"></div>
+      <div><label class="lbl" for="r-desc">Description</label><textarea id="r-desc" name="desc" data-r-desc class="field resize-y min-h-[96px]" rows="3" placeholder="Ex. Assure la coordination des activités d'audit"></textarea></div>
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-7 flex-wrap">
+      <button type="button" class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button type="button" class="btn-accent" data-confirm="role-form">
+        <span data-role-form-icon class="inline-grid place-items-center">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>
+        </span>
+        <span data-role-form-btn>Ajouter le rôle</span>
+      </button>
+    </div>
+    </form>
+  </div>
+
+  <!-- Rôle : suppression -->
+  <div class="umodal umodal-sm" data-modal="role-delete" hidden role="dialog" aria-modal="true" aria-labelledby="role-del-title">
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="role-del-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer ce rôle ?</h2></div>
+    <p class="text-sm mt-3"><span data-role-del-name class="font-bold text-ink-2">—</span></p>
+    <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
+      <button class="btn-soft" data-modal-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-confirm="role-delete">
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+</main>
+[[end]]
+
+[[block js]]
+<script>
+  /* Onglets (global, 5 vues) : active la pilule + n'affiche que le panneau ciblé. */
+  document.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function(t){
+        var on = (t === tab);
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-panel]').forEach(function(p){
+        p.hidden = (p.getAttribute('data-panel') !== name);
+      });
+    });
+  });
+</script>
+<script>
+(function(){
+var R = document.getElementById("admin-gestion");
+
+/* --- Gestionnaire (Ministère + Gestionnaire de crédit) --- */
+(function(){
+var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var XBOX   = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>';
+  var ZAP_OFF = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/><path d="m4 4 16 16"/>';
+  var ZAP_ON  = '<path d="M13 3 5 13h5l-1 8 8-10h-5l1-8Z"/>';
+  function toggleBtnHtml(isOn){
+    return '<button class="act-btn act-toggle'+(isOn?' is-on':'')+'" data-toggle aria-label="'+(isOn?'Activer':'Désactiver')+'"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+(isOn?ZAP_ON:ZAP_OFF)+'</svg></button>';
+  }
+  function actionsCell(isOn){
+    return '<div class="flex items-center justify-end gap-1.5"><button class="act-btn act-edit" aria-label="Modifier">'+PENCIL+'</button><button class="act-btn act-del" aria-label="Supprimer">'+XBOX+'</button>'+toggleBtnHtml(isOn)+'</div>';
+  }
+
+  /* ---- Onglets ---- */
+  R.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      R.querySelectorAll('[data-tab]').forEach(function(t){ var on=(t===tab); t.classList.toggle('active',on); t.setAttribute('aria-selected', on?'true':'false'); });
+      R.querySelectorAll('[data-panel]').forEach(function(p){ p.hidden = (p.getAttribute('data-panel') !== name); });
+    });
+  });
+
+/* ===== Modales ===== */
+  var modalRoot = document.getElementById('modal-root-gestion');
+  if (modalRoot && modalRoot.parentNode !== document.body) document.body.appendChild(modalRoot);  /* centrage viewport (hors ancêtre transformé) */
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+  var currentRow=null, currentToggleBtn=null, currentEntity='min', formMode='add';
+
+  var actionForm = document.getElementById('action-form-g');
+  var minForm = document.getElementById('min-form');
+  var gcForm  = document.getElementById('gc-form');
+  var MIN_ADD_URL = minForm.getAttribute('action');
+  var GC_ADD_URL  = gcForm.getAttribute('action');
+  function postTo(url){ if(!url) return; actionForm.action=url; actionForm.submit(); }
+  function submitForm(form){ if (form.requestSubmit) form.requestSubmit(); else if (form.reportValidity()) form.submit(); }
+
+  function openModal(name){ Object.keys(modals).forEach(function(k){ modals[k].hidden = (k!==name); }); modalRoot.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeModal(){ modalRoot.classList.remove('open'); Object.keys(modals).forEach(function(k){ modals[k].hidden=true; }); document.body.style.overflow=''; currentRow=null; currentToggleBtn=null; }
+  modalRoot.querySelectorAll('[data-modal-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if (e.key==='Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  function phraseOf(entity){ return entity==='min' ? 'ce ministère' : 'ce gestionnaire de crédit'; }
+  function nameOf(row){ return row.getAttribute('data-name') || ''; }
+
+  /* ---- Bascule de statut ---- */
+  function setStatus(row, btn, actif){
+    var pill = row.querySelector('[data-status]'); var svg = btn ? btn.querySelector('svg') : null;
+    if (actif){ pill.classList.remove('is-neutral'); pill.classList.add('is-success'); pill.textContent='Actif';
+      if(btn){ btn.classList.remove('is-on'); btn.setAttribute('aria-label','Désactiver'); if(svg) svg.innerHTML=ZAP_OFF; } }
+    else { pill.classList.remove('is-success'); pill.classList.add('is-neutral'); pill.textContent='Desactivé';
+      if(btn){ btn.classList.add('is-on'); btn.setAttribute('aria-label','Activer'); if(svg) svg.innerHTML=ZAP_ON; } }
+  }
+
+  /* ---- Confirmations (suppression / activation / désactivation) ---- */
+  function openConfirm(entity, kind, row){
+    currentEntity=entity; currentRow=row; currentToggleBtn=row.querySelector('[data-toggle]');
+    var verb = kind==='delete'?'supprimer':(kind==='activate'?'activer':'desactiver');
+    var modalName = 'confirm-'+kind; var modal = modals[modalName];
+    modal.querySelector('[data-confirm-title]').textContent = 'Voulez-vous '+verb+' '+phraseOf(entity)+' ?';
+    modal.querySelector('[data-confirm-name]').textContent = nameOf(row);
+    openModal(modalName);
+  }
+
+  /* ===== Formulaire Ministère ===== */
+  var minTitle=modalRoot.querySelector('[data-min-form-title]'), minBtn=modalRoot.querySelector('[data-min-form-btn]');
+  var mNom=modalRoot.querySelector('[data-m-nom]'), mAbbr=modalRoot.querySelector('[data-m-abbr]'), mActiverRow=modalRoot.querySelector('[data-m-activer-row]'), mActiver=modalRoot.querySelector('[data-m-activer]');
+  function openMinForm(mode, row){
+    formMode=mode; currentEntity='min'; currentRow=row||null;
+    minForm.action = (mode==='edit' && row) ? row.dataset.editUrl : MIN_ADD_URL;
+    minTitle.textContent = mode==='edit' ? 'Mettre à jour un ministère' : 'Ajouter un ministère';
+    minBtn.textContent   = mode==='edit' ? 'Mettre à jour le ministère' : 'Ajouter le ministère';
+    mActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){ mNom.value=nameOf(row); mAbbr.value=row.getAttribute('data-abbr')||''; }
+    else { mNom.value=''; mAbbr.value=''; mActiver.checked=true; }
+    openModal('min-form');
+  }
+  function submitMinForm(){
+    var nom=mNom.value.trim()||'Nouveau ministère'; var abbr=mAbbr.value.trim();
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr);
+      currentRow.querySelector('td .font-bold').textContent=nom;
+      currentRow.querySelector('td .text-muted').textContent=abbr;
+    } else {
+      var isOn = !mActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="badge-verdict '+(isOn?'is-neutral':'is-success')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=nom; tr.querySelector('.text-muted').textContent=abbr;
+      R.querySelector('[data-list="min"]').appendChild(tr); wireRow(tr,'min');
+    }
+  }
+
+  /* ===== Formulaire Gestionnaire ===== */
+  var gcTitle=modalRoot.querySelector('[data-gc-form-title]'), gcBtn=modalRoot.querySelector('[data-gc-form-btn]');
+  var gNom=modalRoot.querySelector('[data-g-nom]'), gAbbr=modalRoot.querySelector('[data-g-abbr]'), gMin=modalRoot.querySelector('[data-g-min]'), gActiverRow=modalRoot.querySelector('[data-g-activer-row]'), gActiver=modalRoot.querySelector('[data-g-activer]');
+  function openGcForm(mode, row){
+    formMode=mode; currentEntity='gc'; currentRow=row||null;
+    gcForm.action = (mode==='edit' && row) ? row.dataset.editUrl : GC_ADD_URL;
+    gcTitle.textContent = mode==='edit' ? 'Mettre à jour un gestionnaire de crédit' : 'Ajouter un gestionnaire de crédit';
+    gcBtn.textContent   = mode==='edit' ? 'Mettre à jour le gestionnaire' : 'Ajouter le gestionnaire';
+    gActiverRow.hidden = (mode==='edit');
+    if (mode==='edit' && row){
+      gNom.value=nameOf(row); gAbbr.value=row.getAttribute('data-abbr')||'';
+      window.setComboValue(gMin, row.getAttribute('data-min')||'');
+    } else { gNom.value=''; gAbbr.value=''; window.setComboValue(gMin, ''); gActiver.checked=true; }
+    openModal('gc-form');
+  }
+  function submitGcForm(){
+    var nom=gNom.value.trim()||'Nouveau gestionnaire'; var abbr=gAbbr.value.trim(); var min=(window.getComboValue(gMin)||'Ministère non défini');
+    var line1 = nom + (abbr ? ' - '+abbr : '');
+    if (formMode==='edit' && currentRow){
+      currentRow.setAttribute('data-name',nom); currentRow.setAttribute('data-abbr',abbr); currentRow.setAttribute('data-min',min);
+      currentRow.querySelector('td .font-bold').textContent=line1;
+      currentRow.querySelector('td .text-muted').textContent=min;
+    } else {
+      var isOn = !gActiver.checked;
+      var tr=document.createElement('tr'); tr.setAttribute('data-name',nom); tr.setAttribute('data-abbr',abbr); tr.setAttribute('data-min',min);
+      tr.innerHTML='<td><div class="font-bold text-ink"></div><div class="text-muted text-[13px]"></div></td>'+
+        '<td><span class="badge-verdict '+(isOn?'is-neutral':'is-success')+'" data-status>'+(isOn?'Desactivé':'Actif')+'</span></td>'+
+        '<td>'+actionsCell(isOn)+'</td>';
+      tr.querySelector('.font-bold').textContent=line1; tr.querySelector('.text-muted').textContent=min;
+      R.querySelector('[data-list="gc"]').appendChild(tr); wireRow(tr,'gc');
+    }
+  }
+
+  function openForm(entity, mode, row){ if (entity==='min') openMinForm(mode,row); else openGcForm(mode,row); }
+
+  /* ---- Câblage des lignes ---- */
+  function wireRow(row, entity){
+    var edit = row.querySelector('.act-edit');
+    var del = row.querySelector('.act-del');
+    var tog = row.querySelector('[data-toggle]');
+    if (edit) edit.addEventListener('click', function(){ openForm(entity,'edit',row); });
+    if (del) del.addEventListener('click', function(){ openConfirm(entity,'delete',row); });
+    if (tog) tog.addEventListener('click', function(){
+      var actif = row.querySelector('[data-status]').classList.contains('is-success');
+      openConfirm(entity, actif ? 'deactivate' : 'activate', row);
+    });
+  }
+  R.querySelectorAll('[data-list="min"] tr[data-id]').forEach(function(r){ wireRow(r,'min'); });
+  R.querySelectorAll('[data-list="gc"] tr[data-id]').forEach(function(r){ wireRow(r,'gc'); });
+
+  R.querySelector('[data-add="min"]').addEventListener('click', function(){ openMinForm('add'); });
+  R.querySelector('[data-add="gc"]').addEventListener('click', function(){ openGcForm('add'); });
+
+  /* ---- Recherche multicritère (nom + abrégé), insensible à la casse/accents ---- */
+  function _norm(s){ return (s || '').toString().toLowerCase().normalize('NFD').replace(new RegExp('['+String.fromCharCode(0x300)+'-'+String.fromCharCode(0x36f)+']','g'), ''); }
+  R.querySelectorAll('[data-search]').forEach(function(input){
+    var list = R.querySelector('[data-list="' + input.getAttribute('data-search') + '"]');
+    if (!list) return;
+    input.addEventListener('input', function(){
+      var q = _norm(input.value.trim());
+      list.querySelectorAll('tr[data-id]').forEach(function(tr){
+        var hay = _norm((tr.getAttribute('data-name') || '') + ' ' + (tr.getAttribute('data-abbr') || ''));
+        tr.style.display = (!q || hay.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  });
+
+  /* Résout l'id du ministère choisi dans le combo (option dont le libellé correspond). */
+  function gcMinId(){
+    var label = window.getComboValue(gMin) || '';
+    var id = '';
+    gMin.querySelectorAll('[data-combo-option]').forEach(function(o){
+      if (o.textContent.trim() === label) id = o.getAttribute('data-id') || '';
+    });
+    return id;
+  }
+
+  /* ---- Confirmations (toutes en POST réel) ---- */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type==='delete' && currentRow)      { postTo(currentRow.dataset.delUrl); return; }
+      if (type==='activate' && currentRow)    { postTo(currentRow.dataset.activateUrl); return; }
+      if (type==='deactivate' && currentRow)  { postTo(currentRow.dataset.deactivateUrl); return; }
+      if (type==='min-form')                  { submitForm(minForm); return; }
+      if (type==='gc-form')                   { R.querySelector('[data-g-min-id]').value = gcMinId(); submitForm(gcForm); return; }
+      // autres confirmations (exercice) gérées par l'autre script.
+    });
+  });
+})();
+
+/* --- Exercice budgétaire --- */
+(function(){
+var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+  var XBOX   = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg>';
+  var I_MINUS = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>';
+  var I_PLUS  = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+  var CAL = '<svg class="w-[18px] h-[18px] text-muted-2 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3"/></svg>';
+
+/* ===== Modales ===== */
+  var modalRoot = document.getElementById('modal-root-gestion');
+  if (modalRoot && modalRoot.parentNode !== document.body) document.body.appendChild(modalRoot);  /* centrage viewport (hors ancêtre transformé) */
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+
+  function openModal(name){
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = (k !== name); });
+    modalRoot.classList.add('open'); document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    modalRoot.classList.remove('open');
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = true; });
+    document.body.style.overflow = '';
+  }
+  modalRoot.querySelectorAll('[data-modal-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  /* ===== Exercices : accordéon + sessions (persistance réelle) ===== */
+  var exoList = R.querySelector('[data-exo-list]');
+  var exoForm = document.getElementById('exo-form');
+  var ADD_EXO_URL = exoForm.getAttribute('action');
+  var blocksWrap = modalRoot.querySelector('[data-session-blocks]');
+  var yearSelect = modalRoot.querySelector('[data-exo-year]');
+  var yearInput = modalRoot.querySelector('[data-exo-year-input]');
+  var yearRow = modalRoot.querySelector('[data-exo-year-row]');
+  var addBlockRow = modalRoot.querySelector('[data-add-session-block]').closest('div');
+  var exoBtn = modalRoot.querySelector('[data-exo-btn]');
+  var exoTitle = modalRoot.querySelector('[data-exo-title]');
+  var formMode = 'new';        // 'new' | 'session-add' | 'session-edit'
+  var targetSession = null;
+
+  function submitForm(form){ if (form.requestSubmit) form.requestSubmit(); else if (form.reportValidity()) form.submit(); }
+
+  function dateField(name, value){
+    return '<div><input class="field" type="date" name="'+ name +'" value="'+ (value||'') +'"></div>';
+  }
+
+  function wireSession(item){
+    item.querySelector('.act-edit').addEventListener('click', function(){
+      openExoForm('session-edit', { session: item });
+    });
+    item.querySelector('.act-del').addEventListener('click', function(){
+      targetSession = item; openModal('session-delete');
+    });
+  }
+
+  function wireExo(exo){
+    var head = exo.querySelector('[data-exo-toggle]');
+    head.addEventListener('click', function(e){
+      if (e.target.closest('[data-add-session]')) return;   // le bouton ne replie pas
+      exo.classList.toggle('open');
+    });
+    exo.querySelector('[data-add-session]').addEventListener('click', function(e){
+      e.stopPropagation();
+      openExoForm('session-add', { exo: exo });
+    });
+    exo.querySelectorAll('[data-session]').forEach(wireSession);
+  }
+  exoList.querySelectorAll('[data-exo]').forEach(wireExo);
+
+  /* ----- Recherche d'exercice (identique aux onglets ministère / gestionnaire) ----- */
+  var exoSearch = R.querySelector('[data-exo-search]');
+  if (exoSearch){
+    exoSearch.addEventListener('input', function(){
+      var q = exoSearch.value.trim().toLowerCase();
+      exoList.querySelectorAll('[data-exo]').forEach(function(ex){
+        var txt = (ex.textContent || '').toLowerCase();
+        ex.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ----- Blocs session dans la modale ----- */
+  function addSessionBlock(prefill){
+    var n = blocksWrap.querySelectorAll('[data-sess-block]').length + 1;
+    prefill = prefill || {};
+    var block = document.createElement('div');
+    block.className = 'sess-block'; block.setAttribute('data-sess-block','');
+    block.innerHTML =
+      '<div class="sess-head" data-sess-toggle>'+
+        '<span class="font-heading font-semibold text-sm text-ink">session <span data-sess-n>'+ n +'</span>:</span>'+
+        '<span class="icon-box" data-sess-collapse aria-label="Replier">'+ I_MINUS +'</span>'+
+      '</div>'+
+      '<div class="sess-block-body">'+
+        '<div class="grid sm:grid-cols-2 gap-4">'+
+          '<div><label class="lbl">Date de début</label>'+ dateField('debut', prefill.debut) +'</div>'+
+          '<div><label class="lbl">Date de fin</label>'+ dateField('fin', prefill.fin) +'</div>'+
+        '</div>'+
+        '<div><label class="lbl">Objet</label><input class="field" name="objet" type="text" placeholder="Ex. lorem ..." value="'+ (prefill.objet||'') +'"></div>'+
+        '<div><label class="lbl">Objectif</label><textarea class="field resize-y min-h-[88px]" name="objectif" rows="3" placeholder="Ex. lorem ipsum">'+ (prefill.objectif||'') +'</textarea></div>'+
+      '</div>';
+    var head = block.querySelector('[data-sess-toggle]');
+    var coll = block.querySelector('[data-sess-collapse]');
+    function toggle(){ var c = block.classList.toggle('collapsed'); coll.innerHTML = c ? I_PLUS : I_MINUS; }
+    coll.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+    head.addEventListener('click', toggle);
+    blocksWrap.appendChild(block);
+    return block;
+  }
+  modalRoot.querySelector('[data-add-session-block]').addEventListener('click', function(){ addSessionBlock(); });
+
+  /* ----- Ouverture du formulaire ----- */
+  function openExoForm(mode, opts){
+    opts = opts || {};
+    formMode = mode; targetSession = opts.session || null;
+    blocksWrap.innerHTML = '';
+    if (mode === 'session-edit' && opts.session){
+      // Une seule session éditée : on cache l'année et le « + » (un seul bloc).
+      exoForm.action = opts.session.dataset.editUrl;
+      yearRow.hidden = true; addBlockRow.hidden = true;
+      if (exoTitle) exoTitle.textContent = 'Modifier une session';
+      exoBtn.textContent = 'Mettre à jour';
+      addSessionBlock({
+        debut: opts.session.getAttribute('data-debut') || '',
+        fin: opts.session.getAttribute('data-fin') || '',
+        objet: opts.session.getAttribute('data-objet') || '',
+        objectif: opts.session.getAttribute('data-objectif') || ''
+      });
+    } else if (mode === 'session-add' && opts.exo){
+      exoForm.action = opts.exo.dataset.addSessionUrl;
+      yearRow.hidden = true; addBlockRow.hidden = false;
+      if (exoTitle) exoTitle.textContent = 'Ajouter une session';
+      exoBtn.textContent = 'Ajouter la session';
+      addSessionBlock();
+    } else { // 'new' : création d'un exercice
+      exoForm.action = ADD_EXO_URL;
+      yearRow.hidden = false; addBlockRow.hidden = false;
+      if (exoTitle) exoTitle.textContent = 'Ajouter un exercice';
+      exoBtn.textContent = "Ajouter l'exercice";
+      addSessionBlock();
+    }
+    openModal('exo-form');
+  }
+
+  R.querySelector('[data-add-exo]').addEventListener('click', function(){ openExoForm('new', {}); });
+
+  /* Synchronise l'input caché « year » avec l'année choisie dans le combo. */
+  if (yearSelect){
+    yearSelect.addEventListener('click', function(){
+      var v = window.getComboValue(yearSelect); if (v) yearInput.value = v;
+    });
+  }
+
+  /* ===== Confirmations (POST réels) ===== */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type === 'session-delete' && targetSession){
+        var f = document.getElementById('action-form-g');
+        f.action = targetSession.dataset.delUrl; f.submit();
+      }
+      else if (type === 'exo-form'){
+        if (formMode === 'new') yearInput.value = window.getComboValue(yearSelect) || yearInput.value;
+        submitForm(exoForm);
+      }
+    });
+  });
+})();
+
+})();
+</script>
+<script>
+(function(){
+var R = document.getElementById("admin-comptes");
+
+/* ---- Onglets (Utilisateurs / Role) ---- */
+  R.querySelectorAll('[data-tab]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var name = tab.getAttribute('data-tab');
+      R.querySelectorAll('[data-tab]').forEach(function(t){
+        var on = (t === tab);
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      R.querySelectorAll('[data-panel]').forEach(function(p){
+        p.hidden = (p.getAttribute('data-panel') !== name);
+      });
+    });
+  });
+
+/* ===== Modales & actions ===== */
+  var modalRoot  = R.querySelector('[data-modal-root]');
+  if (modalRoot && modalRoot.parentNode !== document.body) document.body.appendChild(modalRoot);  /* centrage viewport (hors ancêtre transformé) */
+  var userForm   = document.getElementById('user-form');
+  var actionForm = document.getElementById('action-form-c');
+  var USER_ADD_URL = userForm.getAttribute('action');
+  var modals = {};
+  modalRoot.querySelectorAll('[data-modal]').forEach(function(m){ modals[m.getAttribute('data-modal')] = m; });
+  var currentRow = null, currentRoleRow = null, formMode = 'add';
+
+  var ICON_ADD = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
+  var ICON_UPD = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 4v5h-5"/></svg>';
+
+  function openModal(name){
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = (k !== name); });
+    modalRoot.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    modalRoot.classList.remove('open');
+    Object.keys(modals).forEach(function(k){ modals[k].hidden = true; });
+    document.body.style.overflow = '';
+    currentRow = null; currentRoleRow = null;
+  }
+  modalRoot.addEventListener('click', function(e){ if (e.target.closest('[data-modal-close]')) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && modalRoot.classList.contains('open')) closeModal(); });
+
+  /* Soumet le formulaire d'action caché vers l'URL fournie (POST). */
+  function postTo(url){ if (!url) return; actionForm.action = url; actionForm.submit(); }
+
+  /* Soumet un formulaire EN déclenchant la validation HTML5 (required, type=email…).
+     form.submit() la contournerait ; requestSubmit() la respecte. */
+  function submitForm(form){
+    if (form.requestSubmit) form.requestSubmit();
+    else if (form.reportValidity()) form.submit();
+  }
+
+  /* Rôles : multi-sélection (chaque badge est une case à cocher cachée). */
+  modalRoot.querySelectorAll('[data-roles] [data-role-cb]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      cb.closest('[data-role]').classList.toggle('selected', cb.checked);
+    });
+  });
+
+  /* Références du formulaire utilisateur. */
+  var formTitle = modalRoot.querySelector('[data-form-title]');
+  var formBtn   = modalRoot.querySelector('[data-form-btn]');
+  var formIcon  = modalRoot.querySelector('[data-form-icon]');
+  var fNom = modalRoot.querySelector('[data-f-nom]'), fPrenom = modalRoot.querySelector('[data-f-prenom]');
+  var fEmail = modalRoot.querySelector('[data-f-email]'), fTel = modalRoot.querySelector('[data-f-tel]');
+  var fPwd = modalRoot.querySelector('[data-f-pwd]'), fPwd2 = modalRoot.querySelector('[data-f-pwd2]');
+
+  function clearForm(){
+    fNom.value=''; fPrenom.value=''; fEmail.value=''; fTel.value=''; fPwd.value=''; fPwd2.value='';
+    modalRoot.querySelectorAll('[data-roles] [data-role-cb]').forEach(function(cb){ cb.checked = false; });
+    modalRoot.querySelectorAll('[data-role]').forEach(function(p){ p.classList.remove('selected'); });
+  }
+  /* Coche les rôles fournis (chaîne « A, B ») ; utilisé en édition. */
+  function setRole(roleText){
+    var wanted = (roleText || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    modalRoot.querySelectorAll('[data-roles] [data-role-cb]').forEach(function(cb){
+      var on = wanted.indexOf(cb.value.trim()) !== -1;
+      cb.checked = on;
+      cb.closest('[data-role]').classList.toggle('selected', on);
+    });
+  }
+  function openAdd(){
+    formMode='add'; currentRow=null;
+    userForm.action = USER_ADD_URL;
+    formTitle.textContent = "Ajouter un utilisateur";
+    formBtn.textContent = "Ajouter l'utilisateur";
+    formIcon.innerHTML = ICON_ADD;
+    clearForm();
+    fPwd.placeholder = '••••••••'; fPwd2.placeholder = '••••••••';
+    fPwd.required = true; fPwd2.required = true;   // mot de passe obligatoire à la création
+    openModal('form');
+    setTimeout(function(){ fNom.focus(); }, 60);
+  }
+  function openEdit(row){
+    formMode='edit'; currentRow=row;
+    userForm.action = row.dataset.editUrl;
+    formTitle.textContent = "Modifier l'utilisateur";
+    formBtn.textContent = "Mettre à jour";
+    formIcon.innerHTML = ICON_UPD;
+    clearForm();
+    fNom.value    = row.dataset.last || '';
+    fPrenom.value = row.dataset.first || '';
+    fEmail.value  = row.dataset.email || '';
+    fTel.value    = row.dataset.phone || '';
+    fPwd.placeholder = 'Laisser vide pour ne pas changer';
+    fPwd2.placeholder = 'Laisser vide pour ne pas changer';
+    fPwd.required = false; fPwd2.required = false;  // optionnel en modification
+    var roles = row.dataset.rolesCurrent || '';
+    if (roles && roles !== '—') setRole(roles);
+    openModal('form');
+  }
+
+  R.querySelector('[data-add-user]').addEventListener('click', openAdd);
+
+  /* Câblage d'une ligne utilisateur. */
+  function wireRow(row){
+    var edit = row.querySelector('.act-edit');
+    var del = row.querySelector('.act-del');
+    var toggle = row.querySelector('[data-toggle]');
+    if (edit) edit.addEventListener('click', function(){ openEdit(row); });
+    if (del) del.addEventListener('click', function(){ currentRow = row; openModal('delete'); });
+    if (toggle) toggle.addEventListener('click', function(){
+      currentRow = row;
+      var pill = row.querySelector('[data-status]');
+      if (pill.classList.contains('is-success')){
+        openModal('deactivate');
+      } else {
+        modalRoot.querySelector('[data-activate-name]').textContent = row.dataset.name || '';
+        openModal('activate');
+      }
+    });
+  }
+  R.querySelectorAll('[data-users] tr[data-id]').forEach(wireRow);
+
+  /* ===== Recherche multicritère (nom, prénom, e-mail), insensible casse/accents ===== */
+  (function(){
+    function _norm(s){ return (s || '').toString().toLowerCase().normalize('NFD').replace(new RegExp('['+String.fromCharCode(0x300)+'-'+String.fromCharCode(0x36f)+']','g'), ''); }
+    var input = R.querySelector('[data-user-search]');
+    var list = R.querySelector('[data-users]');
+    if (!input || !list) return;
+    input.addEventListener('input', function(){
+      var q = _norm(input.value.trim());
+      list.querySelectorAll('tr[data-id]').forEach(function(tr){
+        var hay = _norm([tr.getAttribute('data-last'), tr.getAttribute('data-first'),
+                         tr.getAttribute('data-name'), tr.getAttribute('data-email')].join(' '));
+        tr.style.display = (!q || hay.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  })();
+
+  /* ===== Rôles : ajout (modale) + édition inline + suppression ===== */
+  var roleFormTitle = modalRoot.querySelector('[data-role-form-title]');
+  var roleFormBtn   = modalRoot.querySelector('[data-role-form-btn]');
+  var rNom = modalRoot.querySelector('[data-r-nom]'), rDesc = modalRoot.querySelector('[data-r-desc]');
+
+  function openRoleAdd(){
+    roleFormTitle.textContent = "Ajouter un rôle";
+    roleFormBtn.textContent = "Ajouter le rôle";
+    rNom.value=''; rDesc.value='';
+    openModal('role-form');
+    setTimeout(function(){ rNom.focus(); }, 60);
+  }
+  R.querySelector('[data-add-role]').addEventListener('click', openRoleAdd);
+
+  /* Édition inline d'un rôle directement dans le tableau. */
+  function wireRoleRow(row){
+    var editBtn   = row.querySelector('[data-role-edit]');
+    var delBtn    = row.querySelector('[data-role-del]');
+    var saveBtn   = row.querySelector('[data-role-save]');
+    var cancelBtn = row.querySelector('[data-role-cancel]');
+    var form      = row.querySelector('[data-role-form]');
+    var nameSpan  = row.querySelector('[data-role-name]');
+    var descDiv   = row.querySelector('[data-role-desc]');
+    var actions   = row.querySelector('[data-role-actions]');
+    var saveActs  = row.querySelector('[data-role-save-actions]');
+    var nameInput = row.querySelector('[data-role-name-input]');
+    var descInput = row.querySelector('[data-role-desc-input]');
+    var initName = nameInput.value, initDesc = descInput.value;
+
+    function enterEdit(){
+      nameSpan.hidden = true; if (descDiv) descDiv.hidden = true;
+      form.hidden = false; actions.hidden = true; saveActs.hidden = false;
+      setTimeout(function(){ nameInput.focus(); }, 30);
+    }
+    function exitEdit(){
+      nameInput.value = initName; descInput.value = initDesc;
+      form.hidden = true; nameSpan.hidden = false; if (descDiv) descDiv.hidden = false;
+      actions.hidden = false; saveActs.hidden = true;
+    }
+    if (editBtn)   editBtn.addEventListener('click', enterEdit);
+    if (cancelBtn) cancelBtn.addEventListener('click', exitEdit);
+    if (saveBtn)   saveBtn.addEventListener('click', function(){ submitForm(form); });
+    if (delBtn)    delBtn.addEventListener('click', function(){
+      currentRoleRow = row;
+      modalRoot.querySelector('[data-role-del-name]').textContent = row.dataset.name || '';
+      openModal('role-delete');
+    });
+  }
+  R.querySelectorAll('[data-roles-list] tr[data-role-row]').forEach(wireRoleRow);
+
+  /* ===== Confirmations des modales (toutes en POST réel) ===== */
+  modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var type = btn.getAttribute('data-confirm');
+      if (type === 'delete' && currentRow)            { postTo(currentRow.dataset.delUrl); return; }
+      if (type === 'deactivate' && currentRow)        { postTo(currentRow.dataset.deactivateUrl); return; }
+      if (type === 'activate' && currentRow)          { postTo(currentRow.dataset.activateUrl); return; }
+      if (type === 'form')                            { submitForm(userForm); return; }   // add ou edit
+      if (type === 'role-delete' && currentRoleRow)   { postTo(currentRoleRow.dataset.delUrl); return; }
+      if (type === 'role-form')                        { submitForm(document.getElementById('role-form-el')); return; }
+      closeModal();
+    });
+  });
+
+})();
+</script>
+<script>
+  /* Tints (orange) à la sélection : clic sur une ligne = surbrillance ambre. */
+  document.querySelectorAll('.utbl tbody').forEach(function(tb){
+    tb.addEventListener('click', function(e){
+      if (e.target.closest('button, a, input, textarea, .act-btn, [data-combo]')) return;
+      var tr = e.target.closest('tr[data-id], tr[data-role-row]');
+      if (!tr || !tb.contains(tr)) return;
+      var was = tr.classList.contains('is-selected');
+      tb.querySelectorAll('tr.is-selected').forEach(function(r){ r.classList.remove('is-selected'); });
+      if (!was) tr.classList.add('is-selected');
+    });
+  });
+
+  /* Pagination (25 lignes/page) — n'apparaît qu'au-delà de 25 lignes. Coopère
+     avec la recherche (ne pagine que les lignes visibles) et se met à jour
+     lors des ajouts/suppressions de lignes. */
+  (function(){
+    var PER = 25;
+    function dataRows(tb){ return Array.prototype.slice.call(tb.querySelectorAll(':scope > tr[data-id], :scope > tr[data-role-row]')); }
+    function setup(sel, noun){
+      var tb = document.querySelector(sel); if (!tb) return null;
+      var table = tb.closest('table'); if (!table) return null;
+      var bar = document.createElement('div');
+      bar.className = 'flex items-center justify-between gap-3 pt-1 flex-wrap';
+      table.parentNode.insertBefore(bar, table.nextSibling);
+      var state = { page: 0 };
+      function mkBtn(label, page, cls, opts){
+        opts = opts || {};
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = cls; b.innerHTML = label;
+        if (opts.active){ b.classList.add('active'); b.setAttribute('aria-current', 'page'); }
+        if (opts.disabled){ b.disabled = true; }
+        else { b.addEventListener('click', function(){ state.page = page; render(); }); }
+        return b;
+      }
+      function render(){
+        var rows = dataRows(tb);
+        var vis = rows.filter(function(r){ return r.style.display !== 'none'; });
+        var total = vis.length;
+        var pages = Math.max(1, Math.ceil(total / PER));
+        if (state.page > pages - 1) state.page = pages - 1;
+        if (state.page < 0) state.page = 0;
+        rows.forEach(function(r){ r.removeAttribute('data-pg'); });
+        if (total > PER){
+          vis.forEach(function(r, i){ if (Math.floor(i / PER) !== state.page) r.setAttribute('data-pg', 'off'); });
+        }
+        bar.innerHTML = '';
+        bar.style.display = (total > PER) ? '' : 'none';
+        if (total <= PER) return;
+        var from = state.page * PER + 1, to = Math.min(total, (state.page + 1) * PER);
+        var info = document.createElement('span');
+        info.className = 'text-[13px] text-muted';
+        info.innerHTML = 'Affichage <b class="text-ink-2 font-bold tabular-nums">' + from + '–' + to +
+                         '</b> sur <b class="text-brand-600 font-bold tabular-nums">' + total + '</b> ' + noun;
+        bar.appendChild(info);
+        var nav = document.createElement('div');
+        nav.className = 'flex items-center gap-1 flex-wrap';
+        var L = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
+        var Rr = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+        nav.appendChild(mkBtn(L, state.page - 1, 'page-link', { disabled: state.page === 0 }));
+        for (var p = 0; p < pages; p++){
+          if (p === 0 || p === pages - 1 || Math.abs(p - state.page) <= 1){
+            nav.appendChild(mkBtn(String(p + 1), p, 'page-num', { active: p === state.page }));
+          } else if (Math.abs(p - state.page) === 2){
+            var s = document.createElement('span'); s.className = 'px-1.5 text-muted-2 select-none'; s.textContent = '…';
+            nav.appendChild(s);
+          }
+        }
+        nav.appendChild(mkBtn(Rr, state.page + 1, 'page-link', { disabled: state.page === pages - 1 }));
+        bar.appendChild(nav);
+      }
+      new MutationObserver(function(){ render(); }).observe(tb, { childList: true });
+      render();
+      return render;
+    }
+    var renders = [];
+    var CFG = [];
+    CFG.push(['[data-list="min"]', 'ministère(s)']);
+    CFG.push(['[data-list="gc"]', 'gestionnaire(s)']);
+    CFG.push(['[data-users]', 'utilisateur(s)']);
+    CFG.push(['[data-roles-list]', 'rôle(s)']);
+    CFG.forEach(function(c){ var r = setup(c[0], c[1]); if (r) renders.push(r); });
+    function rerun(){ setTimeout(function(){ renders.forEach(function(r){ r(); }); }, 0); }
+    document.addEventListener('input', function(e){
+      if (e.target.matches('[data-search], [data-user-search], [data-role-search]')) rerun();
+    });
+    document.querySelectorAll('[data-tab]').forEach(function(t){ t.addEventListener('click', rerun); });
+  })();
+</script>
+<script>
+  /* Onglet initial piloté par le contrôleur (after CRUD redirect). */
+  (function(){
+    var t = "[[=globals().get('active_tab','exo')]]";
+    if (t && t !== 'exo'){ var b = document.querySelector('[data-tab="' + t + '"]'); if (b) b.click(); }
+  })();
+</script>
+[[end]]

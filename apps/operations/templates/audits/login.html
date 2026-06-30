@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion — AUDIT a posteriori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+@theme{
+  --font-sans:"Inter",system-ui,sans-serif;
+  --font-display:"Plus Jakarta Sans",system-ui,sans-serif;
+  --font-heading:"Plus Jakarta Sans",system-ui,sans-serif;
+  --color-amber-50:#FFF8EC;--color-brand-50:#FFF8EC;
+  --color-amber-100:#FDECCB;--color-brand-100:#FDECCB;
+  --color-amber-200:#FAD78F;--color-brand-200:#FAD78F;
+  --color-amber-300:#F8C25A;--color-brand-300:#F8C25A;
+  --color-amber-400:#F6AE34;--color-brand-400:#F6AE34;
+  --color-amber-500:#F4A01C;--color-brand-500:#F4A01C;
+  --color-amber-600:#DE860F;--color-brand-600:#DE860F;
+  --color-amber-700:#B96A0D;--color-brand-700:#B96A0D;
+  --color-amber-800:#92520C;--color-brand-800:#92520C;
+  --color-amber-900:#6F3E0A;--color-brand-900:#6F3E0A;
+  --color-green-50:#ECF8F0;--color-green-500:#2FA15C;--color-green-600:#258C4D;--color-green-700:#1F7340;
+  --color-danger-50:#FBE9E6;--color-danger-500:#D64535;--color-danger-600:#B83A2B;--color-danger-700:#9B2C20;
+  --color-warning-500:#E0670B;
+  --color-n0:#FFFFFF;--color-n25:#FAFAFA;--color-n100:#EBEBEB;--color-n300:#CFCFCF;--color-n500:#8A8A8A;--color-n600:#6A6A6A;--color-n700:#4C4C4C;
+  --color-ink:#1E1E1E;--color-ink-2:#4C4C4C;--color-muted:#6A6A6A;--color-muted-2:#8A8A8A;--color-surface:#FFFFFF;
+}
+@layer base{
+  :root{--bg:#EEEEEE;--border-weak:#E7E7E7;--border-strong:#C9C9C9;--ring:0 0 0 3px rgba(244,160,28,.32);--sh-sm:0 2px 8px rgba(46,38,28,.06);--sh-lg:0 16px 40px rgba(46,38,28,.12);--r-sm:8px;}
+  body{@apply font-sans text-ink antialiased;min-height:100dvh;background-color:#eef1ef;}
+}
+@layer components{
+  .card{background:rgba(255,255,255,.66);-webkit-backdrop-filter:blur(22px) saturate(150%);backdrop-filter:blur(22px) saturate(150%);border:1px solid rgba(255,255,255,.85);box-shadow:0 18px 48px rgba(46,38,28,.16),0 6px 16px rgba(46,38,28,.08);border-radius:1rem;}
+  .lbl{@apply block text-[12.5px] font-semibold text-muted mb-1;}
+  .field{@apply w-full px-4 rounded-lg border text-sm text-ink transition;height:40px;background:#fff;border-color:var(--border-strong);}
+  .field:focus{@apply outline-none;border-color:var(--color-amber-500);box-shadow:var(--ring);background:#fff;}
+  .field::placeholder{color:var(--color-muted-2);}
+  .btn-accent{@apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-white font-bold font-heading text-sm cursor-pointer transition;background:linear-gradient(135deg,var(--color-green-600),var(--color-green-700));border:1px solid transparent;min-height:44px;}
+  .btn-accent:hover{filter:brightness(1.05);}
+  .btn-accent:focus-visible{outline:none;box-shadow:var(--ring);}
+}
+
+/* Fond glassmorphism : halos colorés (ambre/vert du thème) + grain léger */
+.bg-decor{position:fixed;inset:0;z-index:-2;overflow:hidden}
+.bg-decor::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(60% 55% at 0% 0%,    rgba(244,160,28,.20), transparent 60%),
+    radial-gradient(55% 50% at 100% 6%,  rgba(47,161,92,.16),  transparent 62%),
+    radial-gradient(70% 60% at 100% 100%,rgba(244,160,28,.14), transparent 60%),
+    radial-gradient(60% 55% at 0% 100%,  rgba(47,161,92,.12),  transparent 60%),
+    linear-gradient(160deg,#f4f1ea,#eef1ef);
+}
+.bg-decor::after{
+  content:"";position:absolute;inset:0;opacity:.4;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+}
+</style>
+</head>
+<body>
+<div class="bg-decor" aria-hidden="true"></div>
+<div class="min-h-dvh grid place-items-center p-4 sm:p-6">
+  <main class="card w-full max-w-[940px] overflow-hidden grid md:grid-cols-[1.05fr_1fr]">
+
+    <!-- Panneau de marque AMBRE (orange complémentaire) -->
+    <div class="relative hidden md:flex flex-col justify-between gap-10 p-10 text-white overflow-hidden" style="background:linear-gradient(135deg,#161616 0%,#6B4310 58%,#DE860F 100%)">
+      <div class="pointer-events-none absolute -top-20 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl"></div>
+      <div class="pointer-events-none absolute -bottom-24 -left-12 w-64 h-64 rounded-full bg-amber-300/20 blur-3xl"></div>
+      <div class="relative">
+        <div class="font-display font-extrabold text-4xl tracking-wide leading-none">AUD<span class="text-amber-200">IT</span></div>
+        <div class="font-heading font-medium text-[13px] tracking-[2px] text-white/70 mt-1">a posteriori</div>
+      </div>
+      <div class="relative flex flex-col gap-4">
+        <span class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-white/15 text-xs font-heading font-semibold tracking-wide">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8 7 9 4-1 7-4.5 7-9V6z"/><path d="m9.5 12 1.8 1.8 3.4-3.6"/></svg>
+          Plateforme officielle
+        </span>
+        <h2 class="font-heading font-bold text-2xl leading-snug">Audit a posteriori des marchés publics</h2>
+        <p class="text-sm text-white/80 leading-relaxed max-w-[36ch]">Direction Générale des Marchés Publics — République de Côte d'Ivoire. Contrôle, transparence et conformité des marchés déjà passés.</p>
+      </div>
+      <div class="relative flex items-center justify-between gap-4">
+        <span class="text-xs text-white/70 font-medium">DGMP &copy; 2026</span>
+        <div class="flex items-center gap-1" aria-label="Côte d'Ivoire" role="img">
+          <span class="w-5 h-2.5 rounded-sm bg-[#F77F00]"></span>
+          <span class="w-5 h-2.5 rounded-sm bg-white"></span>
+          <span class="w-5 h-2.5 rounded-sm bg-[#009E60]"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="p-8 sm:p-10 flex flex-col gap-6">
+      <div class="md:hidden">
+        <div class="font-display font-extrabold text-3xl tracking-wide leading-none text-ink">AUD<span class="text-amber-700">IT</span></div>
+        <div class="font-heading font-medium text-[12px] tracking-[2px] text-muted-2 mt-1">a posteriori</div>
+      </div>
+      [[ notice = globals().get('notice', '') ]]
+      [[ if notice: ]]
+      <div class="flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm" role="status" style="background:var(--color-green-50);color:var(--color-green-700)">
+        <svg class="w-[18px] h-[18px] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.2 2.2 4.8-4.8"/></svg>
+        <span>[[=notice]]</span>
+      </div>
+      [[ pass ]]
+      [[ error = globals().get('error', '') ]]
+      [[ if error: ]]
+      <div class="flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm" role="alert" style="background:var(--color-danger-50);color:var(--color-danger-700)">
+        <svg class="w-[18px] h-[18px] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>[[=error]]</span>
+      </div>
+      [[ pass ]]
+      <div>
+        <h1 class="font-heading font-bold text-2xl tracking-tight text-ink">Connexion</h1>
+        <p class="text-sm text-muted mt-1">Accédez à votre espace d'audit.</p>
+      </div>
+      <form method="post" action="[[=URL('login')]]" class="flex flex-col gap-4">
+        <div>
+          <label class="lbl" for="username">Identifiant ou e-mail</label>
+          <div class="relative"><svg class="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+            <input id="username" name="username" type="text" required autocomplete="username" class="field pl-11" placeholder="ex. j.kouassi ou nom@dgmp.ci">
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="lbl mb-0" for="password">Mot de passe</label>
+            <a href="[[=URL('password_forget')]]" class="text-xs font-semibold text-amber-700 hover:text-amber-800">Mot de passe oublié ?</a>
+          </div>
+          <div class="relative"><svg class="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            <input id="password" name="password" type="password" required autocomplete="current-password" class="field pl-11 pr-12" placeholder="Votre mot de passe">
+            <button type="button" data-toggle-pw class="absolute right-2.5 top-1/2 -translate-y-1/2 grid place-items-center w-8 h-8 rounded-lg text-muted-2 hover:text-amber-700 hover:bg-amber-50 transition cursor-pointer" aria-label="Afficher le mot de passe"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+        <label class="flex items-center gap-2.5 cursor-pointer select-none w-fit">
+          <input type="checkbox" name="remember" class="w-4 h-4 rounded accent-amber-600 cursor-pointer">
+          <span class="text-sm text-ink-2">Se souvenir de moi</span>
+        </label>
+        <button type="submit" class="btn-accent w-full mt-1 text-[15px]">
+          <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+          Se connecter
+        </button>
+      </form>
+      <div class="flex items-center gap-3 text-muted-2">
+        <span class="h-px flex-1 bg-black/[.08]"></span>
+        <span class="text-xs font-semibold tracking-wide uppercase">Accès réservé</span>
+        <span class="h-px flex-1 bg-black/[.08]"></span>
+      </div>
+      <p class="text-xs text-muted text-center leading-relaxed">Plateforme réservée aux agents habilités de la DGMP.<br>Besoin d'un accès ? Contactez l'administrateur système.</p>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){var b=document.querySelector('[data-toggle-pw]'),p=document.getElementById('password');if(b&&p)b.addEventListener('click',function(){p.type=p.type==='password'?'text':'password';});})();
+</script>
+</body>
+</html>

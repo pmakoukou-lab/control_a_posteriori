@@ -1,0 +1,94 @@
+<!-- En-tête commun : contexte (Gestion / Session) + menu utilisateur.
+     Le mécanisme des listes déroulantes (data-dropdown / data-dd-trigger /
+     data-dd-panel) est piloté par static/js/app.js. -->
+[[ _cu = globals().get('current_user') or {} ]]
+[[ _nm = (_cu.get('name','') or 'Utilisateur') ]]
+[[ _parts = _nm.split() ]]
+[[ _ini = ((_parts[0][:1] + (_parts[1][:1] if len(_parts) > 1 else '')).upper() or 'U') ]]
+<header class="glass reveal [animation-delay:120ms] relative z-50 flex items-center justify-between gap-4 flex-wrap px-6 py-1.5">
+
+  <!-- Contexte de contrôle -->
+  <div class="flex items-center gap-3 flex-wrap">
+    <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[1.5px] uppercase text-muted-2">
+      <svg class="w-4 h-4 text-brand-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+      Période de contrôle
+    </span>
+
+    [[ _per = globals().get('period') or {} ]]
+    [[ _exos = _per.get('options', []) ]]
+    [[ _gid = _per.get('gestion_id') ]]
+    [[ _sid = _per.get('session_id') ]]
+    [[ _next = globals().get('active', 'dashboard') ]]
+    <div class="flex items-center gap-1">
+      <!-- Gestion (exercice budgétaire) -->
+      <div class="relative" data-dropdown>
+        <button class="hdr-trigger"
+                data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Gestion : exercice budgétaire">
+          <span class="text-sm font-semibold">Gestion</span>
+          <span class="text-sm font-bold text-brand-700 tabular-nums" data-dd-value>[[=_per.get('gestion_label','—')]]</span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dd-panel left-0 min-w-[130px]" data-dd-panel role="listbox" aria-label="Exercice budgétaire">
+          [[ for _e in _exos: ]]
+          <a class="dd-option [[='selected' if _e['id'] == _gid else '']]" data-dd-option role="option" aria-selected="[[='true' if _e['id'] == _gid else 'false']]" href="[[=URL('set_period', vars=dict(gestion=_e['id'], next=_next))]]">[[=_e['label'] ]]</a>
+          [[ pass ]]
+          [[ if not _exos: ]]<span class="dd-option text-muted-2">—</span>[[ pass ]]
+        </div>
+      </div>
+      <!-- Mission (session budgétaire) -->
+      [[ _missions = [] ]]
+      [[ for _e in _exos: ]][[ if _e['id'] == _gid: ]][[ _missions = _e['sessions'] ]][[ pass ]][[ pass ]]
+      <div class="relative" data-dropdown>
+        <button class="hdr-trigger"
+                data-dd-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Mission">
+          <span class="text-sm font-semibold">Mission</span>
+          <span class="text-sm font-bold text-brand-700 tabular-nums" data-dd-value>[[=_per.get('session_num') or '—']]</span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dd-panel left-0 min-w-[120px]" data-dd-panel role="listbox" aria-label="Mission">
+          [[ for _m in _missions: ]]
+          <a class="dd-option [[='selected' if _m['id'] == _sid else '']]" data-dd-option role="option" aria-selected="[[='true' if _m['id'] == _sid else 'false']]" href="[[=URL('set_period', vars=dict(session=_m['id'], next=_next))]]">[[=_m['label'] ]]</a>
+          [[ pass ]]
+          [[ if not _missions: ]]<span class="dd-option text-muted-2">—</span>[[ pass ]]
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menu utilisateur -->
+  <div class="relative" data-dropdown>
+    <button class="usr-btn"
+            data-dd-trigger aria-haspopup="menu" aria-expanded="false" aria-label="Menu utilisateur">
+      <span class="hidden sm:flex flex-col items-end leading-tight">
+        <b class="font-heading font-bold text-sm text-ink">[[=_nm]]</b>
+        <span class="text-[12px] font-semibold text-muted-2">[[=_cu.get('role','')]]</span>
+      </span>
+      <span class="grid place-items-center w-8 h-8 rounded-full text-white font-heading font-bold text-xs tracking-[.02em] shadow-sm" style="background:linear-gradient(135deg,var(--color-amber-700),var(--color-amber-800))">[[=_ini]]</span>
+      <svg class="chev w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+
+    <div class="dd-panel p-2 min-w-[230px]" style="left:auto;right:0;" data-dd-panel role="menu" aria-label="Menu utilisateur">
+      <div class="flex items-center gap-2.5 px-2 pt-1 pb-2.5">
+        <span class="grid place-items-center w-8 h-8 rounded-full text-white font-heading font-bold text-xs shadow-sm" style="background:linear-gradient(135deg,var(--color-amber-700),var(--color-amber-800))">[[=_ini]]</span>
+        <div class="min-w-0">
+          <span class="block font-heading font-bold text-sm text-ink leading-tight truncate">[[=_nm]]</span>
+          <span class="block text-[12px] text-muted-2 truncate">[[=_cu.get('email','')]]</span>
+        </div>
+      </div>
+      <div class="h-px mx-1 my-1.5" style="background:var(--border-weak)"></div>
+      <a class="usr-opt" role="menuitem" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+        Mon profil
+      </a>
+      <a class="usr-opt" role="menuitem" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg>
+        Paramètres
+      </a>
+      <div class="h-px mx-1 my-1.5" style="background:var(--border-weak)"></div>
+      <a class="usr-opt usr-opt-danger" role="menuitem" href="[[=URL('logout')]]">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Déconnexion
+      </a>
+    </div>
+  </div>
+</header>

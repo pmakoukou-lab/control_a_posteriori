@@ -1,0 +1,596 @@
+[[extend 'audits/layout.html']]
+
+[[block title]]Test design — AUDIT a posteriori[[end]]
+
+[[block main]]
+<!-- ===== Thème de TEST : noir comme couleur secondaire du vert =====
+     CSS « brut » (lu directement par le navigateur), portée = page test only. -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+  /* Vert moins pur + police Quicksand — page test uniquement. */
+  :root{
+    --font-sans:"Quicksand",system-ui,sans-serif;
+    --font-heading:"Quicksand",system-ui,sans-serif;
+    --font-display:"Quicksand",system-ui,sans-serif;
+    --color-brand-50:#eef7f1; --color-brand-100:#d9ece0; --color-brand-200:#aedcc1;
+    --color-brand-300:#79c79c; --color-brand-400:#4cb37f; --color-brand-500:#319562;
+    --color-brand-600:#2a6a49; --color-brand-700:#245b3f;
+    /* Rouge cassé (moins vif) — bouton delete & co. */
+    --color-danger-50:#f7efef; --color-danger-100:#efdcdc; --color-danger-200:#e2c2c0;
+    --color-danger-500:#c45f57; --color-danger-600:#a84c46; --color-danger-700:#8c3d39;
+  }
+  /* Police Quicksand pour tout le texte de base de la page test */
+  body{ font-family:"Quicksand", system-ui, sans-serif; }
+  /* Cards en verre semi-transparent (opacité conservée) + flou renforcé. */
+  .glass{ background:rgba(255,255,255,.65);
+          -webkit-backdrop-filter:blur(26px) saturate(135%); backdrop-filter:blur(26px) saturate(135%); }
+  /* Fond légèrement assombri (blobs d'origine conservés, base un cran plus foncée) */
+  .bg-decor::before{
+    background:
+      radial-gradient(60% 55% at 0% 0%,    rgba(43,196,106,.14), transparent 60%),
+      radial-gradient(55% 50% at 100% 8%,  rgba(14,165,183,.12), transparent 62%),
+      radial-gradient(70% 60% at 100% 100%,rgba(95,228,154,.12), transparent 60%),
+      radial-gradient(60% 55% at 0% 100%,  rgba(124,92,255,.14), transparent 60%),
+      linear-gradient(160deg,#e7eae9,#dfe3e1);
+  }
+  /* Zone de recherche : opacité totale */
+  .search input{ background:#fff; }
+  /* Petites polices ~12px → 14px (labels du filtre, etc.) */
+  .lbl{ font-size:14px; }
+  /* Filtre : fond gris autour (extérieur) de la zone de recherche des selects */
+  .combo-search{ background:#eef0ef; border-radius:0.5rem; }
+  /* Filtre : survol des options des selects = teinte du sidebar */
+  .combo-option:hover{ background:rgba(60,72,67,.09); color:#3c4843; }
+  /* En-tête : hauteur réduite (header.glass > utilitaire py-4) */
+  header.glass{ padding-top:0.5rem; padding-bottom:0.5rem; }
+  /* Gestion / Session / Quitter : même hauteur que le CTA (py-2) */
+  header [data-dd-trigger], header .btn-soft{ padding-top:0.5rem; padding-bottom:0.5rem; }
+  /* Noir DOUX (pas de noir total) comme couleur secondaire du vert. */
+  /* Boutons secondaires : fond noir doux, texte + icônes (currentColor) blancs */
+  .btn-secondary{ background:#3c4843; color:#fff; border-color:#3c4843; }
+  .btn-secondary:hover{ background:#4a574f; color:#fff; border-color:#4a574f; }
+  /* Pagination : actif foncé doux, teinte au survol */
+  .pg-num{ color:var(--color-ink-2); }
+  .pg-num:hover{ background:rgba(60,72,67,.10); color:#3c4843; }
+  .pg-num.active{ background:#3c4843; color:#fff; }
+  /* Masqués sur la page test : libellé « Pilotage » du menu + liens du footer */
+  nav[aria-label="Menu"] > span{ display:none; }
+  footer nav[aria-label="Liens du pied de page"]{ display:none; }
+  /* Sidebar : items en pilule (full arrondi) + hauteur réduite (alignée aux boutons) */
+  .nav-item, .subitem{ border-radius:9999px; }
+  .nav-item{ padding-top:0.5rem; padding-bottom:0.5rem; font-size:16px; }
+  .subitem{ font-size:15px; }
+  /* Sidebar : teinte au survol, foncé doux à la sélection */
+  .nav-item:hover{ background:rgba(60,72,67,.09); color:#3c4843; }
+  .nav-item.active{ background:#3c4843; color:#fff; border-color:rgba(255,255,255,.12); }
+  .subitem:hover{ background:rgba(60,72,67,.09); color:#3c4843; }
+  .subitem.active{ background:#3c4843; color:#fff; border-color:rgba(255,255,255,.12); }
+  /* Masque l'avatar/icône utilisateur dans l'en-tête (page test uniquement) */
+  header .from-brand-400.to-teal-500{ display:none; }
+  /* Valeurs des sélecteurs Gestion / Session : fond noir doux, texte blanc */
+  header [data-dd-value]{ background:#3c4843; color:#fff; }
+  /* Taille 14px pour les options des dropdowns « exporter » / « ajouter une opération » */
+  main .dd-option, main .dd-option span{ font-size:14px; }
+  /* Options de dropdown (Gestion, Session, Exporter, Ajouter une opération) :
+     survol = teinte du sidebar ; sélection (en-tête) = foncé doux. */
+  .dd-option:hover{ background:rgba(60,72,67,.09); color:#3c4843; }
+  header .dd-option.selected{ background:#3c4843; color:#fff; }
+  /* Ombre renforcée des dropdowns (Gestion, Session, Filtre) */
+  .dd-panel{ box-shadow:0 16px 40px rgba(15,27,20,.22), 0 6px 14px rgba(15,27,20,.12); }
+</style>
+<main class="glass reveal [animation-delay:190ms] p-8 flex flex-col gap-6 min-h-[560px]">
+
+      <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="font-heading font-bold text-2xl tracking-tight text-ink">Liste des opérations</h1>
+          <p class="text-sm text-muted mt-1"><b class="text-green-600 font-bold tabular-nums">[[=globals().get('count', 0)]]</b> opération(s) collectée(s)</p>
+        </div>
+      </div>
+
+      [[ flash_text = globals().get('msg_text', '') ]]
+      [[ flash_level = globals().get('msg_level', '') ]]
+      [[ include 'audits/_flash.html' ]]
+
+      <!-- Barre d'outils -->
+      <div class="relative flex items-center justify-between gap-4 flex-wrap" data-dropdown>
+        <form method="get" action="[[=URL('collecte')]]" data-filter-form class="flex items-center gap-4 flex-wrap flex-1 min-w-0">
+          [[ _f = globals().get('filters', {}) ]]
+          <!-- Champs cachés alimentés par les combos du panneau Filtre -->
+          <input type="hidden" name="ministere"    data-filter-hidden="ministere"    value="[[=_f.get('ministere','')]]">
+          <input type="hidden" name="gestionnaire" data-filter-hidden="gestionnaire" value="[[=_f.get('gestionnaire','')]]">
+          <input type="hidden" name="imputation"   data-filter-hidden="imputation"   value="[[=_f.get('imputation','')]]">
+          <input type="hidden" name="mode"         data-filter-hidden="mode"         value="[[=_f.get('mode','')]]">
+
+          <div class="search w-full max-w-[320px]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" name="q" value="[[=globals().get('q','')]]"
+                   placeholder="Ministère, gestionnaire, objet, n° BOMP…" aria-label="Rechercher">
+          </div>
+
+          <!-- Filtre -->
+          <button type="button" class="flex items-center text-ink-2 hover:text-brand-600 transition cursor-pointer"
+                  data-dd-trigger aria-haspopup="true" aria-expanded="false" aria-label="Filtre">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M18 6h2M4 12h2M11 12h9M4 18h6M15 18h5"/><circle cx="15.5" cy="6" r="2"/><circle cx="8.5" cy="12" r="2"/><circle cx="12.5" cy="18" r="2"/></svg>
+          </button>
+
+          <div class="dd-panel left-0 right-0 top-full w-auto max-w-none p-4 gap-3" data-dd-panel role="region" aria-label="Filtres de recherche">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+              <!-- Ministère -->
+              <div class="relative" data-combo data-filter="ministere" data-combo-placeholder="Ministère" data-value="[[=_f.get('ministere_label','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate [[='text-ink-2' if _f.get('ministere_label') else 'text-muted-2']]">[[=_f.get('ministere_label') or 'Ministère']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un ministère">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option data-id="">Tous les ministères</button>
+                    [[ for o in globals().get('filt_min_options', []): ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gestionnaire de crédit -->
+              <div class="relative" data-combo data-filter="gestionnaire" data-combo-placeholder="Gestionnaire de crédit" data-value="[[=_f.get('gestionnaire_label','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate [[='text-ink-2' if _f.get('gestionnaire_label') else 'text-muted-2']]">[[=_f.get('gestionnaire_label') or 'Gestionnaire de crédit']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un gestionnaire">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option data-id="">Tous les gestionnaires</button>
+                    [[ for o in globals().get('filt_gc_options', []): ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+
+              <!-- Imputation -->
+              <div class="relative" data-combo data-filter="imputation" data-combo-placeholder="Imputation" data-value="[[=_f.get('imputation','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate [[='text-ink-2' if _f.get('imputation') else 'text-muted-2']]">[[=_f.get('imputation') or 'Imputation']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une imputation">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option data-id="">Toutes les imputations</button>
+                    [[ for o in globals().get('filt_imp_options', []): ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o]]">[[=o]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mode de passation -->
+              <div class="relative" data-combo data-filter="mode" data-combo-placeholder="Mode de passation" data-value="[[=_f.get('mode_label','')]]">
+                <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
+                  <span data-combo-label class="truncate [[='text-ink-2' if _f.get('mode_label') else 'text-muted-2']]">[[=_f.get('mode_label') or 'Mode de passation']]</span>
+                  <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="combo-panel" data-combo-panel role="listbox">
+                  <div class="combo-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher un mode de passation">
+                  </div>
+                  <div class="combo-list" data-combo-list>
+                    <button type="button" class="combo-option" data-combo-option data-id="">Tous les modes</button>
+                    [[ for o in globals().get('filt_mode_options', []): ]]
+                    <button type="button" class="combo-option" data-combo-option data-id="[[=o['id'] ]]">[[=o['label'] ]]</button>
+                    [[ pass ]]
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full justify-center" data-dd-search>
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              Rechercher
+            </button>
+            [[ if _f.get('ministere') or _f.get('gestionnaire') or _f.get('imputation') or _f.get('mode') or globals().get('q'): ]]
+            <a href="[[=URL('collecte')]]" class="text-sm font-semibold text-muted-2 hover:text-ink-2 text-center transition">Réinitialiser les filtres</a>
+            [[ pass ]]
+          </div>
+        </form>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" class="btn-danger" data-bulk-delete style="display:none;padding:0.5rem 1rem;border:1px solid transparent;">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M10 11v6M14 11v6"/></svg>
+            delete
+          </button>
+          <button class="btn-secondary">
+            <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V4h10v4"/><path d="M7 18H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="15" width="10" height="6" rx="1"/></svg>
+            Imprimer
+          </button>
+          <div class="relative" data-dropdown>
+            <button type="button" class="btn-secondary" data-dd-trigger aria-haspopup="menu" aria-expanded="false">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/></svg>
+              exporter
+              <svg class="chev w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="dd-panel min-w-[240px]" style="left:auto;right:0;" data-dd-panel role="menu" aria-label="Exporter par mode de passation">
+              [[ for m in globals().get('add_modes', []): ]]
+              <a href="[[=URL(m['abrege'].lower(), 'export')]]" class="dd-option text-left" role="menuitem" data-dd-option>
+                <span class="font-bold text-ink-2">[[=m['abrege'] ]]</span>
+                <span class="text-muted-2 font-normal">- [[=m['label'] ]]</span>
+              </a>
+              [[ pass ]]
+              [[ if not globals().get('add_modes', []): ]]
+              <div class="combo-empty">Aucun mode de passation</div>
+              [[ pass ]]
+            </div>
+          </div>
+          [[ add_modes = globals().get('add_modes', []) ]]
+          <div class="relative" data-dropdown>
+            <button type="button" class="btn-primary" data-dd-trigger aria-haspopup="menu" aria-expanded="false">
+              <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              ajouter une opération
+              <svg class="chev w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="dd-panel min-w-[240px]" style="left:auto;right:0;" data-dd-panel role="menu" aria-label="Mode de passation">
+              [[ for m in add_modes: ]]
+              <a href="[[=m['url'] ]]" class="dd-option text-left" role="menuitem" data-dd-option>
+                <span class="font-bold text-ink-2">[[=m['abrege'] ]]</span>
+                <span class="text-muted-2 font-normal">- [[=m['label'] ]]</span>
+              </a>
+              [[ pass ]]
+              [[ if not add_modes: ]]
+              <div class="combo-empty">Aucun mode de passation</div>
+              [[ pass ]]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau des opérations (même fond blanc que le panneau de filtre) -->
+      <div class="rounded-2xl border border-black/[.05] overflow-hidden" style="background:#fff">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="[&>th]:text-left [&>th]:font-heading [&>th]:text-sm [&>th]:font-bold [&>th]:tracking-wide [&>th]:text-brand-700 [&>th]:uppercase [&>th]:px-4 [&>th]:pb-3 [&>th]:pt-3">
+              <th class="w-10"><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer" data-select-all aria-label="Tout sélectionner"></th>
+              <th>N° Opération</th>
+              <th>Gestionnaire de crédit</th>
+              <th>Opérations</th>
+              <th>Mode de passation</th>
+              <th class="!text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="[&>tr]:transition [&>tr:hover]:bg-[#3c4843]/[0.03] [&_td]:px-4 [&_td]:py-4 [&_td]:text-sm [&_td]:text-ink-2 [&_td]:border-t [&_td]:border-black/[.06] [&_td]:align-top">
+            [[ operations = globals().get('operations', []) ]]
+            [[ for op in operations: ]]
+            <tr data-op-row
+                data-num="[[=op['number'] ]]"
+                data-objet="[[=op['objet'] ]]" data-nature="[[=op['nature_operation'] ]]"
+                data-gest="[[=op['gestionnaire'] ]]" data-min="[[=op['ministere'] ]]"
+                data-del-url="[[=op['delete_url'] ]]">
+              <td><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer mt-0.5" data-row-check value="[[=op['mode'] ]]:[[=op['id'] ]]" aria-label="Sélectionner"></td>
+              <td class="whitespace-nowrap"><div class="font-semibold tabular-nums">[[=op['number'] ]]</div><div class="text-sm font-normal text-muted-2 mt-0.5">[[=op['date'] ]]</div></td>
+              <td><div class="font-bold text-ink">[[=op['gestionnaire'] or '—']]</div><div class="text-sm text-muted-2 mt-0.5 max-w-[260px]">[[=op['ministere'] ]]</div></td>
+              <td><div class="font-bold text-ink">[[=op['objet'] or '—']]</div><div class="text-sm text-muted-2 mt-0.5">[[=op['nature_operation'] ]]</div></td>
+              <td><span class="pill [[=op['pill'] ]]">[[=op['mode_label'] ]]</span></td>
+              <td>
+                <div class="flex items-center justify-center gap-1">
+                  <a href="[[=op['details_url'] ]]" class="act-btn grid place-items-center w-9 h-9 rounded-lg text-brand-600 hover:bg-brand-50 hover:text-brand-600 transition cursor-pointer" aria-label="Voir"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></svg></a>
+                  <a href="[[=op['edit_url'] ]]" class="act-btn grid place-items-center w-9 h-9 rounded-lg text-blue-600 hover:bg-blue-50 hover:text-blue-600 transition cursor-pointer" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 4.5l3 3L8 19l-4 1 1-4z"/></svg></a>
+                  <button type="button" class="act-btn grid place-items-center w-9 h-9 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-500 transition cursor-pointer" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="m10 11 4 4M14 11l-4 4"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            [[ pass ]]
+            [[ if not operations: ]]
+            <tr><td colspan="6" class="text-center text-muted py-10">Aucune opération collectée pour le moment.</td></tr>
+            [[ pass ]]
+          </tbody>
+        </table>
+      </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-center gap-1 pt-2 flex-wrap">
+        <button class="flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold text-muted-2 cursor-default" disabled>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          Previous
+        </button>
+        <button class="pg-num active grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold tabular-nums cursor-pointer transition" aria-current="page">1</button>
+        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">2</button>
+        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">3</button>
+        <span class="px-2 text-muted-2 font-bold">…</span>
+        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">67</button>
+        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">68</button>
+        <button class="pg-num flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold transition cursor-pointer">
+          Next
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </main>
+
+<form id="op-action-form" method="post" action="" class="hidden"></form>
+<div class="modal" data-del-modal aria-hidden="true">
+  <div class="modal-backdrop" data-m-backdrop></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="del-title">
+    <h2 id="del-title" class="font-heading font-bold text-lg text-ink leading-snug">Êtes-vous sûr de vouloir supprimer l'opération N°<span data-m-num>BOMP</span> ?</h2>
+
+    <div class="mt-5 flex flex-col gap-4">
+      <p class="text-sm leading-relaxed"><b class="font-bold text-ink-2" data-m-objet>objet</b> <span class="text-muted-2">(<span data-m-type>nature de l'opération</span>)</span></p>
+      <p class="text-sm leading-relaxed"><b class="font-bold text-ink-2" data-m-gest>gestionnaire de crédit</b> <span class="text-muted-2">(<span data-m-min>ministère</span>)</span></p>
+    </div>
+
+    <div class="mt-7 flex items-center justify-between gap-3">
+      <button class="btn-danger-secondary" data-m-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a4 4 0 0 1 0 8h-3"/></svg>
+        Fermer
+      </button>
+      <button class="btn-danger" data-m-confirm>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale de suppression groupée (bouton « delete ») — calquée sur la modale
+     de suppression unitaire ci-dessus ; réutilise #op-action-form pour le POST. -->
+<div class="modal" data-bulk-modal aria-hidden="true">
+  <div class="modal-backdrop" data-bm-backdrop></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bulk-del-title">
+    <h2 id="bulk-del-title" class="font-heading font-bold text-lg text-ink leading-snug">Êtes-vous sûr de vouloir supprimer <span data-bm-count>0</span> opération(s) ?</h2>
+
+    <div class="mt-5 flex flex-col gap-4">
+      <p class="text-sm leading-relaxed text-muted-2">Cette action est irréversible. Les opérations sélectionnées seront retirées de la liste.</p>
+    </div>
+
+    <div class="mt-7 flex items-center justify-between gap-3">
+      <button class="btn-danger-secondary" data-bm-close>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a4 4 0 0 1 0 8h-3"/></svg>
+        Retour
+      </button>
+      <button class="btn-danger" data-bm-confirm>
+        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1zM6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+[[end]]
+
+[[block js]]
+<script>
+window.AUDIT_PAGE_OWNS_NAV = true;
+
+  /* Le sidebar utilise de vrais liens (href) ; l'état actif est piloté côté
+     serveur via la variable `active`. On n'intercepte donc PAS les clics. */
+
+  /* ---- Sous-menu Administration (repliable) ---- */
+  document.querySelectorAll('[data-admin-toggle]').forEach(function(btn){
+    var group = btn.closest('[data-admin-group]');
+    var sub   = group.querySelector('.submenu');
+    btn.addEventListener('click', function(){
+      var open = sub.classList.toggle('open');
+      group.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* ---- Listes déroulantes (Gestion / Session / Filtre) ---- */
+  var dropdowns = Array.prototype.slice.call(document.querySelectorAll('[data-dropdown]'));
+
+  function closeCombos(scope){
+    (scope || document).querySelectorAll('[data-combo-panel].open').forEach(function(cp){
+      cp.classList.remove('open');
+      var t = cp.parentElement.querySelector('[data-combo-trigger]');
+      if (t) t.setAttribute('aria-expanded','false');
+    });
+  }
+
+  function closeAllDropdowns(except){
+    dropdowns.forEach(function(dd){
+      if (dd === except) return;
+      dd.classList.remove('is-open');
+      var p = dd.querySelector('[data-dd-panel]');
+      var t = dd.querySelector('[data-dd-trigger]');
+      if (p) p.classList.remove('open');
+      if (t) t.setAttribute('aria-expanded','false');
+      closeCombos(dd);
+    });
+  }
+
+  dropdowns.forEach(function(dd){
+    var trigger = dd.querySelector('[data-dd-trigger]');
+    var panel   = dd.querySelector('[data-dd-panel]');
+    var valueEl = dd.querySelector('[data-dd-value]');
+    if (!trigger || !panel) return;
+
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      var willOpen = !panel.classList.contains('open');
+      closeAllDropdowns(dd);
+      panel.classList.toggle('open', willOpen);
+      dd.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    /* Clic dans le panneau : ne le ferme pas, mais referme les listes de recherche */
+    panel.addEventListener('click', function(e){
+      e.stopPropagation();
+      closeCombos(panel);
+    });
+
+    panel.querySelectorAll('[data-dd-option]').forEach(function(opt){
+      opt.addEventListener('click', function(){
+        panel.querySelectorAll('[data-dd-option]').forEach(function(o){
+          o.classList.remove('selected'); o.setAttribute('aria-selected','false');
+        });
+        opt.classList.add('selected'); opt.setAttribute('aria-selected','true');
+        if (valueEl) valueEl.textContent = opt.textContent.trim();
+        closeAllDropdowns();
+      });
+    });
+
+    var searchBtn = panel.querySelector('[data-dd-search]');
+    if (searchBtn) searchBtn.addEventListener('click', function(){ closeAllDropdowns(); });
+  });
+
+  /* Les comboboxes (listes déroulantes avec recherche) sont initialisées
+     globalement par static/js/app.js — voir window.initCombos. */
+
+  /* Filtres : chaque combo (data-filter) écrit l'id de l'option choisie dans son
+     input caché ; le formulaire (GET) est soumis par le bouton « Rechercher ». */
+  (function(){
+    var form = document.querySelector('[data-filter-form]');
+    if (!form) return;
+    form.querySelectorAll('[data-combo][data-filter]').forEach(function(combo){
+      var key = combo.getAttribute('data-filter');
+      var hidden = form.querySelector('[data-filter-hidden="' + key + '"]');
+      if (!hidden) return;
+      combo.querySelectorAll('[data-combo-option]').forEach(function(o){
+        o.addEventListener('click', function(){ hidden.value = o.getAttribute('data-id') || ''; });
+      });
+    });
+  })();
+
+  /* Fermeture au clic extérieur + touche Échap */
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAllDropdowns(); });
+
+  /* ---- Modale de suppression ---- */
+  (function(){
+    var modal = document.querySelector('[data-del-modal]');
+    if (!modal) return;
+    var elNum   = modal.querySelector('[data-m-num]');
+    var elObjet = modal.querySelector('[data-m-objet]');
+    var elType  = modal.querySelector('[data-m-type]');
+    var elGest  = modal.querySelector('[data-m-gest]');
+    var elMin   = modal.querySelector('[data-m-min]');
+    var currentRow = null;
+
+    function txt(el){ return el ? el.textContent.trim() : ''; }
+
+    function openModal(row){
+      currentRow = row;
+      /* On lit les attributs data-* de la ligne (robuste aux changements de colonnes). */
+      elNum.textContent   = row.dataset.num || '';
+      elGest.textContent  = row.dataset.gest || '';
+      elMin.textContent   = row.dataset.min || '';
+      elObjet.textContent = row.dataset.objet || '';
+      elType.textContent  = row.dataset.nature || '';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      currentRow = null;
+    }
+
+    document.querySelectorAll('button[aria-label="Supprimer"]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var row = btn.closest('tr');
+        if (row) openModal(row);
+      });
+    });
+
+    modal.querySelectorAll('[data-m-close], [data-m-backdrop]').forEach(function(el){
+      el.addEventListener('click', closeModal);
+    });
+    modal.querySelector('[data-m-confirm]').addEventListener('click', function(){
+      if (currentRow && currentRow.dataset.delUrl){
+        var f = document.getElementById('op-action-form');
+        f.action = currentRow.dataset.delUrl; f.submit();
+        return;
+      }
+      closeModal();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+  })();
+
+  /* ---- Sélection multiple : affiche le bouton « delete » (rouge) dès qu'au
+     moins une opération est cochée (case d'en-tête ou cases de ligne). ---- */
+  (function(){
+    var selectAll = document.querySelector('[data-select-all]');
+    var rowChecks = Array.prototype.slice.call(document.querySelectorAll('[data-row-check]'));
+    var delBtn    = document.querySelector('[data-bulk-delete]');
+    if (!delBtn) return;
+
+    function refresh(){
+      var anyChecked = rowChecks.some(function(c){ return c.checked; });
+      var allChecked = rowChecks.length > 0 && rowChecks.every(function(c){ return c.checked; });
+      if (selectAll){
+        selectAll.checked = allChecked;
+        selectAll.indeterminate = anyChecked && !allChecked;
+      }
+      /* display inline pour primer sur .btn-danger (règle non-layered). */
+      delBtn.style.display = (anyChecked || (selectAll && selectAll.checked)) ? 'inline-flex' : 'none';
+    }
+
+    if (selectAll){
+      selectAll.addEventListener('change', function(){
+        rowChecks.forEach(function(c){ c.checked = selectAll.checked; });
+        refresh();
+      });
+    }
+    rowChecks.forEach(function(c){ c.addEventListener('change', refresh); });
+    refresh();
+  })();
+
+  /* ---- Modale de suppression groupée (bouton « delete ») ----
+     Calquée sur la modale de suppression unitaire : mêmes mécanismes
+     (open/close via .open + aria-hidden) et même #op-action-form pour le POST. */
+  (function(){
+    var modal = document.querySelector('[data-bulk-modal]');
+    if (!modal) return;
+    var delBtn  = document.querySelector('[data-bulk-delete]');
+    var countEl = modal.querySelector('[data-bm-count]');
+
+    function selected(){
+      return Array.prototype.slice.call(document.querySelectorAll('[data-row-check]'))
+                  .filter(function(c){ return c.checked; });
+    }
+    function openModal(){
+      var sel = selected();
+      if (!sel.length) return;
+      if (countEl) countEl.textContent = sel.length;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (delBtn) delBtn.addEventListener('click', function(e){ e.stopPropagation(); openModal(); });
+    modal.querySelectorAll('[data-bm-close], [data-bm-backdrop]').forEach(function(el){
+      el.addEventListener('click', closeModal);
+    });
+    modal.querySelector('[data-bm-confirm]').addEventListener('click', function(){
+      var sel = selected();
+      var f = document.getElementById('op-action-form');
+      if (!sel.length || !f){ closeModal(); return; }
+      f.innerHTML = '';
+      f.action = '[[=URL("operations/delete")]]';
+      sel.forEach(function(c){
+        var inp = document.createElement('input');
+        inp.type = 'hidden'; inp.name = 'op'; inp.value = c.value;
+        f.appendChild(inp);
+      });
+      f.submit();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+  })();
+</script>
+[[end]]

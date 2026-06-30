@@ -1,0 +1,1204 @@
+[[extend 'base.html']]
+
+        <style type="text/tailwindcss">
+            @theme {
+            /* ─────────────── Brand ─────────────── */
+            --color-brand:           #1A6B3C;
+            --color-brand-hover:     #155730;
+            --color-brand-muted:     #A8D9B8;
+            --color-brand-tint:      #E6F5EC;
+
+            /* ─────────────── Success (statut positif) ─────────────── */
+            --color-success:         #4CAF50;
+            --color-success-dark:    #1A6B3C;
+            --color-success-tint:    #E6F5EC;
+            --color-success-border:  #A8D9B8;
+
+            /* ─────────────── Info (notification, en cours) ─────────────── */
+            --color-info:            #2B84CC;
+            --color-info-dark:       #1B5E9B;
+            --color-info-tint:       #E8F2FC;
+            --color-info-border:     #9CC6ED;
+
+            /* ─────────────── Warning (alerte modérée) ─────────────── */
+            --color-warning:         #D97706;
+            --color-warning-dark:    #B45309;
+            --color-warning-tint:    #FEF5E7;
+            --color-warning-border:  #F9C96A;
+
+            /* ─────────────── Danger (erreur, critique) ─────────────── */
+            --color-danger:          #EF4444;
+            --color-danger-dark:     #B91C1C;
+            --color-danger-tint:     #FEF0F0;
+            --color-danger-border:   #FCA5A5;
+
+            /* ─────────────── Purple (admin, premium) ─────────────── */
+            --color-purple:          #8B5CF6;
+            --color-purple-dark:     #6D28D9;
+            --color-purple-tint:     #F0EDFB;
+            --color-purple-border:   #C4B5FD;
+
+            /* ─────────────── Teal (permissions, système) ─────────────── */
+            --color-teal:            #0EA5C9;
+            --color-teal-dark:       #0E7490;
+            --color-teal-tint:       #E0F6FA;
+            --color-teal-border:     #7ECFE0;
+
+            /* ─────────────── Surfaces ─────────────── */
+            --color-bg-page:         #F2F2F2;
+            --color-bg-card:         #FFFFFF;
+            --color-bg-input:        #FFFFFF;
+
+            /* ─────────────── Bordures ─────────────── */
+            --color-border-base:     #EBEBEB;
+            --color-border-focus:    #1A6B3C;
+
+            /* ─────────────── Texte ─────────────── */
+            --color-text-primary:    #1A1A1A;
+            --color-text-secondary:  #6B7280;
+            --color-text-muted:      #AAAAAA;
+            --color-text-inverse:    #FFFFFF;
+
+            /* ─────────────── Overlays ─────────────── */
+            --color-overlay:         rgba(0, 0, 0, 0.45);
+            }
+            @layer base {
+                * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+                body { @apply bg-bg-page text-text-primary; }
+            }
+            @layer base {
+            :root {
+                /* Brand */
+                --color-brand:          #1A6B3C;
+                --color-brand-hover:    #155730;
+                --color-brand-muted:    #A8D9B8;
+                --color-brand-tint:     #E6F5EC;
+
+                /* Success (statut positif) */
+                --color-success:        #4CAF50;
+                --color-success-dark:   #1A6B3C;
+                --color-success-tint:   #E6F5EC;
+                --color-success-border: #A8D9B8;
+
+                /* Info (notification, en cours, lien) */
+                --color-info:           #2B84CC;
+                --color-info-dark:      #1B5E9B;
+                --color-info-tint:      #E8F2FC;
+                --color-info-border:    #9CC6ED;
+
+                /* Warning (alerte modérée, expiration) */
+                --color-warning:        #D97706;
+                --color-warning-dark:   #B45309;
+                --color-warning-tint:   #FEF5E7;
+                --color-warning-border: #F9C96A;
+
+                /* Danger (erreur, suppression, critique) */
+                --color-danger:         #EF4444;
+                --color-danger-dark:    #B91C1C;
+                --color-danger-tint:    #FEF0F0;
+                --color-danger-border:  #FCA5A5;
+
+                /* Purple (admin, premium, rôles spéciaux) */
+                --color-purple:         #8B5CF6;
+                --color-purple-dark:    #6D28D9;
+                --color-purple-tint:    #F0EDFB;
+                --color-purple-border:  #C4B5FD;
+
+                /* Teal (permissions, tags système, secondaire) */
+                --color-teal:           #0EA5C9;
+                --color-teal-dark:      #0E7490;
+                --color-teal-tint:      #E0F6FA;
+                --color-teal-border:    #7ECFE0;
+
+                /* Surfaces */
+                --color-bg-page:        #F2F2F2;
+                --color-bg-card:        #FFFFFF;
+                --color-bg-input:       #FFFFFF;
+
+                /* Bordures */
+                --color-border-secondary:#e6e8f0;
+                --color-border-focus:   #1A6B3C;
+                --color-border:         #8c92ae;
+
+                /* Texte */
+                --color-text-primary:   #1A1A1A;
+                --color-text-secondary: #6B7280;
+                --color-text-muted:     #AAAAAA;
+                --color-text-inverse:   #FFFFFF;
+
+                /* Overlays */
+                --color-overlay:        rgba(0, 0, 0, 0.45);
+            }
+            }
+        </style>
+
+[[block content]]
+<div class="relative pt-[70px] h-screen overflow-hidden">
+<header class="flex py-1 px-4 sm:px-7 min-h-[70px] bg-bg-card border-b border-border-base fixed top-0 w-full items-center z-[110]">
+<div class="flex items-center justify-between gap-4 w-full">
+<div class="flex items-center">
+<span class="text-xl font-bold text-brand tracking-tight">Estate Premium</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-9 h-9 flex items-center justify-center rounded-xl relative bg-brand-tint text-brand cursor-pointer transition-colors hover:bg-brand-muted/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+</svg>
+<span class="absolute -right-1 -top-1 w-4 h-4 flex items-center justify-center text-[9px] font-bold bg-brand text-text-inverse rounded-full ring-2 ring-bg-card">3</span>
+</button>
+<div class="relative group ml-1">
+<img alt="avatar" class="w-9 h-9 rounded-full cursor-pointer border-2 border-border-base transition-transform hover:scale-105" src="https://readymadeui.com/team-1.webp"/>
+<div class="invisible group-hover:visible absolute top-full right-0 w-52 mt-2 bg-bg-card border border-border-base rounded-2xl p-2 shadow-xl transition-all">
+<div class="px-3 py-2 mb-1">
+<p class="text-xs font-bold text-text-tertiary uppercase tracking-widest">Admin</p>
+<p class="text-sm font-semibold truncate">admin@estate.com</p>
+</div>
+<hr class="border-border-base my-1"/>
+<a class="flex items-center gap-2 p-2 rounded-lg text-sm text-text-primary hover:bg-bg-page transition-colors" href="#">
+<svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+</svg>
+                            Profil
+                        </a>
+<a class="flex items-center gap-2 p-2 rounded-lg text-sm text-text-secondary hover:bg-bg-page transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" x2="9" y1="12" y2="12"></line>
+</svg>
+                            Déconnexion
+                        </a>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-70px)]">
+<aside class="w-64 bg-bg-card border-r border-border-base flex flex-col overflow-y-auto">
+<div class="py-6 px-4">
+<p class="text-[10px] font-bold uppercase tracking-widest text-text-tertiary px-3 mb-4">Navigation</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-brand-tint text-brand" href="[[=URL('admin/dashboard', 'user')]]">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+<circle cx="9" cy="7" r="4"></circle>
+<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+</svg>
+                        Users
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:bg-bg-page transition-colors" href="#">
+<svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+<circle cx="9" cy="7" r="4"></circle>
+</svg>
+                        Biens Immobiliers
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-secondary hover:bg-bg-page transition-colors" href="#">
+<svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.07 4.93A10 10 0 1 0 4.93 19.07"></path>
+<path d="M19.07 4.93l-7.07 7.07"></path>
+</svg>
+                        Paramètres
+                    </a>
+</nav>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full overflow-hidden">
+<!-- index -->
+            [[if page == 'index':]]
+            <div class="flex-1 overflow-y-auto p-6">
+                dahsboard index
+            </div>
+            [[pass]]
+
+            <!--  Users list-->
+            [[if page == 'user':]]
+            <div class="flex-1 overflow-y-auto p-6">
+<div class="tab-content block" id="homeContent">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+<div class="flex items-center px-4 py-2 border border-border-base rounded-xl max-w-xs w-full bg-bg-card focus-within:border-brand transition-colors">
+<svg class="w-4 h-4 mr-2 flex-shrink-0 fill-text-muted" viewbox="0 0 192.904 192.904" xmlns="http://www.w3.org/2000/svg">
+<path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831
+                                C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767
+                                36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079
+                                47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803z
+                                M15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189
+                                66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689
+                                15 81.193z"></path>
+</svg>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" placeholder="Search users..." type="text"/>
+</div>
+<a class="inline-flex items-center text-[15px] font-semibold px-6 py-2 rounded-lg cursor-pointer transition-all bg-brand text-text-inverse hover:bg-brand-hover" href="[[=URL('admin/dashboard', 'add-user')]]">
+<svg class="w-4 h-4 mr-2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5v14M5 12h14"></path>
+</svg>
+                            Add user
+                        </a>
+</div>
+<div class="rounded-2xl overflow-hidden bg-bg-card border border-border-base shadow-sm">
+<table class="min-w-full">
+<thead>
+<tr class="bg-bg-card border-b border-border-base">
+<th aria-sort="none" class="w-8 pl-3 py-3.5" scope="col">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="master-checkbox" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M337.711 241.3a16 16 0 0 0-11.461 3.988c-18.739 16.561-43.688 25.682-70.25 25.682s-51.511-9.121-70.25-25.683a16.007 16.007 0 0 0-11.461-3.988c-78.926 4.274-140.752 63.672-140.752 135.224v107.152C33.537 499.293 46.9 512 63.332 512h385.336c16.429 0 29.8-12.707 29.8-28.325V376.523c-.005-71.552-61.831-130.95-140.757-135.223zM446.463 480H65.537V376.523c0-52.739 45.359-96.888 104.351-102.8C193.75 292.63 224.055 302.97 256 302.97s62.25-10.34 86.112-29.245c58.992 5.91 104.351 50.059 104.351 102.8zM256 234.375a117.188 117.188 0 1 0-117.188-117.187A117.32 117.32 0 0 0 256 234.375zM256 32a85.188 85.188 0 1 1-85.188 85.188A85.284 85.284 0 0 1 256 32z" data-original="#000000"></path>
+</svg>
+                                            Users
+                                        </div>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" fill-rule="evenodd" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<g transform="matrix(1.08 0 0 1.08 -.96 -.96)">
+<path d="M11.5 20.263H2.95a.2.2 0 0 1-.2-.2v-1.45c0-.831.593-1.563 1.507-2.185 1.632-1.114 4.273-1.816 7.243-1.816a.75.75 0 0 0 0-1.5c-3.322 0-6.263.831-8.089 2.076-1.393.95-2.161 2.157-2.161 3.424v1.451a1.7 1.7 0 0 0 1.7 1.7h8.55a.75.75 0 1 0 0-1.5zm0-19.013C8.464 1.25 6 3.714 6 6.75s2.464 5.5 5.5 5.5S17 9.786 17 6.75s-2.464-5.5-5.5-5.5zm0 1.5c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4zm5.25 14.75V20a.75.75 0 0 0 1.5 0v-2.5a.75.75 0 0 0-1.5 0z" data-original="#000000"></path>
+<circle cx="17.5" cy="15.25" data-original="#000000" r="1"></circle>
+<path d="M17.5 12.25c-2.898 0-5.25 2.352-5.25 5.25s2.352 5.25 5.25 5.25 5.25-2.352 5.25-5.25-2.352-5.25-5.25-5.25zm0 1.5c2.07 0 3.75 1.68 3.75 3.75s-1.68 3.75-3.75 3.75-3.75-1.68-3.75-3.75 1.68-3.75 3.75-3.75z" data-original="#000000"></path>
+</g>
+</svg>
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Roles</span>
+</div>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 text-slate-500 stroke-current fill-none shrink-0 mr-2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Permissions</span>
+</div>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" stroke-width="1.8" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 0C114.615 0 0 114.615 0 256s114.615 256 256 256 256-114.615 256-256S397.385 0 256 0zm0 480C132.288 480 32 379.712 32 256S132.288 32 256 32s224 100.288 224 224-100.288 224-224 224z"></path>
+<path d="M272 240V120a16 16 0 0 0-32 0v128a16 16 0 0 0 4.686 11.314l80 80a16 16 0 0 0 22.628-22.628z"></path>
+</svg>
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Status</span>
+</div>
+</th>
+<th class="px-5 py-3 text-center">
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Actions</span>
+</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-base">
+<tr class="hover:bg-bg-page transition-colors">
+<td class="w-8 pl-3 py-4">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full flex-shrink-0" src="https://readymadeui.com/profile_4.webp"/>
+<div>
+<p class="text-[15px] font-semibold text-text-primary">Gladys Jones</p>
+<p class="text-sm text-text-muted">gladys@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-5 py-3 text-sm text-text-secondary">admin</td>
+<td class="px-5 py-3 text-sm text-text-secondary">Product Owner</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary px-2.5 py-0.5 rounded-full border border-border-base">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-red-50 group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-red-600" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="3 6 5 6 21 6"></polyline>
+<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+<path d="M10 11v6M14 11v6"></path>
+<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+</svg>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-bg-page transition-colors">
+<td class="w-8 pl-3 py-4">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full flex-shrink-0" src="https://readymadeui.com/profile_4.webp"/>
+<div>
+<p class="text-[15px] font-semibold text-text-primary">Marcus Lee</p>
+<p class="text-sm text-text-muted">marcus@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-5 py-3 text-[15px] text-text-secondary">manager</td>
+<td class="px-5 py-3 text-[15px] text-text-secondary">Product Owner</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-text-secondary px-2.5 py-0.5 rounded-full border border-border-base">
+<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                            Inactive
+                                        </span>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-red-50 group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-red-600" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="3 6 5 6 21 6"></polyline>
+<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+<path d="M10 11v6M14 11v6"></path>
+<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+</svg>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex flex-wrap items-center justify-between mt-5 gap-4 bg-bg-card py-4 px-6 rounded-2xl border border-border-base shadow-sm">
+<p class="text-sm text-text-secondary">Affichage de 1 à 2 sur 100 entrées</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="text-sm text-text-secondary">Afficher</span>
+<select class="text-sm px-3 h-8 rounded-lg outline-none bg-bg-card border border-border-base text-text-secondary focus:border-brand cursor-pointer border-2 border-gray-400">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+<ul class="flex items-center gap-1">
+<li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer bg-bg-page border border-border-base hover:bg-brand-tint hover:text-brand transition-all text-text-tertiary">
+<svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"></path>
+</svg>
+</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-bold cursor-pointer bg-brand text-text-inverse shadow-sm">
+                                    1</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium cursor-pointer text-text-secondary border border-border-base hover:border-brand hover:text-brand transition-all">
+                                    2</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer bg-bg-page border border-border-base hover:bg-brand-tint hover:text-brand transition-all text-text-secondary">
+<svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M9 18l6-6-6-6"></path>
+</svg>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="tab-content hidden block" id="settingContent">
+<div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+<div class="flex items-center px-4 py-2 border border-border-base rounded-xl max-w-xs w-full bg-bg-card focus-within:border-brand transition-colors">
+<svg class="w-4 h-4 mr-2 flex-shrink-0 fill-text-muted" viewbox="0 0 192.904 192.904" xmlns="http://www.w3.org/2000/svg">
+<path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831
+                                C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767
+                                36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079
+                                47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803z
+                                M15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189
+                                66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689
+                                15 81.193z"></path>
+</svg>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" placeholder="Search roles..." type="text"/>
+</div>
+<a class="inline-flex items-center text-[15px] font-semibold px-6 py-2 rounded-lg cursor-pointer transition-all bg-brand text-text-inverse hover:bg-brand-hover" href="[[=URL('admin/dashboard', 'add-role')]]">
+<svg class="w-4 h-4 mr-2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 5v14M5 12h14"></path>
+</svg>
+                            Add role
+                        </a>
+</div>
+<div class="rounded-2xl overflow-hidden bg-bg-card border border-border-base shadow-sm">
+<table class="min-w-full">
+<thead>
+<tr class="bg-bg-card border-b border-border-base">
+<th aria-sort="none" class="w-8 pl-3 py-3.5" scope="col">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="master-checkbox" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M337.711 241.3a16 16 0 0 0-11.461 3.988c-18.739 16.561-43.688 25.682-70.25 25.682s-51.511-9.121-70.25-25.683a16.007 16.007 0 0 0-11.461-3.988c-78.926 4.274-140.752 63.672-140.752 135.224v107.152C33.537 499.293 46.9 512 63.332 512h385.336c16.429 0 29.8-12.707 29.8-28.325V376.523c-.005-71.552-61.831-130.95-140.757-135.223zM446.463 480H65.537V376.523c0-52.739 45.359-96.888 104.351-102.8C193.75 292.63 224.055 302.97 256 302.97s62.25-10.34 86.112-29.245c58.992 5.91 104.351 50.059 104.351 102.8zM256 234.375a117.188 117.188 0 1 0-117.188-117.187A117.32 117.32 0 0 0 256 234.375zM256 32a85.188 85.188 0 1 1-85.188 85.188A85.284 85.284 0 0 1 256 32z" data-original="#000000"></path>
+</svg>
+                                            Name
+                                        </div>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" fill-rule="evenodd" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<g transform="matrix(1.08 0 0 1.08 -.96 -.96)">
+<path d="M11.5 20.263H2.95a.2.2 0 0 1-.2-.2v-1.45c0-.831.593-1.563 1.507-2.185 1.632-1.114 4.273-1.816 7.243-1.816a.75.75 0 0 0 0-1.5c-3.322 0-6.263.831-8.089 2.076-1.393.95-2.161 2.157-2.161 3.424v1.451a1.7 1.7 0 0 0 1.7 1.7h8.55a.75.75 0 1 0 0-1.5zm0-19.013C8.464 1.25 6 3.714 6 6.75s2.464 5.5 5.5 5.5S17 9.786 17 6.75s-2.464-5.5-5.5-5.5zm0 1.5c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4zm5.25 14.75V20a.75.75 0 0 0 1.5 0v-2.5a.75.75 0 0 0-1.5 0z" data-original="#000000"></path>
+<circle cx="17.5" cy="15.25" data-original="#000000" r="1"></circle>
+<path d="M17.5 12.25c-2.898 0-5.25 2.352-5.25 5.25s2.352 5.25 5.25 5.25 5.25-2.352 5.25-5.25-2.352-5.25-5.25-5.25zm0 1.5c2.07 0 3.75 1.68 3.75 3.75s-1.68 3.75-3.75 3.75-3.75-1.68-3.75-3.75 1.68-3.75 3.75-3.75z" data-original="#000000"></path>
+</g>
+</svg>
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Description</span>
+</div>
+</th>
+<th class="px-5 py-3 text-left">
+<div class="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted">
+<svg class="w-4 h-4 fill-gray-500 inline mr-2" stroke-width="1.8" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 0C114.615 0 0 114.615 0 256s114.615 256 256 256 256-114.615 256-256S397.385 0 256 0zm0 480C132.288 480 32 379.712 32 256S132.288 32 256 32s224 100.288 224 224-100.288 224-224 224z"></path>
+<path d="M272 240V120a16 16 0 0 0-32 0v128a16 16 0 0 0 4.686 11.314l80 80a16 16 0 0 0 22.628-22.628z"></path>
+</svg>
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Status</span>
+</div>
+</th>
+<th class="px-5 py-3 text-center">
+<span class="text-xs font-bold uppercase tracking-wider text-text-muted">Actions</span>
+</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-base">
+<tr class="hover:bg-bg-page transition-colors">
+<td class="w-8 pl-3 py-4">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full flex-shrink-0" src="https://readymadeui.com/profile_4.webp"/>
+<div>
+<p class="text-[15px] font-semibold text-text-primary">Gladys Jones</p>
+<p class="text-sm text-text-muted">gladys@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-5 py-3 text-sm text-text-secondary">admin</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary px-2.5 py-0.5 rounded-full border border-border-base">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-red-50 group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-red-600" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="3 6 5 6 21 6"></polyline>
+<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+<path d="M10 11v6M14 11v6"></path>
+<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+</svg>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-bg-page transition-colors">
+<td class="w-8 pl-3 py-4">
+<label class="group has-[input:checked]:text-slate-900 inline-block">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" type="checkbox"/>
+<span aria-hidden="true" class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-700 bg-white dark:bg-neutral-800 group-has-[input:checked]:bg-brand group-has-[input:checked]:outline-brand group-focus-within:outline-2 group-focus-within:outline-brand">
+<!-- Checkmark -->
+<svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 12 10">
+<path d="M1 5l3 3 7-7"></path>
+</svg>
+</span>
+</label>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center gap-3">
+<img class="w-9 h-9 rounded-full flex-shrink-0" src="https://readymadeui.com/profile_4.webp"/>
+<div>
+<p class="text-[15px] font-semibold text-text-primary">Marcus Lee</p>
+<p class="text-sm text-text-muted">marcus@example.com</p>
+</div>
+</div>
+</td>
+<td class="px-5 py-3 text-[15px] text-text-secondary">manager</td>
+<td class="px-5 py-3">
+<span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-text-secondary px-2.5 py-0.5 rounded-full border border-border-base">
+<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                            Inactive
+                                        </span>
+</td>
+<td class="px-5 py-3">
+<div class="flex items-center justify-center gap-1">
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-brand-tint group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+<button class="p-1.5 rounded-lg cursor-pointer transition-colors hover:bg-red-50 group">
+<svg class="w-4 h-4 fill-none stroke-text-secondary group-hover:stroke-red-600" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="3 6 5 6 21 6"></polyline>
+<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+<path d="M10 11v6M14 11v6"></path>
+<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+</svg>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex flex-wrap items-center justify-between mt-5 gap-4 bg-bg-card py-4 px-6 rounded-2xl border border-border-base shadow-sm">
+<p class="text-sm text-text-secondary">Affichage de 1 à 2 sur 100 entrées</p>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="text-sm text-text-secondary">Afficher</span>
+<select class="text-sm px-3 h-8 rounded-lg outline-none bg-bg-card border border-border-base text-text-secondary focus:border-brand cursor-pointer border-2 border-gray-400">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+<ul class="flex items-center gap-1">
+<li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer bg-bg-page border border-border-base hover:bg-brand-tint hover:text-brand transition-all text-text-tertiary">
+<svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M15 18l-6-6 6-6"></path>
+</svg>
+</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-bold cursor-pointer bg-brand text-text-inverse shadow-sm">
+                                    1</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium cursor-pointer text-text-secondary border border-border-base hover:border-brand hover:text-brand transition-all">
+                                    2</li>
+<li class="w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer bg-bg-page border border-border-base hover:bg-brand-tint hover:text-brand transition-all text-text-secondary">
+<svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M9 18l6-6-6-6"></path>
+</svg>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="tab-content hidden max-w-2xl" id="profileContent">
+<h4 class="text-[15px] font-semibold text-text-primary">Your Profile</h4>
+<p class="text-[15px] mt-2 leading-relaxed text-text-secondary">
+                        Update personal information and manage your preferences.
+                    </p>
+</div>
+</div>
+<div class="py-3 flex justify-center bg-bg-card border-t border-border-base">
+<ul class="flex gap-1.5 p-1 rounded-full bg-bg-card border border-border-base shadow-sm">
+<li class="tab flex items-center gap-2 py-2.5 px-6 rounded-full text-[14px] font-semibold cursor-pointer transition-all bg-brand-tint text-brand border border-brand" id="homeTab">
+<svg class="w-4 h-4 fill-brand" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M256 269.507c-42.871 0-77.754-34.882-77.754-77.753C178.246 148.879 213.13 114 256 114s77.754 34.879 77.754 77.754c0 42.871-34.883 77.754-77.754 77.754z
+                            M437.02 74.98C388.668 26.63 324.379 0 256 0S123.332 26.629 74.98 74.98
+                            C26.63 123.332 0 187.621 0 256s26.629 132.668 74.98 181.02
+                            C123.332 485.37 187.621 512 256 512s132.668-26.629 181.02-74.98
+                            C485.37 388.668 512 324.379 512 256s-26.629-132.668-74.98-181.02z
+                            M111.105 429.297c8.454-72.735 70.989-128.89 144.895-128.89 38.96 0
+                            75.598 15.179 103.156 42.734 23.281 23.285 37.965 53.687 41.742 86.152
+                            C361.641 462.172 311.094 482 256 482s-105.637-19.824-144.895-52.703z"></path>
+</svg>
+                        Users
+                    </li>
+<li class="tab flex items-center gap-2 py-2.5 px-6 rounded-full text-[14px] font-medium cursor-pointer transition-all text-text-secondary hover:bg-bg-page" id="settingTab">
+<svg class="w-4 h-4 fill-text-secondary" viewbox="0 0 640 512" xmlns="http://www.w3.org/2000/svg">
+<path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304
+                            178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7
+                            C13.3 512 0 498.7 0 482.3zM609.3 512H471.4c5.4-9.4 8.6-20.3 8.6-32v-8
+                            c0-60.7-27.1-115.2-69.8-151.8c2.4-.1 4.7-.2 7.1-.2h61.4C567.8 320 640 392.2
+                            640 481.3c0 17-13.8 30.7-30.7 30.7zM432 256c-31 0-59-12.6-79.3-32.9
+                            C372.4 196.5 384 163.6 384 128c0-26.8-6.3-52.1-17.4-74.5C389.1 42.1 411.1
+                            36 432 36a112 112 0 1 1 0 224z"></path>
+</svg>
+                        Groups
+                    </li>
+<li class="tab flex items-center gap-2 py-2.5 px-6 rounded-full text-[14px] font-medium cursor-pointer transition-all text-text-secondary hover:bg-bg-page" id="profileTab">
+<svg class="w-4 h-4 fill-none stroke-text-secondary" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="11" rx="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+                        Permissions
+                    </li>
+</ul>
+</div>
+            [[pass]]
+
+            <!-- Users add -->
+            [[if page == 'add-user':]]
+            <div class="flex-1 overflow-y-auto p-6">
+<div class="max-w-2xl mx-auto rounded-2xl overflow-hidden">
+<div class="flex items-center justify-center gap-3 px-6 py-5 shadow-xs">
+<svg class="w-5 h-5 stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+<path d="M16 11h6m-3-3v6"></path>
+</svg>
+<h1 class="text-[18px] font-semibold text-brand">Create User Account</h1>
+</div>
+<form action="" novalidate="">
+<div class="px-6 py-6 space-y-8">
+<div class="grid md:grid-cols-3 gap-6">
+<div class="text-[15px] font-semibold text-right text-#6b7280">
+<span class="border-b-1 border-text-muted">User Information</span>
+</div>
+<div class="md:col-span-2 space-y-4">
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">First
+                                            Name</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="first_name" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Last
+                                            Name</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="last_name" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="text-[15px] font-semibold text-right text-#6b7280">
+<span class="border-b-1 border-text-muted">Security</span>
+</div>
+<div class="md:col-span-2 space-y-4">
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Username</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+<circle cx="12" cy="7" r="4"></circle>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="username" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Phone
+                                            Number</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.86 19.86 0 0 1 3.09 5.18 2 2 0 0 1 5.11 3h3a2 2 0 0 1 2 1.72 12.05 12.05 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L9.91 10.09a16 16 0 0 0 6 6l.45-.45 a2 2 0 0 1 2.11-.45 12.05 12.05 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="phone" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Email</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+</path>
+<polyline points="22,6 12,13 2,6"></polyline>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="email" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Password</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="password" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="password"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280">Confirm
+                                            Password</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="11" rx="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="confirm_password" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="text-[15px] font-semibold text-right text-#6b7280">
+<span class="border-b-1 border-text-muted">Rôles &amp;
+                                        permissions</span>
+</div>
+<div class="md:col-span-2 space-y-4">
+<div class="group/role" id="role-wrapper">
+<div class="flex items-center justify-between mb-1">
+<label class="text-base font-normal text-#6b7280">Rôles</label>
+<button class="invisible group-focus-within/role:visible text-[12px] font-semibold cursor-pointer text-#1a6b3c" id="role-select-all" type="button">Tout sélectionner</button>
+</div>
+<div class="relative" id="role-container">
+<div class="min-h-[42px] pl-3 pr-3 py-1.5 rounded-xl flex flex-wrap gap-2 items-center cursor-pointer outline-none" id="role-select-box" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" tabindex="0">
+<span class="inline-flex items-center gap-1.5 text-sm text-#aaaaaa" id="role-placeholder">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+<circle cx="9" cy="7" r="4"></circle>
+<path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+</svg>
+                                                    Sélectionner les rôles...
+                                                </span>
+<div class="flex flex-wrap gap-1.5" id="role-selected-tags"></div>
+<button class="hidden ml-auto text-[11px] cursor-pointer text-#aaaaaa" id="role-clear-all" type="button">Tout effacer</button>
+</div>
+<div class="hidden absolute z-50 w-full mt-1 rounded-2xl overflow-hidden" id="role-dropdown">
+<div class="p-2">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="role-search" onblur="this.style.borderColor='#EBEBEB'" onfocus="this.style.borderColor='#1A6B3C'" placeholder="Rechercher..." type="text"/>
+</div>
+<div class="p-3 flex flex-wrap gap-2 max-h-48 overflow-y-auto" id="role-pills-container">
+<label class="role-item cursor-pointer" data-name="administrateur">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="roles[]" type="checkbox" value="admin"/>
+<div class="px-4 py-1.5 rounded-full text-sm font-medium transition-all peer-checked:text-white text-#6b7280" data-pill="role">
+                                                            Administrateur</div>
+</label>
+<label class="role-item cursor-pointer" data-name="éditeur">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="roles[]" type="checkbox" value="editor"/>
+<div class="px-4 py-1.5 rounded-full text-sm font-medium transition-all peer-checked:text-white text-#6b7280" data-pill="role">
+                                                            Éditeur
+                                                        </div>
+</label>
+<label class="role-item cursor-pointer" data-name="contributeur">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="roles[]" type="checkbox" value="contributor"/>
+<div class="px-4 py-1.5 rounded-full text-sm font-medium transition-all peer-checked:text-white text-#6b7280" data-pill="role">
+                                                            Contributeur</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="group/perm" id="perm-wrapper">
+<div class="flex items-center justify-between mb-1">
+<label class="text-base font-normal text-#6b7280">Permissions</label>
+<button class="invisible group-focus-within/perm:visible text-[12px] font-semibold cursor-pointer text-#1a6b3c" id="perm-select-all" type="button">Tout sélectionner</button>
+</div>
+<div class="relative" id="perm-container">
+<div class="min-h-[42px] pl-3 pr-3 py-1.5 rounded-xl flex flex-wrap gap-2 items-center cursor-pointer outline-none" id="perm-select-box" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" tabindex="0">
+<span class="inline-flex items-center gap-1.5 text-sm text-#aaaaaa" id="perm-placeholder">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+</svg>
+
+                                                    Gérer les permissions...
+                                                </span>
+<div class="flex flex-wrap gap-1.5" id="perm-selected-tags"></div>
+<button class="hidden ml-auto text-[11px] cursor-pointer text-#aaaaaa" id="perm-clear-all" type="button">Tout effacer</button>
+</div>
+<div class="hidden absolute z-50 w-full mt-1 rounded-2xl overflow-hidden" id="perm-dropdown">
+<div class="p-2">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="perm-search" onblur="this.style.borderColor='#EBEBEB'" onfocus="this.style.borderColor='#1A6B3C'" placeholder="Filtrer..." type="text"/>
+</div>
+<div class="p-3 space-y-5 max-h-56 overflow-y-auto">
+<div class="permission-category">
+<h3 class="text-[10px] font-bold uppercase tracking-widest mb-2 text-#aaaaaa">Contenu</h3>
+<div class="flex flex-wrap gap-2">
+<label class="perm-item cursor-pointer" data-name="voir">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="permissions[]" type="checkbox" value="view"/>
+<div class="px-3 py-1.5 rounded-full text-sm font-medium transition-all text-#6b7280" data-pill="perm">
+                                                                    Voir</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid md:grid-cols-3 gap-6 items-center">
+<div class="text-sm font-semibold text-right text-#6b7280">
+<span class="border-b-1 border-text-muted">Activation</span>
+</div>
+<div class="md:col-span-2 flex items-center gap-3">
+<span class="text-[15px] font-normal text-text-secondary">Confirmer</span>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="activation-toggle" type="checkbox"/>
+<div class="w-10 h-6 bg-border-base rounded-full peer border border-brand peer-checked:bg-brand transition-colors"></div>
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm peer-checked:translate-x-4 transition-transform"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center px-6 py-4">
+<a class="inline-flex items-center px-10 py-2 bg-bg-page border border-brand text-brand hover:bg-brand-tint text-[15px] font-semibold rounded-lg transition-colors cursor-pointer" href="[[=URL('admin/dashboard', 'user')]]">
+                                Close
+                            </a>
+<button class="inline-flex items-center justify-center bg-brand hover:bg-brand-hover text-white text-[15px] font-semibold px-10 py-2 rounded-lg transition-colors cursor-pointer" type="submit">
+                                Add
+                            </button>
+</div>
+</form>
+</div>
+</div>
+            [[pass]]
+
+
+            <!-- Add Roles-->
+            [[if page == 'add-role':]]
+            <div class="flex-1 overflow-y-auto p-6">
+<div class="max-w-2xl mx-auto rounded-2xl overflow-hidden">
+<div class="flex items-center justify-center gap-3 px-6 py-5 shadow-xs">
+<svg class="w-5 h-5 stroke-brand" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+<path d="M16 11h6m-3-3v6"></path>
+</svg>
+<h1 class="text-[18px] font-semibold text-brand">Create Role</h1>
+</div>
+<form action="" novalidate="">
+<div class="px-6 py-6 space-y-8">
+<div class="md:col-span-2 space-y-4">
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280"> Name</label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+</svg>
+</span>
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" name="first_name" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[15px] font-normal mb-1 text-#6b7280"> Description </label>
+<div class="relative">
+<span class="absolute left-3 top-2.5 text-#aaaaaa">
+<svg class="w-4 h-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="8" r="4"></circle>
+<path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+</svg>
+</span>
+<textarea class="w-full h-32 pl-10 pr-4 py-2 rounded-xl text-base outline-none text-#1a1a1a border-2 border-gray-400" name="last_name" onblur="this.style.borderColor='#EBEBEB';this.style.boxShadow='none'" onfocus="this.style.borderColor='#1A6B3C';this.style.boxShadow='0 0 0 3px rgba(26,107,60,0.12)'"></textarea>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 flex items-center gap-3">
+<span class="text-[15px] font-normal text-text-secondary">Activer</span>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input class="w-full p-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand transition-all duration-200 bg-bg-input" id="activation-toggle" type="checkbox"/>
+<div class="w-10 h-6 bg-border-base rounded-full peer border border-brand peer-checked:bg-brand transition-colors"></div>
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm peer-checked:translate-x-4 transition-transform"></div>
+</label>
+</div>
+</div>
+<div class="flex justify-between items-center px-6 py-4">
+<a class="inline-flex items-center px-10 py-2 bg-bg-page border border-brand text-brand hover:bg-brand-tint text-[15px] font-semibold rounded-lg transition-colors cursor-pointer" href="[[=URL('admin/dashboard', 'user')]]">
+                                Close
+                            </a>
+<button class="inline-flex items-center justify-center bg-brand hover:bg-brand-hover text-white text-[15px] font-semibold px-10 py-2 rounded-lg transition-colors cursor-pointer" type="submit">
+                                Add
+                            </button>
+</div>
+</form>
+</div>
+</div>
+            [[pass]]
+        </main>
+</div>
+</div>
+<!-- modal form js-->
+<script>
+    function initPillSelect({
+        containerId,
+        selectBoxId,
+        dropdownId,
+        searchId,
+        selectedTagsId,
+        placeholderId,
+        itemClass,
+        tagColor,
+        menuKey,
+        selectAllBtnId,
+        clearAllBtnId,    // ✅ nouveau paramètre
+        buildTagLabel,
+    }) {
+        const container = document.getElementById(containerId);
+        const selectBox = document.getElementById(selectBoxId);
+        const dropdown = document.getElementById(dropdownId);
+        const searchInput = document.getElementById(searchId);
+        const tagsCont = document.getElementById(selectedTagsId);
+        const placeholder = document.getElementById(placeholderId);
+        const clearAllBtn = clearAllBtnId ? document.getElementById(clearAllBtnId) : null; // ✅
+        const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+        function updateUI() {
+            tagsCont.innerHTML = '';
+            const selected = Array.from(checkboxes).filter(cb => cb.checked);
+            placeholder.classList.toggle('hidden', selected.length > 0);
+
+            // ✅ Affiche le bouton "Tout effacer" seulement si au moins 1 sélection
+            if (clearAllBtn) {
+                clearAllBtn.classList.toggle('hidden', selected.length === 0);
+            }
+
+            selected.forEach(cb => {
+                const tag = document.createElement('span');
+                tag.className = `group relative inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-${tagColor}-50 text-${tagColor}-700 text-sm border border-${tagColor}-200 font-medium`;
+                tag.innerHTML = `
+                ${buildTagLabel(cb)}
+                <button type="button" class="ml-1 hover:text-${tagColor}-900 cursor-pointer font-bold">×</button>
+            `;
+                tag.querySelector('button').onclick = (e) => {
+                    e.stopPropagation();
+                    cb.checked = false;
+                    updateUI();
+                };
+                tagsCont.appendChild(tag);
+            });
+        }
+
+        selectBox.onclick = (e) => {
+            e.stopPropagation();
+            if (!dropdown.classList.toggle('hidden')) searchInput.focus();
+            window.dispatchEvent(new CustomEvent('close-all-menus', { detail: menuKey }));
+        };
+
+        window.addEventListener('close-all-menus', (e) => {
+            if (e.detail !== menuKey) dropdown.classList.add('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) dropdown.classList.add('hidden');
+        });
+
+        searchInput.oninput = (e) => {
+            const q = e.target.value.toLowerCase();
+            container.querySelectorAll(itemClass).forEach(item => {
+                item.classList.toggle('hidden', !item.dataset.name.includes(q));
+            });
+            container.querySelectorAll('.permission-category').forEach(cat => {
+                const anyVisible = Array.from(cat.querySelectorAll(itemClass))
+                    .some(item => !item.classList.contains('hidden'));
+                cat.classList.toggle('hidden', !anyVisible);
+            });
+        };
+
+        if (selectAllBtnId) {
+            document.getElementById(selectAllBtnId).onclick = (e) => {
+                e.stopPropagation();
+                const visible = Array.from(checkboxes).filter(
+                    cb => !cb.closest(itemClass).classList.contains('hidden')
+                );
+                const allChecked = visible.every(cb => cb.checked);
+                visible.forEach(cb => cb.checked = !allChecked);
+                updateUI();
+                searchInput.focus();
+            };
+        }
+
+        // ✅ Logique "Tout effacer" : décoche toutes les cases, masque le bouton
+        if (clearAllBtn) {
+            clearAllBtn.onclick = (e) => {
+                e.stopPropagation(); // ne ferme pas le dropdown si ouvert
+                checkboxes.forEach(cb => cb.checked = false);
+                updateUI();
+            };
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+        updateUI();
+    }
+
+    // ─── Rôles ────────────────────────────────────────────────────────────────────
+    initPillSelect({
+        containerId: 'role-container',
+        selectBoxId: 'role-select-box',
+        dropdownId: 'role-dropdown',
+        searchId: 'role-search',
+        selectedTagsId: 'role-selected-tags',
+        placeholderId: 'role-placeholder',
+        itemClass: '.role-item',
+        tagColor: 'blue',
+        menuKey: 'role',
+        selectAllBtnId: 'role-select-all',
+        clearAllBtnId: 'role-clear-all',  // ✅
+        buildTagLabel: (cb) => cb.closest('label').querySelector('div').textContent.trim(),
+    });
+
+    // ─── Permissions ──────────────────────────────────────────────────────────────
+    initPillSelect({
+        containerId: 'perm-container',
+        selectBoxId: 'perm-select-box',
+        dropdownId: 'perm-dropdown',
+        searchId: 'perm-search',
+        selectedTagsId: 'perm-selected-tags',
+        placeholderId: 'perm-placeholder',
+        itemClass: '.perm-item',
+        tagColor: 'emerald',
+        menuKey: 'perm',
+        selectAllBtnId: 'perm-select-all',
+        clearAllBtnId: 'perm-clear-all',  // ✅
+        buildTagLabel: (cb) => {
+            const label = cb.closest('label').querySelector('div').textContent.trim();
+            const category = cb.closest('.permission-category');
+            const groupName = category ? category.querySelector('h3').textContent.trim() : '';
+            return `
+            <span class="relative group/tooltip cursor-help">
+                ${label} : ${groupName}
+                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/tooltip:block z-50">
+                    <span class="relative bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow-lg block whitespace-nowrap">
+                        Groupe : ${groupName}
+                        <span class="absolute top-full left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-4 border-t-slate-800"></span>
+                    </span>
+                </span>
+            </span>`;
+        },
+    });
+</script>
+<!-- tab script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let tabs = document.querySelectorAll('.tab');
+        let contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function (e) {
+                let targetId = tab.id.replace('Tab', 'Content');
+
+                // Hide all content divs
+                contents.forEach(function (content) {
+                    content.classList.add('hidden');
+                });
+
+                // Remove active class from all tabs
+                tabs.forEach(function (tab) {
+                    tab.classList.remove('text-white', 'bg-gray-600', 'font-semibold');
+                    tab.classList.add('text-slate-600', 'font-medium');
+                });
+
+                // Show the target content
+                document.getElementById(targetId).classList.remove('hidden');
+
+                // Add active class to the clicked tab
+                tab.classList.add('text-white', 'bg-gray-600', 'font-semibold');
+                tab.classList.remove('text-slate-600', 'font-medium');
+            });
+        });
+    });
+</script>
+<!-- multiselect js-->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+   const masterCheckbox = document.getElementById('master-checkbox');
+   const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+
+   // 1. Handle "Select All" logic
+   masterCheckbox.addEventListener('change', () => {
+      const isChecked = masterCheckbox.checked;
+      rowCheckboxes.forEach(checkbox => {
+         checkbox.checked = isChecked;
+      });
+   });
+
+   // 2. Handle Individual Row logic
+   rowCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+         // If any checkbox is unchecked, uncheck the master
+         if (!checkbox.checked) {
+            masterCheckbox.checked = false;
+         }
+         // If all checkboxes are checked, check the master
+         else {
+            const allChecked = Array.from(rowCheckboxes).every(cb => cb.checked);
+            masterCheckbox.checked = allChecked;
+         }
+      });
+   });
+});
+</script>
+[[end]]
