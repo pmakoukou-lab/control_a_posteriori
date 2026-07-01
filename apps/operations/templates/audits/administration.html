@@ -3,7 +3,7 @@
 [[block title]]Administration — AUDIT a posteriori[[end]]
 
 [[block main]]
-<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6">
+<main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-hidden">
       [[ flash_text = globals().get('msg_text', '') ]]
       [[ flash_level = globals().get('msg_level', '') ]]
       [[ include 'audits/_flash.html' ]]
@@ -17,7 +17,7 @@
       </div>
 
 <div id="admin-gestion" style="display:contents">
-<div id="panel-min" data-panel="min" role="tabpanel" hidden class="flex flex-col gap-6">
+<div id="panel-min" data-panel="min" role="tabpanel" hidden data-table-block class="flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-hidden">
         <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des ministères</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('ministeres', []))]]</b> ministère(s)</p></div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
           <div class="search w-full max-w-[360px]">
@@ -30,10 +30,10 @@
           </button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
           <table class="utbl utbl-fit">
             <thead><tr><th>Ministères</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
-            <tbody data-list="min">
+            <tbody data-list="min" data-paginate>
               [[ ministeres = globals().get('ministeres', []) ]]
               [[ for m in ministeres: ]]
               [[ actif = bool(m.is_active) ]]
@@ -52,15 +52,17 @@
               </tr>
               [[ pass ]]
               [[ if not ministeres: ]]
-              <tr><td colspan="3" class="text-center text-muted py-8">Aucun ministère pour le moment.</td></tr>
+              <tr data-pgskip><td colspan="3" class="text-center text-muted py-8">Aucun ministère pour le moment.</td></tr>
               [[ pass ]]
             </tbody>
           </table>
         </div>
+        [[ page_noun = 'ministère(s)' ]]
+        [[ include 'audits/_pagination.html' ]]
 
       </div>
 
-<div id="panel-gc" data-panel="gc" role="tabpanel" hidden class="flex flex-col gap-6" hidden>
+<div id="panel-gc" data-panel="gc" role="tabpanel" hidden data-table-block class="flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-hidden">
         <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des gestionnaires de crédits</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('gestionnaires', []))]]</b> gestionnaire(s)</p></div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
           <div class="search w-full max-w-[360px]">
@@ -73,10 +75,10 @@
           </button>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
           <table class="utbl">
             <thead><tr><th>Gestionnaires de crédits</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
-            <tbody data-list="gc">
+            <tbody data-list="gc" data-paginate>
               [[ gestionnaires = globals().get('gestionnaires', []) ]]
               [[ for g in gestionnaires: ]]
               [[ actif = g['active'] ]]
@@ -96,15 +98,17 @@
               </tr>
               [[ pass ]]
               [[ if not gestionnaires: ]]
-              <tr><td colspan="3" class="text-center text-muted py-8">Aucun gestionnaire pour le moment.</td></tr>
+              <tr data-pgskip><td colspan="3" class="text-center text-muted py-8">Aucun gestionnaire pour le moment.</td></tr>
               [[ pass ]]
             </tbody>
           </table>
         </div>
+        [[ page_noun = 'gestionnaire(s)' ]]
+        [[ include 'audits/_pagination.html' ]]
 
       </div>
 
-<div id="panel-exo" data-panel="exo" role="tabpanel" class="flex flex-col gap-6">
+<div id="panel-exo" data-panel="exo" role="tabpanel" class="flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-y-auto">
         <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des exercices budgétaires</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('exercices', []))]]</b> exercice(s)</p></div>
         <div class="flex items-center justify-between gap-4 flex-wrap">
           <div class="search w-full max-w-[360px]">
@@ -117,9 +121,10 @@
           </button>
         </div>
 
-      <!-- Liste accordéon -->
-      <div class="rounded-2xl border border-black/[.07] overflow-hidden">
-        <div class="list-head">
+      <!-- Liste accordéon — entête aligné sur celui des autres onglets (.utbl thead :
+           même police/taille + fond n25 + liseré bas), SANS bordure de tableau. -->
+      <div>
+        <div class="list-head" style="background:var(--color-surface-2);box-shadow:inset 0 -1px 0 var(--border-strong)">
           <span>Exercices budgétaires</span>
           <span>Actions</span>
         </div>
@@ -330,7 +335,7 @@
       
 
       <!-- ============ PANNEAU : UTILISATEURS ============ -->
-      <div id="panel-users" data-panel="users" role="tabpanel" hidden class="flex flex-col gap-6">
+      <div id="panel-users" data-panel="users" role="tabpanel" hidden data-table-block class="flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-hidden">
 
         <!-- Titre -->
         <div><h1 class="font-heading font-bold text-xl tracking-tight text-ink">Liste des comptes utilisateurs</h1><p class="text-[13px] text-muted mt-1"><b class="text-brand-600 font-bold tabular-nums">[[=len(globals().get('users', []))]]</b> utilisateur(s)</p></div>
@@ -348,7 +353,7 @@
         </div>
 
       <!-- Table -->
-      <div class="overflow-x-auto">
+      <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
         <table class="utbl utbl-fit">
           <thead>
             <tr>
@@ -358,7 +363,7 @@
               <th class="text-center">Actions</th>
             </tr>
           </thead>
-          <tbody data-users>
+          <tbody data-users data-paginate>
             [[ users = globals().get('users', []) ]]
             [[ for u in users: ]]
             [[ actif = u['active'] ]]
@@ -389,16 +394,18 @@
             </tr>
             [[ pass ]]
             [[ if not users: ]]
-            <tr><td colspan="4" class="text-center text-muted py-8">Aucun utilisateur pour le moment.</td></tr>
+            <tr data-pgskip><td colspan="4" class="text-center text-muted py-8">Aucun utilisateur pour le moment.</td></tr>
             [[ pass ]]
           </tbody>
         </table>
       </div>
+      [[ page_noun = 'utilisateur(s)' ]]
+      [[ include 'audits/_pagination.html' ]]
 
       </div><!-- /panneau utilisateurs -->
 
       <!-- ============ PANNEAU : ROLE ============ -->
-      <div id="panel-roles" data-panel="roles" role="tabpanel" hidden class="flex flex-col gap-6">
+      <div id="panel-roles" data-panel="roles" role="tabpanel" hidden data-table-block class="flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-hidden">
 
         <!-- Titre + action -->
         <div class="flex items-center justify-between gap-4 flex-wrap">
@@ -410,7 +417,7 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto">
+        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
           <table class="utbl utbl-fit">
             <thead>
               <tr>
@@ -418,7 +425,7 @@
                 <th class="text-right">Actions</th>
               </tr>
             </thead>
-            <tbody data-roles-list>
+            <tbody data-roles-list data-paginate>
               [[ roles = globals().get('roles', []) ]]
               [[ for r in roles: ]]
               <tr data-role-row data-id="[[=r.id]]" data-name="[[=r.name]]" data-del-url="[[=URL('comptes/roles', r.id, 'delete')]]">
@@ -443,11 +450,13 @@
               </tr>
               [[ pass ]]
               [[ if not roles: ]]
-              <tr><td colspan="2" class="text-center text-muted py-8">Aucun rôle pour le moment.</td></tr>
+              <tr data-pgskip><td colspan="2" class="text-center text-muted py-8">Aucun rôle pour le moment.</td></tr>
               [[ pass ]]
             </tbody>
           </table>
         </div>
+        [[ page_noun = 'rôle(s)' ]]
+        [[ include 'audits/_pagination.html' ]]
       </div>
     
 
@@ -1196,10 +1205,12 @@ var R = document.getElementById("admin-comptes");
     });
   });
 
-  /* Pagination (25 lignes/page) — n'apparaît qu'au-delà de 25 lignes. Coopère
-     avec la recherche (ne pagine que les lignes visibles) et se met à jour
-     lors des ajouts/suppressions de lignes. */
+  /* Pagination : DÉSACTIVÉE ici. Elle est désormais assurée par le composant
+     UNIFIÉ window.initPagination (static/js/app.js) — plafond 15 lignes/page,
+     sélecteur 5/10/15, rendu identique partout. L'ancien paginateur client
+     (PER=25, sans sélecteur) est neutralisé par le `return` ci-dessous. */
   (function(){
+    return;
     var PER = 25;
     function dataRows(tb){ return Array.prototype.slice.call(tb.querySelectorAll(':scope > tr[data-id], :scope > tr[data-role-row]')); }
     function setup(sel, noun){

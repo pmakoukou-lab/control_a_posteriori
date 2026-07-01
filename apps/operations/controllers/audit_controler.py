@@ -516,72 +516,16 @@ def _collecte_context():
         mode=f_mode, mode_label=(PASSATION_MODES[f_mode]['label'] if f_mode in PASSATION_MODES else ''),
     )
 
-    # --- Pagination serveur -------------------------------------------------
-    # Découpe la liste complète en pages. `per_page` ∈ {10,25,50,100} ; les liens
-    # de pagination CONSERVENT les filtres/recherche actifs.
+    # Pagination : gérée à 100 % CÔTÉ CLIENT (static/js/app.js, composant unifié,
+    # plafond 15 lignes/page). Le serveur renvoie donc la liste COMPLÈTE (déjà
+    # filtrée/recherchée) ; le découpage en pages se fait dans le navigateur.
     total = len(operations)
-    _ALLOWED_PP = (10, 25, 50, 100)
-    try:
-        per_page = int(request.query.get('per_page') or 25)
-    except (TypeError, ValueError):
-        per_page = 25
-    if per_page not in _ALLOWED_PP:
-        per_page = 25
-    total_pages = max(1, (total + per_page - 1) // per_page)
-    try:
-        page = int(request.query.get('page') or 1)
-    except (TypeError, ValueError):
-        page = 1
-    page = max(1, min(page, total_pages))
-    start = (page - 1) * per_page
-    page_ops = operations[start:start + per_page]
-
-    filter_vars = {}
-    if q:
-        filter_vars['q'] = q
-    if f_min:
-        filter_vars['ministere'] = f_min
-    if f_gc:
-        filter_vars['gestionnaire'] = f_gc
-    if f_type:
-        filter_vars['type'] = f_type
-    if f_mode:
-        filter_vars['mode'] = f_mode
-
-    def _page_url(p):
-        return URL('collecte', vars=dict(filter_vars, per_page=per_page, page=p))
-
-    # Fenêtre de numéros (avec ellipses `None`) : 1·2 … p-1·p·p+1 … last-1·last
-    if total_pages <= 7:
-        _nums = list(range(1, total_pages + 1))
-    else:
-        _keep = sorted({1, 2, total_pages - 1, total_pages,
-                        page - 1, page, page + 1})
-        _keep = [x for x in _keep if 1 <= x <= total_pages]
-        _nums, _prev = [], 0
-        for x in _keep:
-            if x - _prev > 1:
-                _nums.append(None)
-            _nums.append(x)
-            _prev = x
-    page_items = [dict(n=n, url=(_page_url(n) if n else None), current=(n == page))
-                  for n in _nums]
-    pp_options = [dict(value=pp,
-                       url=URL('collecte', vars=dict(filter_vars, per_page=pp, page=1)),
-                       current=(pp == per_page))
-                  for pp in _ALLOWED_PP]
-
     level, message = OPERATION_MESSAGES.get(request.query.get('msg'), ('', ''))
-    return dict(active='collecte', operations=page_ops, count=total,
+    return dict(active='collecte', operations=operations, count=total,
                 add_modes=add_modes, msg_level=level, msg_text=message,
                 q=q, filters=filters,
                 filt_min_options=filt_min_options, filt_gc_options=filt_gc_options,
                 filt_mode_options=filt_mode_options, filt_type_options=filt_type_options,
-                page=page, per_page=per_page, total=total, total_pages=total_pages,
-                page_items=page_items, pp_options=pp_options,
-                disp_from=(start + 1 if page_ops else 0), disp_to=start + len(page_ops),
-                prev_url=(_page_url(page - 1) if page > 1 else None),
-                next_url=(_page_url(page + 1) if page < total_pages else None),
                 current_user=_current_user_display())
 
 

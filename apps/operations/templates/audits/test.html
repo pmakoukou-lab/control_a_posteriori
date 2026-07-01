@@ -78,7 +78,7 @@
   /* Ombre renforcée des dropdowns (Gestion, Session, Filtre) */
   .dd-panel{ box-shadow:0 16px 40px rgba(15,27,20,.22), 0 6px 14px rgba(15,27,20,.12); }
 </style>
-<main class="glass reveal [animation-delay:190ms] p-8 flex flex-col gap-6 min-h-[560px]">
+<main class="glass reveal [animation-delay:190ms] p-8 flex flex-col gap-6 min-[860px]:flex-1 min-[860px]:min-h-0" data-table-block>
 
       <div class="flex items-end justify-between gap-4 flex-wrap">
         <div>
@@ -257,11 +257,11 @@
       </div>
 
       <!-- Tableau des opérations (même fond blanc que le panneau de filtre) -->
-      <div class="rounded-2xl border border-black/[.05] overflow-hidden" style="background:#fff">
-      <div class="overflow-x-auto">
+      <div class="rounded-2xl border border-black/[.05] overflow-hidden flex flex-col min-[860px]:flex-1 min-[860px]:min-h-0" style="background:#fff">
+      <div class="overflow-auto min-h-0 flex-1">
         <table class="w-full border-collapse">
           <thead>
-            <tr class="[&>th]:text-left [&>th]:font-heading [&>th]:text-sm [&>th]:font-bold [&>th]:tracking-wide [&>th]:text-brand-700 [&>th]:uppercase [&>th]:px-4 [&>th]:pb-3 [&>th]:pt-3">
+            <tr class="[&>th]:text-left [&>th]:font-heading [&>th]:text-sm [&>th]:font-bold [&>th]:tracking-wide [&>th]:text-brand-700 [&>th]:uppercase [&>th]:px-4 [&>th]:pb-3 [&>th]:pt-3 [&>th]:sticky [&>th]:top-0 [&>th]:z-[2] [&>th]:bg-white">
               <th class="w-10"><input type="checkbox" class="w-4 h-4 rounded accent-brand-600 cursor-pointer" data-select-all aria-label="Tout sélectionner"></th>
               <th>N° Opération</th>
               <th>Gestionnaire de crédit</th>
@@ -270,7 +270,7 @@
               <th class="!text-center">Actions</th>
             </tr>
           </thead>
-          <tbody class="[&>tr]:transition [&>tr:hover]:bg-[#3c4843]/[0.03] [&_td]:px-4 [&_td]:py-4 [&_td]:text-sm [&_td]:text-ink-2 [&_td]:border-t [&_td]:border-black/[.06] [&_td]:align-top">
+          <tbody data-paginate class="[&>tr]:transition [&>tr:hover]:bg-[#3c4843]/[0.03] [&_td]:px-4 [&_td]:py-4 [&_td]:text-sm [&_td]:text-ink-2 [&_td]:border-t [&_td]:border-black/[.06] [&_td]:align-top">
             [[ operations = globals().get('operations', []) ]]
             [[ for op in operations: ]]
             <tr data-op-row
@@ -293,30 +293,16 @@
             </tr>
             [[ pass ]]
             [[ if not operations: ]]
-            <tr><td colspan="6" class="text-center text-muted py-10">Aucune opération collectée pour le moment.</td></tr>
+            <tr data-pgskip><td colspan="6" class="text-center text-muted py-10">Aucune opération collectée pour le moment.</td></tr>
             [[ pass ]]
           </tbody>
         </table>
       </div>
       </div>
 
-      <!-- Pagination -->
-      <div class="flex items-center justify-center gap-1 pt-2 flex-wrap">
-        <button class="flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold text-muted-2 cursor-default" disabled>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-          Previous
-        </button>
-        <button class="pg-num active grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold tabular-nums cursor-pointer transition" aria-current="page">1</button>
-        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">2</button>
-        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">3</button>
-        <span class="px-2 text-muted-2 font-bold">…</span>
-        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">67</button>
-        <button class="pg-num grid place-items-center min-w-9 h-9 px-3 rounded-full text-sm font-bold transition tabular-nums cursor-pointer">68</button>
-        <button class="pg-num flex items-center gap-1.5 px-3 h-9 rounded-full text-sm font-semibold transition cursor-pointer">
-          Next
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </div>
+      <!-- Pagination : composant unifié, piloté côté client (static/js/app.js). -->
+      [[ page_noun = 'opération(s)' ]]
+      [[ include 'audits/_pagination.html' ]]
     </main>
 
 <form id="op-action-form" method="post" action="" class="hidden"></form>

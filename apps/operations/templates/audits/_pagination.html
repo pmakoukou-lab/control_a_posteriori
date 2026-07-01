@@ -1,0 +1,19 @@
+[[ _noun = globals().get('page_noun', 'éléments') ]]
+<div class="flex items-center justify-between gap-3 pt-1 flex-wrap" data-pagination data-noun="[[=_noun]]" style="display:none">
+  <div class="flex items-center gap-4 flex-wrap">
+    <div class="flex items-center gap-2.5">
+      <span class="text-[13px] text-muted whitespace-nowrap">Lignes par page</span>
+      <div class="relative">
+        <select class="h-9 min-w-[64px] pl-2.5 pr-8 rounded-lg border border-n300 bg-white text-sm font-semibold text-ink cursor-pointer transition hover:border-brand-300 appearance-none focus:outline-none focus:border-brand-500"
+                data-pg-size aria-label="Lignes par page">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15" selected>15</option>
+        </select>
+        <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+    </div>
+    <span class="text-[13px] text-muted" data-pg-info></span>
+  </div>
+  <div class="flex items-center gap-1 flex-wrap" data-pg-nav></div>
+</div>

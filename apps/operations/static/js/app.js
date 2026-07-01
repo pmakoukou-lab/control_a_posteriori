@@ -209,11 +209,126 @@
 
 
   /* ================================================================
+     Pagination unifiée (100 % client) — pilote TOUTE table marquée
+     [data-paginate] et sa barre [data-pagination] situées dans le même
+     conteneur [data-table-block]. Rendu identique partout (précédent /
+     numéros / suivant + compteur « x–y sur N » + sélecteur lignes/page).
+     SOURCE UNIQUE de la taille de page : les <option data-pg-size> du
+     partial (jamais > 15) ; un plafond dur CAP=15 borne toute valeur.
+     Coopère avec la recherche (ne pagine que les lignes visibles, càd
+     display !== 'none') et se met à jour sur mutation du <tbody>.
+     ================================================================ */
+  var PG_CAP = 15;  // plafond dur : jamais plus de 15 lignes par page.
+  var PG_ARROW_L = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
+  var PG_ARROW_R = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+
+  function initPagination(scope) {
+    scope = scope || document;
+    scope.querySelectorAll('[data-pagination]').forEach(function (bar) {
+      if (bar._pgReady) return;
+      var block = bar.closest('[data-table-block]') || bar.parentNode;
+      var tb = block ? block.querySelector('[data-paginate]') : null;
+      if (!tb) return;
+      bar._pgReady = true;
+
+      var sizeSel = bar.querySelector('[data-pg-size]');
+      var info = bar.querySelector('[data-pg-info]');
+      var nav = bar.querySelector('[data-pg-nav]');
+      var noun = bar.getAttribute('data-noun') || 'éléments';
+      var state = { page: 0 };
+
+      function dataRows() {
+        return Array.prototype.slice.call(tb.children).filter(function (tr) {
+          return tr.tagName === 'TR' && !tr.hasAttribute('data-pgskip');
+        });
+      }
+      function pageSize() {
+        var v = sizeSel ? parseInt(sizeSel.value, 10) : PG_CAP;
+        if (!v || v < 1) v = PG_CAP;
+        return Math.min(v, PG_CAP);   // plafond dur
+      }
+      function mkBtn(html, page, opts) {
+        opts = opts || {};
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'page-num'; b.innerHTML = html;
+        if (opts.active) { b.classList.add('active'); b.setAttribute('aria-current', 'page'); }
+        if (opts.disabled) { b.disabled = true; }
+        else { b.addEventListener('click', function () { state.page = page; render(); }); }
+        return b;
+      }
+      function render() {
+        var rows = dataRows();
+        var vis = rows.filter(function (r) { return r.style.display !== 'none'; });
+        var per = pageSize();
+        var total = vis.length;
+        var pages = Math.max(1, Math.ceil(total / per));
+        if (state.page > pages - 1) state.page = pages - 1;
+        if (state.page < 0) state.page = 0;
+        rows.forEach(function (r) { r.removeAttribute('data-pg'); });
+        vis.forEach(function (r, i) { if (Math.floor(i / per) !== state.page) r.setAttribute('data-pg', 'off'); });
+
+        // Masquage fiable (indépendant de Tailwind / attribut hidden) : style inline.
+        bar.style.display = (total === 0) ? 'none' : '';
+        if (total === 0) return;
+        var from = state.page * per + 1, to = Math.min(total, (state.page + 1) * per);
+        if (info) {
+          info.innerHTML = 'Affichage <b class="text-ink-2 font-bold tabular-nums">' + from + '–' + to +
+            '</b> sur <b class="text-brand-600 font-bold tabular-nums">' + total + '</b> ' + noun;
+        }
+        if (nav) {
+          nav.innerHTML = '';
+          nav.appendChild(mkBtn(PG_ARROW_L, state.page - 1, { disabled: state.page === 0 }));
+          for (var p = 0; p < pages; p++) {
+            if (p === 0 || p === pages - 1 || Math.abs(p - state.page) <= 1) {
+              nav.appendChild(mkBtn(String(p + 1), p, { active: p === state.page }));
+            } else if (Math.abs(p - state.page) === 2) {
+              var s = document.createElement('span');
+              s.className = 'page-num ell'; s.setAttribute('aria-hidden', 'true'); s.textContent = '…';
+              nav.appendChild(s);
+            }
+          }
+          nav.appendChild(mkBtn(PG_ARROW_R, state.page + 1, { disabled: state.page === pages - 1 }));
+        }
+      }
+
+      if (sizeSel) sizeSel.addEventListener('change', function () { state.page = 0; render(); });
+      tb._pgRender = render;
+      new MutationObserver(function () { render(); }).observe(tb, { childList: true });
+      render();
+    });
+
+    /* Recalcule toutes les tables paginées quand une recherche filtre les lignes
+       (les handlers de recherche posent display:none ; on recompte APRÈS eux) ou
+       au changement d'onglet. */
+    if (!initPagination._hooked) {
+      initPagination._hooked = true;
+      var refreshAll = function () {
+        setTimeout(function () {
+          document.querySelectorAll('[data-paginate]').forEach(function (tb) {
+            if (tb._pgRender) tb._pgRender();
+          });
+        }, 0);
+      };
+      /* Toute frappe dans un champ (recherche, filtre…) peut masquer des lignes
+         via display:none ; on recompte après les handlers de recherche. Large à
+         dessein pour couvrir toutes les recherches quel que soit leur attribut. */
+      document.addEventListener('input', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) refreshAll();
+      });
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-tab]')) refreshAll();
+      });
+    }
+  }
+  window.initPagination = initPagination;
+
+  /* ================================================================
      Démarrage
      ================================================================ */
   function boot() {
     initSharedNav();
     initCombos(document);
+    initPagination(document);
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);

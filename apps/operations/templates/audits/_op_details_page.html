@@ -25,6 +25,20 @@
   --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
 
+  /* === Échelle typographique FLUIDE (clamp) — centralisée ==================
+     Override des tokens de taille Tailwind v4 : toutes les classes text-xs…
+     text-3xl de l'app deviennent fluides SANS toucher au markup. Chaque niveau
+     vaut sa taille actuelle à 1440px (borne MIN → rendu Yoga identique) et
+     grandit d'un facteur ~1.30 jusqu'à 3840px (borne MAX), ratios préservés.
+     Les line-height (ratios --text-*--line-height de v4) restent proportionnels. */
+  --text-xs:   clamp(0.75rem,  calc(0.615rem  + 0.15vw),  0.975rem);   /* 12 → 15.6  (labels, tags) */
+  --text-sm:   clamp(0.875rem, calc(0.7175rem + 0.175vw), 1.1375rem);  /* 14 → 18.2  (corps / UI) */
+  --text-base: clamp(1rem,     calc(0.82rem   + 0.2vw),   1.3rem);     /* 16 → 20.8 */
+  --text-lg:   clamp(1.125rem, calc(0.9225rem + 0.225vw), 1.4625rem);  /* 18 → 23.4  (h3) */
+  --text-xl:   clamp(1.25rem,  calc(1.025rem  + 0.25vw),  1.625rem);   /* 20 → 26    (h2) */
+  --text-2xl:  clamp(1.5rem,   calc(1.23rem   + 0.3vw),   1.95rem);    /* 24 → 31.2  (h1) */
+  --text-3xl:  clamp(1.875rem, calc(1.5375rem + 0.375vw), 2.4375rem);  /* 30 → 39    (logo / hero) */
+
   /* === Amber — primaire (= brand, pour la rétrocompat des pages existantes) === */
   --color-amber-50:#FFF8EC;  --color-brand-50:#FFF8EC;
   --color-amber-100:#FDECCB; --color-brand-100:#FDECCB;
@@ -535,7 +549,10 @@
 <body>
 <div class="bg-decor" aria-hidden="true"></div>
 
-<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+<!-- Grille responsive (cf. audits/layout.html) : gouttière/paddings fluides via
+     clamp() — plancher 1rem = rendu Yoga identique — et ensemble plafonné+centré
+     (max-w + mx-auto) pour éviter l'étirement du main sur 28"/4K. -->
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[clamp(264px,calc(220.8px+3vw),336px)_minmax(0,1fr)] gap-[clamp(1rem,1vw,2rem)] p-[clamp(1rem,1vw,2rem)] min-h-dvh max-w-[1800px] mx-auto">
 
   <!-- Barre latérale commune. État actif piloté par la variable `active`
      (passée par le contrôleur : 'dashboard' | 'collecte' | 'rapport'

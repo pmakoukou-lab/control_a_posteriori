@@ -25,6 +25,20 @@
   --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
 
+  /* === Échelle typographique FLUIDE (clamp) — centralisée ==================
+     Override des tokens de taille Tailwind v4 : toutes les classes text-xs…
+     text-3xl de l'app deviennent fluides SANS toucher au markup. Chaque niveau
+     vaut sa taille actuelle à 1440px (borne MIN → rendu Yoga identique) et
+     grandit d'un facteur ~1.30 jusqu'à 3840px (borne MAX), ratios préservés.
+     Les line-height (ratios --text-*--line-height de v4) restent proportionnels. */
+  --text-xs:   clamp(0.75rem,  calc(0.615rem  + 0.15vw),  0.975rem);   /* 12 → 15.6  (labels, tags) */
+  --text-sm:   clamp(0.875rem, calc(0.7175rem + 0.175vw), 1.1375rem);  /* 14 → 18.2  (corps / UI) */
+  --text-base: clamp(1rem,     calc(0.82rem   + 0.2vw),   1.3rem);     /* 16 → 20.8 */
+  --text-lg:   clamp(1.125rem, calc(0.9225rem + 0.225vw), 1.4625rem);  /* 18 → 23.4  (h3) */
+  --text-xl:   clamp(1.25rem,  calc(1.025rem  + 0.25vw),  1.625rem);   /* 20 → 26    (h2) */
+  --text-2xl:  clamp(1.5rem,   calc(1.23rem   + 0.3vw),   1.95rem);    /* 24 → 31.2  (h1) */
+  --text-3xl:  clamp(1.875rem, calc(1.5375rem + 0.375vw), 2.4375rem);  /* 30 → 39    (logo / hero) */
+
   /* === Amber — primaire (= brand, pour la rétrocompat des pages existantes) === */
   --color-amber-50:#FFF8EC;  --color-brand-50:#FFF8EC;
   --color-amber-100:#FDECCB; --color-brand-100:#FDECCB;
@@ -317,14 +331,21 @@
      qui élargirait la mise en page) ; le contenu trop long passe à la ligne. */
   .utbl-fit{ table-layout:fixed; }
   .utbl-fit td{ overflow-wrap:anywhere; }
-  .utbl thead th{ @apply text-left font-heading text-xs font-bold tracking-wide text-muted-2 uppercase px-4 pb-4 pt-2; }
+  .utbl thead th{
+        @apply text-left font-heading text-xs font-bold tracking-wide text-muted-2 uppercase px-4 pb-4 pt-2;
+        /* thead collant à l'intérieur de la zone scrollable (patron flex-1/min-h-0) :
+           fond opaque obligatoire pour couvrir les lignes qui défilent dessous. */
+        position:sticky; top:0; z-index:2; background:var(--color-surface-2);
+        box-shadow:inset 0 -1px 0 var(--border-strong), 0 6px 8px -6px rgba(0,0,0,.12);
+      }
   .utbl tbody tr{ @apply transition cursor-pointer; }
   /* Tints orange (ambre) au survol et à la sélection */
   .utbl tbody tr:hover{ background:var(--color-amber-50); }
   .utbl tbody tr.is-selected{ background:var(--color-amber-50); }
   .utbl tbody tr.is-selected td:first-child{ box-shadow:inset 3px 0 0 var(--color-amber-600); }
-  /* Lignes hors page courante (pagination JS) */
-  .utbl tbody tr[data-pg="off"]{ display:none !important; }
+  /* Lignes hors page courante (pagination JS unifiée) — générique : vaut pour
+     .utbl (administration) ET .optbl (collecte) et toute table paginée. */
+  tr[data-pg="off"]{ display:none !important; }
   .utbl tbody td{ @apply px-4 py-4 text-sm text-ink-2 align-top; border-top:1px solid rgba(0,0,0,.06); }
   .act-btn{ @apply relative inline-grid place-items-center w-9 h-9 rounded-lg text-muted-2 transition cursor-pointer; }
   .act-edit:hover{ @apply bg-green-50 text-green-700; }
@@ -604,17 +625,24 @@
 <body>
 <div class="bg-decor" aria-hidden="true"></div>
 
-<div class="grid grid-cols-1 min-[860px]:grid-cols-[264px_minmax(0,1fr)] gap-4 p-4 min-h-dvh max-w-[1480px] mx-auto">
+<!-- Grille dashboard : sidebar figée 264px + main fluide.
+     Responsive de ~1440px (Yoga) à la 4K SANS breakpoint > 2xl :
+     - gouttière/paddings FLUIDES via clamp() — plancher 1rem (= ancien gap-4,
+       donc rendu identique au Yoga), montée jusqu'à 2rem sur grand écran ;
+     - max-w + mx-auto plafonnent et CENTRENT l'ensemble → le main ne s'étire
+       jamais (contrainte de largeur de lecture) et les marges restent symétriques
+       sur 28"/4K ; la sidebar garde sa largeur. -->
+<div class="grid grid-cols-1 min-[860px]:grid-cols-[clamp(264px,calc(220.8px+3vw),336px)_minmax(0,1fr)] gap-[clamp(1rem,1vw,2rem)] p-[clamp(1rem,1vw,2rem)] min-h-dvh min-[860px]:h-dvh min-[860px]:overflow-hidden max-w-[1800px] mx-auto">
 
   [[include 'audits/_sidebar.html']]
 
-  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0">
+  <div class="min-[860px]:col-start-2 flex flex-col gap-4 min-w-0 min-[860px]:h-full min-[860px]:overflow-hidden">
     [[ if not globals().get('hide_header'): ]]
     [[include 'audits/_header.html']]
     [[ pass ]]
 
     [[block main]]
-    <main class="glass reveal [animation-delay:190ms] p-6 sm:p-8">
+    <main class="glass reveal [animation-delay:190ms] p-6 sm:p-8 min-[860px]:flex-1 min-[860px]:min-h-0 min-[860px]:overflow-y-auto">
       <p class="text-muted">Contenu de la page.</p>
     </main>
     [[end]]
@@ -623,7 +651,9 @@
   </div>
 </div>
 
-<script src="[[=URL('static', 'js/app.js')]]"></script>
+<!-- ?v= : cache-buster — à incrémenter à chaque modif d'app.js (fichier statique
+     mis en cache par le navigateur, contrairement aux templates). -->
+<script src="[[=URL('static', 'js/app.js', vars=dict(v=3))]]"></script>
 
 <!-- Conteneur des toasts (flash) -->
 <div class="flash-stack" aria-live="polite" aria-atomic="false"></div>
