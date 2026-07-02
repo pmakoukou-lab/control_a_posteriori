@@ -215,7 +215,7 @@ def define_allotissements(db):
         # --- Examen préalable à l'approbation ---
         Field("exam_prealable_approb_constat", "boolean", label="Constat", comment="Section: Examen préalable à l'approbation | col. CP"),
         Field("exam_prealable_approb_date_soumission", "date", label="Date de soumission du projet de marché à la DGMP", comment="Section: Examen préalable à l'approbation | col. CQ"),
-        Field("exam_prealable_approb_date_validation", "date", label="Date de vaidation du projet de marché par la DGMP", comment="Section: Examen préalable à l'approbation | col. CR"),
+        Field("exam_prealable_approb_date_validation", "date", label="Date de validation du projet de marché par la DGMP", comment="Section: Examen préalable à l'approbation | col. CR"),
         Field("exam_prealable_approb_observation", "text", label="Observations", comment="Section: Examen préalable à l'approbation | col. CS"),
         # --- Approbation du marché ---
         Field("approbation_marche_constat", "boolean", label="Constat", comment="Section: Approbation du marché | col. CT"),
