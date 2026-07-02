@@ -1,16 +1,23 @@
 [[ _noun = globals().get('page_noun', 'éléments') ]]
 <div class="flex items-center justify-between gap-3 pt-1 flex-wrap" data-pagination data-noun="[[=_noun]]" style="display:none">
   <div class="flex items-center gap-4 flex-wrap">
+    <!-- Sélecteur « lignes par page » : menu maison. Déclencheur BORDÉ (bordure
+         neutre n300, pas ambre) ; items .dd-option au survol ambre comme les menus
+         Gestion/Session ; conteneur de liste bordé. Piloté par window.initPagination. -->
     <div class="flex items-center gap-2.5">
       <span class="text-[13px] text-muted whitespace-nowrap">Lignes par page</span>
-      <div class="relative">
-        <select class="h-9 min-w-[64px] pl-2.5 pr-8 rounded-lg border border-n300 bg-white text-sm font-semibold text-ink cursor-pointer transition hover:border-brand-300 appearance-none focus:outline-none focus:border-brand-500"
-                data-pg-size aria-label="Lignes par page">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15" selected>15</option>
-        </select>
-        <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      <div class="relative" data-pg-menu>
+        <button type="button" class="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-n300 bg-white cursor-pointer transition hover:border-brand-300 hover:bg-brand-50 focus:outline-none focus:border-brand-500" data-pg-size-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Lignes par page">
+          <span class="text-sm font-bold text-brand-700 tabular-nums" data-pg-size-label>15</span>
+          <svg class="chev w-4 h-4 text-muted-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <!-- Ouverture vers le HAUT (la barre est en bas de la zone scrollable). Bordure
+             plus visible (n300) que la .dd-panel par défaut. -->
+        <div class="dd-panel left-0 !min-w-[76px] border-n300" style="top:auto;bottom:calc(100% + 6px);margin-top:0" data-pg-size-panel role="listbox" aria-label="Lignes par page">
+          <button type="button" class="dd-option" data-pg-size-option data-value="5" role="option">5</button>
+          <button type="button" class="dd-option" data-pg-size-option data-value="10" role="option">10</button>
+          <button type="button" class="dd-option selected" data-pg-size-option data-value="15" role="option" aria-selected="true">15</button>
+        </div>
       </div>
     </div>
     <span class="text-[13px] text-muted" data-pg-info></span>

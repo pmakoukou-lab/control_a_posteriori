@@ -711,3 +711,6 @@ success!
 success!
 success!
 success!
+timestamp: 2026-07-01T22:53:48.480053
+ALTER TABLE "session_budgetaire" ADD "numero_mission" INTEGER;
+success!

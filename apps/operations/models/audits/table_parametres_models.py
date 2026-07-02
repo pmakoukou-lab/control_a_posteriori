@@ -77,6 +77,7 @@ def define_session_budgetaire(db):
     """Table de référence `session_budgetaire` (période datée d'un exercice)."""
     db.define_table("session_budgetaire",
         Field("exercice",    "reference exercice_budgetaire"),
+        Field("numero_mission", "integer", label="Numéro de mission"),
         Field("objet",       "text",     default=""),
         Field("objectif",    "text",     default=""),
         Field("date_debut",  "date"),
@@ -220,10 +221,10 @@ def seed_exercice_session(db):
     for y in (cur - 2, cur - 1, cur):
         eid = db.exercice_budgetaire.insert(annee=y)
         db.session_budgetaire.insert(
-            exercice=eid, objet="1re session",
+            exercice=eid, numero_mission=1, objet="1re session",
             date_debut=datetime(y, 1, 15).date(), date_fin=datetime(y, 6, 30).date())
         db.session_budgetaire.insert(
-            exercice=eid, objet="2e session",
+            exercice=eid, numero_mission=2, objet="2e session",
             date_debut=datetime(y, 7, 1).date(), date_fin=datetime(y, 12, 31).date())
     db.commit()
 

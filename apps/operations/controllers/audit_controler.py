@@ -63,9 +63,9 @@ GESTION_MESSAGES = {
     'gc_deactivated':  ('ok',  "Autorité contractante désactivée."),
     'gc_deleted':      ('del', "Autorité contractante supprimée."),
     'exo_added':       ('ok',  "Exercice budgétaire enregistré avec succès."),
-    'sess_added':      ('ok',  "Session(s) ajoutée(s) avec succès."),
-    'sess_updated':    ('edit', "Session modifiée avec succès."),
-    'sess_deleted':    ('del', "Session supprimée."),
+    'sess_added':      ('ok',  "Mission(s) ajoutée(s) avec succès."),
+    'sess_updated':    ('edit', "Mission modifiée avec succès."),
+    'sess_deleted':    ('del', "Mission supprimée."),
     'min_name':        ('err', "Le nom du ministère est requis."),
     'gc_name':         ('err', "Le nom de l'autorité contractante est requis."),
     'gc_min':          ('err', "Veuillez choisir un ministère valide."),
@@ -101,6 +101,14 @@ def _parse_date(value):
         except ValueError:
             continue
     return None
+
+
+def _to_int(value):
+    """Entier depuis une saisie (numéro de mission…), ou None si vide/invalide."""
+    try:
+        return int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
 
 # Rôles par défaut créés au premier affichage si la table est vide.
 # NB : les noms ci-dessous DOIVENT correspondre aux tags réellement assignés aux
@@ -588,7 +596,8 @@ def _admin_context():
                   (db.session_budgetaire.is_deleted == False)).select(  # noqa: E712
             orderby=db.session_budgetaire.id)
         sessions = [dict(
-            id=s.id, objet=s.objet or '', objectif=s.objectif or '',
+            id=s.id, numero=(s.numero_mission if s.numero_mission is not None else ''),
+            objet=s.objet or '', objectif=s.objectif or '',
             debut=s.date_debut.strftime('%Y-%m-%d') if s.date_debut else '',
             fin=s.date_fin.strftime('%Y-%m-%d') if s.date_fin else '',
             range=_range_label(s)) for s in rows]
@@ -800,16 +809,19 @@ def _insert_sessions(exo_id, forms):
     fins = _as_list(forms.get('fin'))
     objets = _as_list(forms.get('objet'))
     objectifs = _as_list(forms.get('objectif'))
-    n = max(len(debuts), len(fins), len(objets), len(objectifs))
+    numeros = _as_list(forms.get('numero_mission'))
+    n = max(len(debuts), len(fins), len(objets), len(objectifs), len(numeros))
     created = 0
     for i in range(n):
         debut = _parse_date(debuts[i] if i < len(debuts) else '')
         fin = _parse_date(fins[i] if i < len(fins) else '')
         objet = (objets[i] if i < len(objets) else '').strip()
         objectif = (objectifs[i] if i < len(objectifs) else '').strip()
-        if not (debut or fin or objet or objectif):
+        numero = _to_int(numeros[i] if i < len(numeros) else '')
+        if not (debut or fin or objet or objectif or numero):
             continue  # bloc vide → on ignore
-        db.session_budgetaire.insert(exercice=exo_id, date_debut=debut, date_fin=fin,
+        db.session_budgetaire.insert(exercice=exo_id, numero_mission=numero,
+                                     date_debut=debut, date_fin=fin,
                                      objet=objet, objectif=objectif)
         created += 1
     return created
@@ -852,6 +864,7 @@ def update_session(sid):
         redirect(URL('gestion', vars=dict(msg='not_found')))
     f = request.forms
     row.update_record(
+        numero_mission=_to_int(f.get('numero_mission')),
         date_debut=_parse_date(f.get('debut')),
         date_fin=_parse_date(f.get('fin')),
         objet=(f.get('objet') or '').strip(),
@@ -1447,7 +1460,8 @@ def _operation_form_context(active='collecte', mode='AOO', row=None):
                   (db.session_budgetaire.is_deleted == False)).select(  # noqa: E712
             orderby=db.session_budgetaire.date_debut | db.session_budgetaire.id)
         for i, s in enumerate(sess, start=1):
-            session_options.append(dict(id=s.id, gestion=e.id, label='Session %d' % i))
+            _num = s.numero_mission if s.numero_mission is not None else i
+            session_options.append(dict(id=s.id, gestion=e.id, label='Mission %d' % _num))
             _last_sess[e.id] = s.id
     gestion_default = next((e.id for e in exercices if e.annee == datetime.now().year),
                            (exercices[0].id if exercices else ''))

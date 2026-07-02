@@ -31,7 +31,11 @@ def period_options():
             orderby=db.session_budgetaire.id)
         out.append(dict(
             id=e.id, annee=e.annee, label=str(e.annee),
-            sessions=[dict(id=s.id, num=i + 1, label="Mission %d" % (i + 1))
+            # `num`/`label` = numero_mission saisi ; repli sur l'index (missions
+            # existantes sans numéro) pour ne jamais afficher un libellé vide.
+            sessions=[dict(id=s.id,
+                           num=(s.numero_mission if s.numero_mission is not None else i + 1),
+                           label="Mission %d" % (s.numero_mission if s.numero_mission is not None else i + 1))
                       for i, s in enumerate(sess)],
         ))
     return out

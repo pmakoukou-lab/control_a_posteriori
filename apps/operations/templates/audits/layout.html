@@ -186,6 +186,9 @@
   .field{
         @apply w-full px-4 rounded-lg border text-sm text-ink transition;
         height:40px; background:#fff; border-color:var(--border-strong);
+        /* Native date/time pickers : surbrillance de sélection en ambre (marque)
+           au lieu du bleu par défaut du navigateur. */
+        accent-color:var(--color-amber-600);
       }
   .field:focus{ @apply outline-none; border-color:var(--color-amber-500); box-shadow:var(--ring); background:#fff; }
   textarea.field{ @apply resize-y py-2.5; height:auto; min-height:92px; }
@@ -653,7 +656,7 @@
 
 <!-- ?v= : cache-buster — à incrémenter à chaque modif d'app.js (fichier statique
      mis en cache par le navigateur, contrairement aux templates). -->
-<script src="[[=URL('static', 'js/app.js', vars=dict(v=3))]]"></script>
+<script src="[[=URL('static', 'js/app.js', vars=dict(v=5))]]"></script>
 
 <!-- Conteneur des toasts (flash) -->
 <div class="flash-stack" aria-live="polite" aria-atomic="false"></div>

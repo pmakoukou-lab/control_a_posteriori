@@ -30,7 +30,7 @@
           </button>
         </div>
 
-        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
+        <div class="overflow-y-auto overflow-x-hidden min-[860px]:flex-1 min-[860px]:min-h-0">
           <table class="utbl utbl-fit">
             <thead><tr><th>Ministères</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
             <tbody data-list="min" data-paginate>
@@ -75,8 +75,8 @@
           </button>
         </div>
 
-        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
-          <table class="utbl">
+        <div class="overflow-y-auto overflow-x-hidden min-[860px]:flex-1 min-[860px]:min-h-0">
+          <table class="utbl utbl-fit">
             <thead><tr><th>Gestionnaires de crédits</th><th>Statut</th><th class="text-right">Actions</th></tr></thead>
             <tbody data-list="gc" data-paginate>
               [[ gestionnaires = globals().get('gestionnaires', []) ]]
@@ -140,16 +140,16 @@
                 <span class="exo-title">Exercice budgétaire [[=e['annee'] ]]</span>
                 <span class="exo-count text-brand-600" data-count>( [[=len(e['sessions']) ]] )</span>
               </div>
-              <button class="btn-soft" data-add-session><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>Ajouter une session</button>
+              <button class="btn-soft" data-add-session><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>Ajouter une mission</button>
             </div>
             <div class="exo-body" data-exo-body>
               [[ for i, s in enumerate(e['sessions']): ]]
-              <div class="sess-item" data-session data-id="[[=s['id'] ]]"
+              <div class="sess-item" data-session data-id="[[=s['id'] ]]" data-numero="[[=s['numero'] ]]"
                    data-range="[[=s['range'] ]]" data-debut="[[=s['debut'] ]]" data-fin="[[=s['fin'] ]]"
                    data-objet="[[=s['objet'] ]]" data-objectif="[[=s['objectif'] ]]"
                    data-edit-url="[[=URL('gestion/sessions', s['id'], 'edit')]]"
                    data-del-url="[[=URL('gestion/sessions', s['id'], 'delete')]]">
-                <span class="sess-txt">Session [[=i+1]] : [[=s['range'] ]]</span>
+                <span class="sess-txt">Mission [[=s['numero'] or (i+1)]] : [[=s['range'] ]]</span>
                 <div class="flex items-center gap-1.5">
                   <button class="act-btn act-edit" aria-label="Modifier"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
                   <button class="act-btn act-del" aria-label="Supprimer"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg></button>
@@ -268,31 +268,16 @@
     [[ year_options = globals().get('year_options', []) ]]
     [[ default_year = year_options[1] if len(year_options) > 1 else (year_options[0] if year_options else '') ]]
     <form id="exo-form" method="post" action="[[=URL('gestion/exercices/add')]]">
-    <input type="hidden" name="year" data-exo-year-input value="[[=default_year]]">
     <div class="flex items-center justify-between gap-3 mb-5" data-exo-year-row>
-      <label class="lbl mb-0">Exercice budgétaire</label>
-      <div class="relative w-[150px]" data-exo-year data-combo data-value="[[=default_year]]">
-        <button type="button" class="field flex items-center justify-between gap-2 text-left cursor-pointer font-bold" data-combo-trigger aria-haspopup="listbox" aria-expanded="false">
-          <span data-combo-label class="truncate">[[=default_year]]</span>
-          <svg class="combo-chev w-4 h-4 text-muted-2 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="combo-panel" data-combo-panel role="listbox">
-          <div class="combo-search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" placeholder="Rechercher…" data-combo-input aria-label="Rechercher une année">
-          </div>
-          <div class="combo-list" data-combo-list>
-            [[ for y in year_options: ]]
-            <button type="button" class="combo-option" data-combo-option>[[=y]]</button>
-            [[ pass ]]
-          </div>
-        </div>
-      </div>
+      <label class="lbl mb-0" for="exo-year-input">Exercice budgétaire</label>
+      <input type="text" id="exo-year-input" name="year" data-exo-year-input
+             class="field w-[150px] font-bold text-center tabular-nums" value="[[=default_year]]"
+             inputmode="numeric" maxlength="4" placeholder="AAAA" autocomplete="off" required>
     </div>
 
     <div class="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-black/[.07]">
-      <span class="font-heading font-semibold text-sm text-muted">Ajouter des sessions</span>
-      <button type="button" class="icon-box" data-add-session-block aria-label="Ajouter une session">
+      <span class="font-heading font-semibold text-sm text-muted">Ajouter des missions</span>
+      <button type="button" class="icon-box" data-add-session-block aria-label="Ajouter une mission">
         <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
     </div>
@@ -314,8 +299,8 @@
 
   <!-- Suppression de session -->
   <div class="umodal umodal-sm" data-modal="session-delete" hidden role="dialog" aria-modal="true" aria-labelledby="sdel-title">
-    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="sdel-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer cette session ?</h2></div>
-    <p class="text-sm text-muted mt-3 leading-relaxed">Vous n'aurez plus l'accès à cette session et les informations qui la concerne.</p>
+    <div class="flex items-start gap-3.5 mb-1"><span class="ico ico-lg is-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M6 6l1 14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-14"/></svg></span><h2 id="sdel-title" class="font-heading font-bold text-lg text-ink leading-snug">Voulez-vous supprimer cette mission ?</h2></div>
+    <p class="text-sm text-muted mt-3 leading-relaxed">Vous n'aurez plus l'accès à cette mission et les informations qui la concerne.</p>
     <div class="flex items-center justify-between gap-3 mt-6 flex-wrap">
       <button class="btn-soft" data-modal-close>
         <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
@@ -353,7 +338,7 @@
         </div>
 
       <!-- Table -->
-      <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
+      <div class="overflow-y-auto overflow-x-hidden min-[860px]:flex-1 min-[860px]:min-h-0">
         <table class="utbl utbl-fit">
           <thead>
             <tr>
@@ -417,7 +402,7 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-auto min-[860px]:flex-1 min-[860px]:min-h-0">
+        <div class="overflow-y-auto overflow-x-hidden min-[860px]:flex-1 min-[860px]:min-h-0">
           <table class="utbl utbl-fit">
             <thead>
               <tr>
@@ -833,7 +818,6 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
   var exoForm = document.getElementById('exo-form');
   var ADD_EXO_URL = exoForm.getAttribute('action');
   var blocksWrap = modalRoot.querySelector('[data-session-blocks]');
-  var yearSelect = modalRoot.querySelector('[data-exo-year]');
   var yearInput = modalRoot.querySelector('[data-exo-year-input]');
   var yearRow = modalRoot.querySelector('[data-exo-year-row]');
   var addBlockRow = modalRoot.querySelector('[data-add-session-block]').closest('div');
@@ -844,8 +828,17 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
 
   function submitForm(form){ if (form.requestSubmit) form.requestSubmit(); else if (form.reportValidity()) form.submit(); }
 
+  // Date-picker MAISON (comme les pages d'ajout) au lieu de l'input date natif (bleu,
+  // carré). Le champ affiche jj/mm/aaaa ; le serveur (_parse_date) accepte ce format.
+  function _toDMY(v){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+    return m ? (m[3] + '/' + m[2] + '/' + m[1]) : (v || '');
+  }
   function dateField(name, value){
-    return '<div><input class="field" type="date" name="'+ name +'" value="'+ (value||'') +'"></div>';
+    return '<div class="relative" data-dp>'
+      + '<input type="text" class="field cursor-pointer" data-dp-input name="'+ name +'" value="'+ _toDMY(value) +'" placeholder="jj/mm/aaaa" readonly>'
+      + '<div class="dp-pop" data-dp-pop hidden></div>'
+      + '</div>';
   }
 
   function wireSession(item){
@@ -885,16 +878,18 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
 
   /* ----- Blocs session dans la modale ----- */
   function addSessionBlock(prefill){
-    var n = blocksWrap.querySelectorAll('[data-sess-block]').length + 1;
     prefill = prefill || {};
     var block = document.createElement('div');
-    block.className = 'sess-block'; block.setAttribute('data-sess-block','');
+    // overflow-visible : sinon .sess-block (overflow:hidden) rogne le popup du
+    // date-picker (dernières lignes du calendrier coupées).
+    block.className = 'sess-block overflow-visible'; block.setAttribute('data-sess-block','');
     block.innerHTML =
       '<div class="sess-head" data-sess-toggle>'+
-        '<span class="font-heading font-semibold text-sm text-ink">session <span data-sess-n>'+ n +'</span>:</span>'+
+        '<span class="font-heading font-semibold text-sm text-ink">Mission</span>'+
         '<span class="icon-box" data-sess-collapse aria-label="Replier">'+ I_MINUS +'</span>'+
       '</div>'+
       '<div class="sess-block-body">'+
+        '<div><label class="lbl">Numéro de mission</label><input class="field w-full sm:w-[160px] font-bold tabular-nums" name="numero_mission" type="text" inputmode="numeric" maxlength="4" placeholder="Ex. 1" value="'+ (prefill.numero||'') +'" required></div>'+
         '<div class="grid sm:grid-cols-2 gap-4">'+
           '<div><label class="lbl">Date de début</label>'+ dateField('debut', prefill.debut) +'</div>'+
           '<div><label class="lbl">Date de fin</label>'+ dateField('fin', prefill.fin) +'</div>'+
@@ -921,9 +916,10 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
       // Une seule session éditée : on cache l'année et le « + » (un seul bloc).
       exoForm.action = opts.session.dataset.editUrl;
       yearRow.hidden = true; addBlockRow.hidden = true;
-      if (exoTitle) exoTitle.textContent = 'Modifier une session';
+      if (exoTitle) exoTitle.textContent = 'Modifier une mission';
       exoBtn.textContent = 'Mettre à jour';
       addSessionBlock({
+        numero: opts.session.getAttribute('data-numero') || '',
         debut: opts.session.getAttribute('data-debut') || '',
         fin: opts.session.getAttribute('data-fin') || '',
         objet: opts.session.getAttribute('data-objet') || '',
@@ -932,8 +928,8 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
     } else if (mode === 'session-add' && opts.exo){
       exoForm.action = opts.exo.dataset.addSessionUrl;
       yearRow.hidden = true; addBlockRow.hidden = false;
-      if (exoTitle) exoTitle.textContent = 'Ajouter une session';
-      exoBtn.textContent = 'Ajouter la session';
+      if (exoTitle) exoTitle.textContent = 'Ajouter une mission';
+      exoBtn.textContent = 'Ajouter la mission';
       addSessionBlock();
     } else { // 'new' : création d'un exercice
       exoForm.action = ADD_EXO_URL;
@@ -947,12 +943,7 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
 
   R.querySelector('[data-add-exo]').addEventListener('click', function(){ openExoForm('new', {}); });
 
-  /* Synchronise l'input caché « year » avec l'année choisie dans le combo. */
-  if (yearSelect){
-    yearSelect.addEventListener('click', function(){
-      var v = window.getComboValue(yearSelect); if (v) yearInput.value = v;
-    });
-  }
+  /* L'année de l'exercice est saisie directement dans le champ (data-exo-year-input). */
 
   /* ===== Confirmations (POST réels) ===== */
   modalRoot.querySelectorAll('[data-confirm]').forEach(function(btn){
@@ -963,7 +954,6 @@ var PENCIL = '<svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" str
         f.action = targetSession.dataset.delUrl; f.submit();
       }
       else if (type === 'exo-form'){
-        if (formMode === 'new') yearInput.value = window.getComboValue(yearSelect) || yearInput.value;
         submitForm(exoForm);
       }
     });
@@ -1288,6 +1278,74 @@ var R = document.getElementById("admin-comptes");
   (function(){
     var t = "[[=globals().get('active_tab','exo')]]";
     if (t && t !== 'exo'){ var b = document.querySelector('[data-tab="' + t + '"]'); if (b) b.click(); }
+  })();
+</script>
+<script>
+  /* Date-picker maison (branding) — repris des pages d'ajout, pour les champs date
+     des sessions (modale exercice). Remplace le calendrier natif (bleu / carré). */
+  (function(){
+    var MS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    var DOW = ['lu','ma','me','je','ve','sa','di'];
+    var CH_L = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>';
+    var CH_R = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    function parseDMY(s){ var m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((s||'').trim()); return m ? { d:+m[1], mo:+m[2]-1, y:+m[3] } : null; }
+    function closeAll(){ document.querySelectorAll('[data-dp-pop]').forEach(function(p){ p.hidden = true; }); }
+    function build(pop, y, mo, sel){
+      pop.setAttribute('data-y', y); pop.setAttribute('data-m', mo);
+      var startDow = (new Date(y, mo, 1).getDay() + 6) % 7;
+      var days = new Date(y, mo + 1, 0).getDate();
+      var now = new Date(), th = (now.getFullYear() === y && now.getMonth() === mo) ? now.getDate() : -1;
+      var h = '<div class="dp-head"><button type="button" class="dp-nav" data-dp-prev aria-label="Mois précédent">' + CH_L + '</button>' +
+        '<span class="dp-title">' + MS[mo] + ' ' + y + '</span>' +
+        '<button type="button" class="dp-nav" data-dp-next aria-label="Mois suivant">' + CH_R + '</button></div><div class="dp-grid">';
+      DOW.forEach(function(d){ h += '<div class="dp-dow">' + d + '</div>'; });
+      for (var i = 0; i < startDow; i++) h += '<div></div>';
+      for (var dd = 1; dd <= days; dd++){
+        var cls = 'dp-day';
+        if (sel && sel.d === dd && sel.mo === mo && sel.y === y) cls += ' sel';
+        if (dd === th) cls += ' today';
+        h += '<button type="button" class="' + cls + '" data-dp-day="' + dd + '">' + dd + '</button>';
+      }
+      pop.innerHTML = h + '</div>';
+    }
+    function open(wrap){
+      closeAll();
+      var input = wrap.querySelector('[data-dp-input]'), pop = wrap.querySelector('[data-dp-pop]');
+      var sel = parseDMY(input.value), now = new Date();
+      build(pop, sel ? sel.y : now.getFullYear(), sel ? sel.mo : now.getMonth(), sel);
+      pop.style.top = ''; pop.style.bottom = '';
+      pop.hidden = false;
+      // Si le calendrier dépasserait le bas de l'écran (modale centrée non
+      // scrollable), on l'ouvre vers le HAUT pour ne rien tronquer.
+      var r = pop.getBoundingClientRect();
+      if (r.bottom > (window.innerHeight - 8)) { pop.style.top = 'auto'; pop.style.bottom = 'calc(100% + 6px)'; }
+    }
+    document.addEventListener('click', function(e){
+      var day = e.target.closest('[data-dp-day]');
+      if (day){
+        var pop = day.closest('[data-dp-pop]'), wrap = pop.closest('[data-dp]');
+        wrap.querySelector('[data-dp-input]').value = pad(+day.getAttribute('data-dp-day')) + '/' + pad(+pop.getAttribute('data-m') + 1) + '/' + pop.getAttribute('data-y');
+        closeAll(); e.stopPropagation(); return;
+      }
+      var nav = e.target.closest('[data-dp-prev],[data-dp-next]');
+      if (nav){
+        var pop2 = nav.closest('[data-dp-pop]'), wrap2 = pop2.closest('[data-dp]');
+        var y2 = +pop2.getAttribute('data-y'), m2 = +pop2.getAttribute('data-m');
+        m2 += nav.hasAttribute('data-dp-prev') ? -1 : 1;
+        if (m2 < 0){ m2 = 11; y2--; } else if (m2 > 11){ m2 = 0; y2++; }
+        build(pop2, y2, m2, parseDMY(wrap2.querySelector('[data-dp-input]').value));
+        e.stopPropagation(); return;
+      }
+      var wrap3 = e.target.closest('[data-dp]');
+      if (wrap3){
+        var pop3 = wrap3.querySelector('[data-dp-pop]');
+        if (pop3.hidden) open(wrap3); else closeAll();
+        e.stopPropagation(); return;
+      }
+      closeAll();
+    });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeAll(); });
   })();
 </script>
 [[end]]

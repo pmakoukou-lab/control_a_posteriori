@@ -231,11 +231,15 @@
       if (!tb) return;
       bar._pgReady = true;
 
-      var sizeSel = bar.querySelector('[data-pg-size]');
+      var szTrigger = bar.querySelector('[data-pg-size-trigger]');
+      var szPanel = bar.querySelector('[data-pg-size-panel]');
+      var szLabel = bar.querySelector('[data-pg-size-label]');
+      var szOpts = szPanel ? Array.prototype.slice.call(szPanel.querySelectorAll('[data-pg-size-option]')) : [];
       var info = bar.querySelector('[data-pg-info]');
       var nav = bar.querySelector('[data-pg-nav]');
       var noun = bar.getAttribute('data-noun') || 'éléments';
-      var state = { page: 0 };
+      var state = { page: 0, size: 15 };
+      szOpts.forEach(function (o) { if (o.classList.contains('selected')) state.size = parseInt(o.getAttribute('data-value'), 10) || 15; });
 
       function dataRows() {
         return Array.prototype.slice.call(tb.children).filter(function (tr) {
@@ -243,7 +247,7 @@
         });
       }
       function pageSize() {
-        var v = sizeSel ? parseInt(sizeSel.value, 10) : PG_CAP;
+        var v = state.size;
         if (!v || v < 1) v = PG_CAP;
         return Math.min(v, PG_CAP);   // plafond dur
       }
@@ -291,7 +295,28 @@
         }
       }
 
-      if (sizeSel) sizeSel.addEventListener('change', function () { state.page = 0; render(); });
+      /* Menu maison « lignes par page » (ouverture/fermeture/sélection). */
+      if (szTrigger && szPanel) {
+        function szClose() { szPanel.classList.remove('open'); szTrigger.setAttribute('aria-expanded', 'false'); }
+        szTrigger.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var willOpen = !szPanel.classList.contains('open');
+          szPanel.classList.toggle('open', willOpen);
+          szTrigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+        szOpts.forEach(function (o) {
+          o.addEventListener('click', function (e) {
+            e.stopPropagation();
+            state.size = parseInt(o.getAttribute('data-value'), 10) || 15;
+            szOpts.forEach(function (x) { x.classList.remove('selected'); x.setAttribute('aria-selected', 'false'); });
+            o.classList.add('selected'); o.setAttribute('aria-selected', 'true');
+            if (szLabel) szLabel.textContent = o.textContent.trim();
+            szClose(); state.page = 0; render();
+          });
+        });
+        document.addEventListener('click', szClose);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') szClose(); });
+      }
       tb._pgRender = render;
       new MutationObserver(function () { render(); }).observe(tb, { childList: true });
       render();
